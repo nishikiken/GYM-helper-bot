@@ -230,21 +230,21 @@
 /* === КНОПКА "ВВЕРХ" === */
 .scroll-to-top {
     position: fixed;
-    top: 16px;
+    top: 50%;
     left: 16px;
-    width: 40px;
-    height: 40px;
+    transform: translateY(-50%) scale(0.8);
+    width: 50px;
+    height: 50px;
     background: var(--tg-theme-secondary-bg-color);
     color: var(--tg-theme-text-color);
     border: none;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.8);
     transition: all 0.3s ease;
     z-index: 1000;
     display: flex;
@@ -255,9 +255,9 @@
 .scroll-to-top.visible {
     opacity: 1;
     visibility: visible;
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
 }
 
 .scroll-to-top:active {
-    transform: scale(0.9);
+    transform: translateY(-50%) scale(0.9);
 }
