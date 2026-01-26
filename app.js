@@ -744,6 +744,8 @@ function goToExercises() {
 
 function goToCalories() {
     showStep('step-calories');
+    // Загружаем сохраненные данные если есть
+    setTimeout(() => loadSavedCaloriesData(), 100);
     haptic();
 }
 
@@ -788,6 +790,10 @@ function switchCaloriesGoal(goal) {
     currentGoal = goal;
     document.querySelectorAll('.calories-tab').forEach(tab => tab.classList.remove('active'));
     event.target.classList.add('active');
+    
+    // Сохраняем выбранную цель
+    localStorage.setItem('caloriesGoal', goal);
+    
     haptic();
 }
 
@@ -795,6 +801,16 @@ function selectGender(gender) {
     currentGender = gender;
     document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
+    haptic();
+}
+
+function showCaloriesForm() {
+    const form = document.querySelector('.calories-form');
+    const result = document.getElementById('calories-result');
+    
+    form.classList.remove('hidden');
+    result.classList.remove('active');
+    
     haptic();
 }
 
@@ -858,9 +874,72 @@ function calculateCalories() {
     document.getElementById('result-fats').textContent = fats + ' г';
     document.getElementById('result-carbs').textContent = carbs + ' г';
     
-    document.getElementById('calories-result').style.display = 'block';
+    // Сохраняем в localStorage
+    const caloriesData = {
+        goal: currentGoal,
+        gender: currentGender,
+        age, weight, height, activity,
+        calories, protein, fats, carbs
+    };
+    localStorage.setItem('caloriesData', JSON.stringify(caloriesData));
+    
+    // Показываем результат поверх формы
+    const form = document.querySelector('.calories-form');
+    const result = document.getElementById('calories-result');
+    
+    form.classList.add('hidden');
+    result.classList.add('active');
     
     haptic('success');
+}
+
+// Загрузка сохраненных данных при открытии страницы калькулятора
+function loadSavedCaloriesData() {
+    const savedData = localStorage.getItem('caloriesData');
+    if (!savedData) return;
+    
+    try {
+        const data = JSON.parse(savedData);
+        
+        // Восстанавливаем цель
+        currentGoal = data.goal || 'bulk';
+        document.querySelectorAll('.calories-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.textContent.includes('Масса') && data.goal === 'bulk') tab.classList.add('active');
+            if (tab.textContent.includes('Сушка') && data.goal === 'cut') tab.classList.add('active');
+            if (tab.textContent.includes('Поддержка') && data.goal === 'maintain') tab.classList.add('active');
+        });
+        
+        // Восстанавливаем пол
+        currentGender = data.gender || 'male';
+        document.querySelectorAll('.gender-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.gender === data.gender) btn.classList.add('active');
+        });
+        
+        // Восстанавливаем значения полей
+        if (data.age) document.getElementById('age').value = data.age;
+        if (data.weight) document.getElementById('weight').value = data.weight;
+        if (data.height) document.getElementById('height').value = data.height;
+        if (data.activity) document.getElementById('activity').value = data.activity;
+        
+        // Показываем результаты
+        document.getElementById('result-calories').textContent = data.calories;
+        document.getElementById('result-protein').textContent = data.protein + ' г';
+        document.getElementById('result-fats').textContent = data.fats + ' г';
+        document.getElementById('result-carbs').textContent = data.carbs + ' г';
+        
+        // Показываем результат поверх формы
+        const form = document.querySelector('.calories-form');
+        const result = document.getElementById('calories-result');
+        
+        form.classList.add('hidden');
+        result.classList.add('active');
+        
+        console.log('Loaded saved calories data:', data);
+    } catch (e) {
+        console.error('Error loading saved calories data:', e);
+    }
 }
 
 // === МАГАЗИН КАСТОМИЗАЦИИ ===

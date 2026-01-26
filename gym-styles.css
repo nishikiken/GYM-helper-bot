@@ -9,6 +9,8 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 24px;
+    position: relative;
+    min-height: 500px;
 }
 
 .calories-tabs {
@@ -41,6 +43,14 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.calories-form.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    position: absolute;
 }
 
 .form-group {
@@ -115,9 +125,24 @@
 }
 
 .calories-result {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    position: absolute;
+    width: calc(100% - 48px);
+    top: 80px;
+    left: 24px;
+}
+
+.calories-result.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 .calories-result h3 {
@@ -148,6 +173,25 @@
     font-size: 18px;
     font-weight: 700;
     color: var(--tg-theme-button-color);
+}
+
+.recalculate-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--tg-theme-text-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 16px;
+}
+
+.recalculate-btn:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* === УПРАЖНЕНИЯ (ЗАГЛУШКА) === */

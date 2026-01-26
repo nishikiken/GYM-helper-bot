@@ -192,6 +192,22 @@
                     <div class="faq-question">Сколько белка нужно в день?</div>
                     <div class="faq-answer">Для набора мышечной массы рекомендуется 1.6-2.2 грамма белка на килограмм веса тела. Для поддержания формы достаточно 1-1.5 г/кг.</div>
                 </div>
+                <div class="faq-item">
+                    <div class="faq-question">Можно ли тренироваться каждый день?</div>
+                    <div class="faq-answer">Да, но важно чередовать группы мышц и давать им время на восстановление (48-72 часа). Можно делать легкое кардио или растяжку в дни отдыха.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Нужно ли пить протеин?</div>
+                    <div class="faq-answer">Протеиновые добавки - это просто удобный способ добрать норму белка. Если получаешь достаточно белка из обычной еды, дополнительный протеин не обязателен.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Когда лучше тренироваться: утром или вечером?</div>
+                    <div class="faq-answer">Лучшее время - когда тебе удобно и комфортно. Главное - регулярность. Утренние тренировки бодрят, вечерние помогают снять стресс после дня.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Что делать если болят мышцы после тренировки?</div>
+                    <div class="faq-answer">Легкая боль (крепатура) - это нормально, особенно после новых упражнений. Помогает легкая активность, растяжка, массаж и достаточный сон. Если боль острая - обратись к врачу.</div>
+                </div>
             </div>
         </div>
 
@@ -206,9 +222,9 @@
             <div class="calories-container">
                 <div class="calories-card">
                     <div class="calories-tabs">
-                        <div class="calories-tab active" onclick="switchCaloriesGoal('bulk')">Набор массы</div>
+                        <div class="calories-tab active" onclick="switchCaloriesGoal('bulk')">Масса</div>
                         <div class="calories-tab" onclick="switchCaloriesGoal('cut')">Сушка</div>
-                        <div class="calories-tab" onclick="switchCaloriesGoal('maintain')">Удержание</div>
+                        <div class="calories-tab" onclick="switchCaloriesGoal('maintain')">Поддержка</div>
                     </div>
                     
                     <div class="calories-form">
@@ -222,17 +238,17 @@
                         
                         <div class="form-group">
                             <label>Возраст (лет)</label>
-                            <input type="number" id="age" placeholder="25" min="15" max="100">
+                            <input type="number" id="age" placeholder="Введите возраст" min="15" max="100">
                         </div>
                         
                         <div class="form-group">
                             <label>Вес (кг)</label>
-                            <input type="number" id="weight" placeholder="70" min="30" max="200">
+                            <input type="number" id="weight" placeholder="Ваш вес" min="30" max="200">
                         </div>
                         
                         <div class="form-group">
                             <label>Рост (см)</label>
-                            <input type="number" id="height" placeholder="175" min="140" max="220">
+                            <input type="number" id="height" placeholder="Ваш рост" min="140" max="220">
                         </div>
                         
                         <div class="form-group">
@@ -249,7 +265,7 @@
                         <button class="calculate-btn" onclick="calculateCalories()">Рассчитать</button>
                     </div>
                     
-                    <div class="calories-result" id="calories-result" style="display: none;">
+                    <div class="calories-result" id="calories-result">
                         <h3>Ваши показатели:</h3>
                         <div class="result-item">
                             <span class="result-label">Калории в день:</span>
@@ -267,6 +283,7 @@
                             <span class="result-label">Углеводы:</span>
                             <span class="result-value" id="result-carbs">0 г</span>
                         </div>
+                        <button class="recalculate-btn" onclick="showCaloriesForm()">Перерасчет</button>
                     </div>
                 </div>
             </div>
