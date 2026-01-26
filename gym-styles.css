@@ -239,7 +239,7 @@
     border: none;
     border-radius: 35px;
     font-size: 34px;
-    font-weight: 900;
+    font-weight: 400;
     line-height: 1;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -260,4 +260,206 @@
 
 .scroll-to-top:active {
     transform: translateY(-50%) scale(0.95);
+}
+
+
+/* === УПРАЖНЕНИЯ === */
+.exercises-container {
+    padding: 0 16px 100px;
+}
+
+.workout-days-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.workout-day-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.workout-day-card:active {
+    transform: scale(0.98);
+}
+
+.workout-day-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.workout-day-card p {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color);
+    margin-bottom: 8px;
+}
+
+.workout-day-card .exercises-count {
+    font-size: 12px;
+    color: var(--tg-theme-button-color);
+}
+
+.add-day-btn {
+    width: 100%;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    color: var(--tg-theme-hint-color);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-day-btn:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Детали дня тренировки */
+.workout-day-container {
+    padding: 0 16px 100px;
+}
+
+.exercises-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.exercise-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.exercise-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.exercise-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--tg-theme-hint-color);
+}
+
+.exercise-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.workout-day-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.add-exercise-btn,
+.start-workout-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-exercise-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    color: var(--tg-theme-hint-color);
+}
+
+.start-workout-btn {
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+}
+
+.add-exercise-btn:active,
+.start-workout-btn:active {
+    transform: scale(0.98);
+}
+
+/* Модальные окна */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--tg-theme-bg-color);
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-cancel,
+.btn-save {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--tg-theme-text-color);
+}
+
+.btn-save {
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+}
+
+.btn-cancel:active,
+.btn-save:active {
+    transform: scale(0.95);
 }

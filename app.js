@@ -1431,3 +1431,206 @@ async function executeExchange(ratingAmount, tokensAmount) {
         }
     }
 }
+
+// === УПРАЖНЕНИЯ И ТРЕНИРОВКИ ===
+let workoutDays = [];
+let currentDayId = null;
+
+// Загрузка дней тренировок из localStorage
+function loadWorkoutDays() {
+    const saved = localStorage.getItem('workoutDays');
+    if (saved) {
+        try {
+            workoutDays = JSON.parse(saved);
+        } catch (e) {
+            console.error('Error loading workout days:', e);
+            workoutDays = [];
+        }
+    }
+    renderWorkoutDays();
+}
+
+// Сохранение дней тренировок в localStorage
+function saveWorkoutDays() {
+    localStorage.setItem('workoutDays', JSON.stringify(workoutDays));
+}
+
+// Отрисовка списка дней тренировок
+function renderWorkoutDays() {
+    const container = document.getElementById('workout-days-list');
+    
+    if (workoutDays.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Нет тренировок. Создай свою первую!</div>';
+        return;
+    }
+    
+    container.innerHTML = workoutDays.map(day => `
+        <div class="workout-day-card" onclick="openWorkoutDay('${day.id}')">
+            <h3>${day.name}</h3>
+            <p>${day.description}</p>
+            <div class="exercises-count">${day.exercises.length} упражнений</div>
+        </div>
+    `).join('');
+}
+
+// Показать модальное окно добавления дня
+function showAddDayModal() {
+    const modal = document.getElementById('add-day-modal');
+    modal.classList.add('active');
+    document.getElementById('day-name').value = '';
+    document.getElementById('day-description').value = '';
+    haptic();
+}
+
+// Закрыть модальное окно добавления дня
+function closeAddDayModal() {
+    const modal = document.getElementById('add-day-modal');
+    modal.classList.remove('active');
+    haptic();
+}
+
+// Сохранить новый день тренировки
+function saveDayWorkout() {
+    const name = document.getElementById('day-name').value.trim();
+    const description = document.getElementById('day-description').value.trim();
+    
+    if (!name) {
+        if (tg?.showAlert) {
+            tg.showAlert('Введи название дня!');
+        }
+        return;
+    }
+    
+    const newDay = {
+        id: Date.now().toString(),
+        name: name,
+        description: description || 'Без описания',
+        exercises: []
+    };
+    
+    workoutDays.push(newDay);
+    saveWorkoutDays();
+    renderWorkoutDays();
+    closeAddDayModal();
+    haptic('success');
+}
+
+// Открыть детали дня тренировки
+function openWorkoutDay(dayId) {
+    currentDayId = dayId;
+    const day = workoutDays.find(d => d.id === dayId);
+    
+    if (!day) return;
+    
+    document.getElementById('workout-day-title').textContent = day.name;
+    document.getElementById('workout-day-subtitle').textContent = day.description;
+    
+    renderExercisesList(day.exercises);
+    showStep('step-workout-day');
+    haptic();
+}
+
+// Отрисовка списка упражнений
+function renderExercisesList(exercises) {
+    const container = document.getElementById('exercises-list');
+    
+    if (exercises.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Нет упражнений. Добавь первое!</div>';
+        return;
+    }
+    
+    container.innerHTML = exercises.map(exercise => `
+        <div class="exercise-card">
+            <h3>${exercise.name}</h3>
+            <div class="exercise-stats">
+                <div class="exercise-stat">
+                    <span>Подходы:</span>
+                    <span>${exercise.sets}</span>
+                </div>
+                <div class="exercise-stat">
+                    <span>Повторения:</span>
+                    <span>${exercise.reps}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Показать модальное окно добавления упражнения
+function showAddExerciseModal() {
+    const modal = document.getElementById('add-exercise-modal');
+    modal.classList.add('active');
+    document.getElementById('exercise-name').value = '';
+    document.getElementById('exercise-sets').value = '3';
+    document.getElementById('exercise-reps').value = '12';
+    haptic();
+}
+
+// Закрыть модальное окно добавления упражнения
+function closeAddExerciseModal() {
+    const modal = document.getElementById('add-exercise-modal');
+    modal.classList.remove('active');
+    haptic();
+}
+
+// Сохранить новое упражнение
+function saveExercise() {
+    const name = document.getElementById('exercise-name').value.trim();
+    const sets = parseInt(document.getElementById('exercise-sets').value) || 3;
+    const reps = parseInt(document.getElementById('exercise-reps').value) || 12;
+    
+    if (!name) {
+        if (tg?.showAlert) {
+            tg.showAlert('Введи название упражнения!');
+        }
+        return;
+    }
+    
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day) return;
+    
+    const newExercise = {
+        id: Date.now().toString(),
+        name: name,
+        sets: sets,
+        reps: reps
+    };
+    
+    day.exercises.push(newExercise);
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    closeAddExerciseModal();
+    haptic('success');
+}
+
+// Начать тренировку
+function startWorkout() {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || day.exercises.length === 0) {
+        if (tg?.showAlert) {
+            tg.showAlert('Добавь хотя бы одно упражнение!');
+        }
+        return;
+    }
+    
+    // TODO: Реализовать активный экран тренировки
+    if (tg?.showAlert) {
+        tg.showAlert('Активный экран тренировки в разработке!');
+    }
+    haptic();
+}
+
+// Инициализация при загрузке страницы упражнений
+document.addEventListener('DOMContentLoaded', () => {
+    loadWorkoutDays();
+});
+
+// Делаем функции глобальными
+window.showAddDayModal = showAddDayModal;
+window.closeAddDayModal = closeAddDayModal;
+window.saveDayWorkout = saveDayWorkout;
+window.openWorkoutDay = openWorkoutDay;
+window.showAddExerciseModal = showAddExerciseModal;
+window.closeAddExerciseModal = closeAddExerciseModal;
+window.saveExercise = saveExercise;
+window.startWorkout = startWorkout;
