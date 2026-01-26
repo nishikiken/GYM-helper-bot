@@ -1435,6 +1435,74 @@ async function executeExchange(ratingAmount, tokensAmount) {
 // === УПРАЖНЕНИЯ И ТРЕНИРОВКИ ===
 let workoutDays = [];
 let currentDayId = null;
+let activeWorkout = null;
+let workoutTimerInterval = null;
+let restTimerInterval = null;
+let restDuration = 90; // секунды
+
+// Каталог готовых программ
+const workoutCatalog = {
+    chest: {
+        name: 'Грудь',
+        icon: '💪',
+        exercises: [
+            { name: 'Жим штанги лежа', sets: 4, reps: 10 },
+            { name: 'Жим гантелей на наклонной', sets: 3, reps: 12 },
+            { name: 'Разводка гантелей', sets: 3, reps: 15 },
+            { name: 'Отжимания на брусьях', sets: 3, reps: 12 }
+        ]
+    },
+    triceps: {
+        name: 'Трицепс',
+        icon: '💪',
+        exercises: [
+            { name: 'Французский жим', sets: 3, reps: 12 },
+            { name: 'Разгибания на блоке', sets: 3, reps: 15 },
+            { name: 'Жим узким хватом', sets: 4, reps: 10 },
+            { name: 'Отжимания обратные', sets: 3, reps: 15 }
+        ]
+    },
+    biceps: {
+        name: 'Бицепс',
+        icon: '💪',
+        exercises: [
+            { name: 'Подъем штанги на бицепс', sets: 4, reps: 10 },
+            { name: 'Молотки с гантелями', sets: 3, reps: 12 },
+            { name: 'Концентрированный подъем', sets: 3, reps: 12 },
+            { name: 'Подъем на скамье Скотта', sets: 3, reps: 12 }
+        ]
+    },
+    shoulders: {
+        name: 'Плечи',
+        icon: '💪',
+        exercises: [
+            { name: 'Жим штанги стоя', sets: 4, reps: 10 },
+            { name: 'Махи гантелями в стороны', sets: 3, reps: 15 },
+            { name: 'Махи в наклоне', sets: 3, reps: 15 },
+            { name: 'Тяга к подбородку', sets: 3, reps: 12 }
+        ]
+    },
+    back: {
+        name: 'Спина',
+        icon: '💪',
+        exercises: [
+            { name: 'Становая тяга', sets: 4, reps: 8 },
+            { name: 'Подтягивания', sets: 4, reps: 10 },
+            { name: 'Тяга штанги в наклоне', sets: 4, reps: 10 },
+            { name: 'Тяга верхнего блока', sets: 3, reps: 12 }
+        ]
+    },
+    legs: {
+        name: 'Ноги',
+        icon: '🦵',
+        exercises: [
+            { name: 'Приседания со штангой', sets: 4, reps: 10 },
+            { name: 'Жим ногами', sets: 4, reps: 12 },
+            { name: 'Разгибания ног', sets: 3, reps: 15 },
+            { name: 'Сгибания ног', sets: 3, reps: 15 }
+        ]
+    }
+};
 
 // Загрузка дней тренировок из localStorage
 function loadWorkoutDays() {
@@ -1539,7 +1607,7 @@ function renderExercisesList(exercises) {
         return;
     }
     
-    container.innerHTML = exercises.map(exercise => `
+    container.innerHTML = exercises.map((exercise, index) => `
         <div class="exercise-card">
             <h3>${exercise.name}</h3>
             <div class="exercise-stats">
@@ -1552,6 +1620,9 @@ function renderExercisesList(exercises) {
                     <span>${exercise.reps}</span>
                 </div>
             </div>
+            <button class="btn-cancel" onclick="removeExercise(${index})" style="width: 100%; margin-top: 12px; padding: 10px;">
+                Удалить
+            </button>
         </div>
     `).join('');
 }
@@ -1613,10 +1684,333 @@ function startWorkout() {
         return;
     }
     
-    // TODO: Реализовать активный экран тренировки
-    if (tg?.showAlert) {
-        tg.showAlert('Активный экран тренировки в разработке!');
+    // Инициализируем активную тренировку
+    activeWorkout = {
+        dayId: currentDayId,
+        dayName: day.name,
+        startTime: Date.now(),
+        exercises: day.exercises.map(ex => ({
+            ...ex,
+            completedSets: []
+        }))
+    };
+    
+    // Применяем цвет бейджа к плашке тренировки
+    const glassPanel = document.getElementById('active-workout-glass');
+    if (userInventory.equippedBadge) {
+        const badgeItem = shopItems.badges.find(i => i.id === userInventory.equippedBadge);
+        if (badgeItem) {
+            glassPanel.className = 'active-workout-glass ' + badgeItem.class;
+        }
     }
+    
+    renderActiveWorkout();
+    showStep('step-active-workout');
+    startWorkoutTimer();
+    haptic();
+}
+
+// Остановить тренировку
+function stopWorkout() {
+    if (tg?.showConfirm) {
+        tg.showConfirm('Завершить тренировку?', (confirmed) => {
+            if (confirmed) {
+                executeStopWorkout();
+            }
+        });
+    } else {
+        executeStopWorkout();
+    }
+}
+
+function executeStopWorkout() {
+    if (workoutTimerInterval) {
+        clearInterval(workoutTimerInterval);
+        workoutTimerInterval = null;
+    }
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+    }
+    activeWorkout = null;
+    openWorkoutDay(currentDayId);
+    haptic();
+}
+
+// Таймер тренировки
+function startWorkoutTimer() {
+    const startTime = activeWorkout.startTime;
+    
+    const updateTimer = () => {
+        const elapsed = Date.now() - startTime;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        document.getElementById('workout-timer').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+    
+    updateTimer();
+    workoutTimerInterval = setInterval(updateTimer, 1000);
+}
+
+// Таймер отдыха
+function toggleRestTimer() {
+    const container = document.getElementById('rest-timer-container');
+    const btn = document.getElementById('rest-btn');
+    
+    if (restTimerInterval) {
+        // Остановить отдых
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        container.classList.remove('active');
+        btn.classList.remove('active');
+        btn.textContent = '⏱️ Отдых';
+    } else {
+        // Начать отдых
+        let timeLeft = restDuration;
+        
+        const updateRestTimer = () => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('rest-timer-display').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(restTimerInterval);
+                restTimerInterval = null;
+                container.classList.remove('active');
+                btn.classList.remove('active');
+                btn.textContent = '⏱️ Отдых';
+                haptic('success');
+            }
+            
+            timeLeft--;
+        };
+        
+        container.classList.add('active');
+        btn.classList.add('active');
+        btn.textContent = '⏹️ Стоп';
+        updateRestTimer();
+        restTimerInterval = setInterval(updateRestTimer, 1000);
+    }
+    
+    haptic();
+}
+
+// Отрисовка активной тренировки
+function renderActiveWorkout() {
+    document.getElementById('active-workout-title').textContent = activeWorkout.dayName;
+    
+    const container = document.getElementById('active-exercises-list');
+    container.innerHTML = activeWorkout.exercises.map((exercise, exIndex) => {
+        const allCompleted = exercise.completedSets.length >= exercise.sets;
+        
+        return `
+            <div class="active-exercise-card ${allCompleted ? 'completed' : ''}">
+                <h3>${exercise.name}</h3>
+                <div class="sets-grid">
+                    ${Array.from({ length: exercise.sets }, (_, setIndex) => {
+                        const isCompleted = exercise.completedSets.includes(setIndex);
+                        return `
+                            <div class="set-item ${isCompleted ? 'completed' : ''}" 
+                                 onclick="toggleSet(${exIndex}, ${setIndex})">
+                                <div class="set-number">Подход ${setIndex + 1}</div>
+                                <div class="set-reps">${exercise.reps}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Отметить/снять подход
+function toggleSet(exerciseIndex, setIndex) {
+    const exercise = activeWorkout.exercises[exerciseIndex];
+    const completedIndex = exercise.completedSets.indexOf(setIndex);
+    
+    if (completedIndex > -1) {
+        exercise.completedSets.splice(completedIndex, 1);
+    } else {
+        exercise.completedSets.push(setIndex);
+        exercise.completedSets.sort((a, b) => a - b);
+    }
+    
+    renderActiveWorkout();
+    haptic();
+}
+
+// Удалить упражнение
+function removeExercise(exerciseIndex) {
+    if (tg?.showConfirm) {
+        tg.showConfirm('Удалить упражнение?', (confirmed) => {
+            if (confirmed) {
+                executeRemoveExercise(exerciseIndex);
+            }
+        });
+    } else {
+        executeRemoveExercise(exerciseIndex);
+    }
+}
+
+function executeRemoveExercise(exerciseIndex) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day) return;
+    
+    day.exercises.splice(exerciseIndex, 1);
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
+}
+
+// === КАТАЛОГ ТРЕНИРОВОК ===
+function openCatalog() {
+    renderCatalog();
+    showStep('step-catalog');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    haptic();
+}
+
+function closeCatalog() {
+    goToExercises();
+    haptic();
+}
+
+function renderCatalog() {
+    const container = document.getElementById('catalog-categories');
+    
+    container.innerHTML = Object.entries(workoutCatalog).map(([key, category]) => `
+        <div class="catalog-category">
+            <h3>${category.icon} ${category.name}</h3>
+            <div class="catalog-exercises">
+                ${category.exercises.map(exercise => `
+                    <div class="catalog-exercise-item" onclick='showAddFromCatalog(${JSON.stringify(exercise)})'>
+                        <h4>${exercise.name}</h4>
+                        <div class="catalog-exercise-stats">
+                            <span>Подходы: ${exercise.sets}</span>
+                            <span>Повторения: ${exercise.reps}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Показать модальное окно добавления из каталога
+let catalogExerciseToAdd = null;
+
+function showAddFromCatalog(exercise) {
+    catalogExerciseToAdd = exercise;
+    
+    const modal = document.getElementById('add-from-catalog-modal');
+    document.getElementById('catalog-exercise-name').textContent = 
+        `${exercise.name} (${exercise.sets}×${exercise.reps})`;
+    
+    const daysList = document.getElementById('catalog-days-list');
+    
+    if (workoutDays.length === 0) {
+        daysList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--tg-theme-hint-color);">Сначала создай день тренировки</div>';
+    } else {
+        daysList.innerHTML = workoutDays.map(day => `
+            <div class="catalog-day-item" onclick="addExerciseFromCatalog('${day.id}')">
+                <h4>${day.name}</h4>
+                <p style="font-size: 13px; color: var(--tg-theme-hint-color); margin-top: 4px;">
+                    ${day.description}
+                </p>
+            </div>
+        `).join('');
+    }
+    
+    modal.classList.add('active');
+    haptic();
+}
+
+function closeAddFromCatalogModal() {
+    const modal = document.getElementById('add-from-catalog-modal');
+    modal.classList.remove('active');
+    catalogExerciseToAdd = null;
+    haptic();
+}
+
+function addExerciseFromCatalog(dayId) {
+    if (!catalogExerciseToAdd) return;
+    
+    const day = workoutDays.find(d => d.id === dayId);
+    if (!day) return;
+    
+    const newExercise = {
+        id: Date.now().toString(),
+        name: catalogExerciseToAdd.name,
+        sets: catalogExerciseToAdd.sets,
+        reps: catalogExerciseToAdd.reps
+    };
+    
+    day.exercises.push(newExercise);
+    saveWorkoutDays();
+    
+    closeAddFromCatalogModal();
+    
+    if (tg?.showAlert) {
+        tg.showAlert(`Добавлено в "${day.name}"!`);
+    }
+    
+    haptic('success');
+}
+
+// Показать кнопку каталога на странице упражнений
+function goToExercises() {
+    loadWorkoutDays();
+    showStep('step-exercises');
+    document.getElementById('catalog-fab').classList.add('visible');
+    haptic();
+}
+
+// Скрыть кнопку каталога при уходе со страницы
+function goToMain() {
+    showStep('step-main');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    haptic();
+}
+
+function goToFAQ() {
+    showStep('step-faq');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    
+    // Инициализируем отслеживание скролла для кнопки "Вверх"
+    setTimeout(() => {
+        initScrollToTop('faq');
+    }, 100);
+    
+    haptic();
+}
+
+function goToShop() {
+    renderShop();
+    showStep('step-shop');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    haptic();
+}
+
+function goToExchange() {
+    showStep('step-exchange');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    haptic();
+    
+    const input = document.getElementById('exchange-amount');
+    input.addEventListener('input', () => {
+        const amount = parseInt(input.value) || 0;
+        const tokens = Math.floor(amount / 100);
+        document.getElementById('exchange-tokens').textContent = tokens;
+    });
+}
+
+function goToCalories() {
+    showStep('step-calories');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    // Загружаем сохраненные данные если есть
+    setTimeout(() => loadSavedCaloriesData(), 100);
     haptic();
 }
 
@@ -1634,3 +2028,12 @@ window.showAddExerciseModal = showAddExerciseModal;
 window.closeAddExerciseModal = closeAddExerciseModal;
 window.saveExercise = saveExercise;
 window.startWorkout = startWorkout;
+window.stopWorkout = stopWorkout;
+window.toggleRestTimer = toggleRestTimer;
+window.toggleSet = toggleSet;
+window.removeExercise = removeExercise;
+window.openCatalog = openCatalog;
+window.closeCatalog = closeCatalog;
+window.showAddFromCatalog = showAddFromCatalog;
+window.closeAddFromCatalogModal = closeAddFromCatalogModal;
+window.addExerciseFromCatalog = addExerciseFromCatalog;

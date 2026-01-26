@@ -153,7 +153,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v16</div>
+                        <div class="user-version">v17</div>
                     </div>
                 </div>
             </div>
@@ -343,6 +343,53 @@
             </div>
         </div>
 
+        <!-- Активная тренировка -->
+        <div id="step-active-workout" class="step">
+            <div class="active-workout-overlay">
+                <div class="active-workout-glass" id="active-workout-glass">
+                    <div class="workout-header">
+                        <button class="workout-close-btn" onclick="stopWorkout()">✕</button>
+                        <h2 id="active-workout-title">Тренировка</h2>
+                        <div class="workout-timer" id="workout-timer">00:00</div>
+                    </div>
+                    
+                    <div class="rest-timer-container" id="rest-timer-container">
+                        <div class="rest-timer-display" id="rest-timer-display">01:30</div>
+                        <div class="rest-timer-label">Отдых</div>
+                    </div>
+                    
+                    <div class="active-exercises-list" id="active-exercises-list">
+                        <!-- Упражнения с подходами -->
+                    </div>
+                    
+                    <button class="rest-btn" id="rest-btn" onclick="toggleRestTimer()">
+                        ⏱️ Отдых
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Каталог тренировок -->
+        <div id="step-catalog" class="step">
+            <div class="header">
+                <button class="back-btn" onclick="closeCatalog()">←</button>
+                <div class="icon">📚</div>
+                <h1>Каталог тренировок</h1>
+                <p class="subtitle">Готовые программы</p>
+            </div>
+            
+            <div class="catalog-container">
+                <div class="catalog-categories" id="catalog-categories">
+                    <!-- Категории будут здесь -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка открытия каталога -->
+        <button class="catalog-fab" id="catalog-fab" onclick="openCatalog()">
+            🛒
+        </button>
+
         <!-- Модальное окно: Добавить день -->
         <div class="modal" id="add-day-modal">
             <div class="modal-content">
@@ -382,6 +429,18 @@
                     <button class="btn-cancel" onclick="closeAddExerciseModal()">Отмена</button>
                     <button class="btn-save" onclick="saveExercise()">Добавить</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно: Добавить упражнение из каталога -->
+        <div class="modal" id="add-from-catalog-modal">
+            <div class="modal-content">
+                <h2>Добавить в день</h2>
+                <p id="catalog-exercise-name" style="margin-bottom: 16px; color: var(--tg-theme-hint-color);"></p>
+                <div class="catalog-days-list" id="catalog-days-list">
+                    <!-- Список дней -->
+                </div>
+                <button class="btn-cancel" onclick="closeAddFromCatalogModal()" style="width: 100%; margin-top: 16px;">Отмена</button>
             </div>
         </div>
 
