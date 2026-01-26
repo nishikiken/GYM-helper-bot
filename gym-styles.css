@@ -281,12 +281,12 @@
 
 .arrow-up::before {
     left: -10px;
-    transform: rotate(45deg);
+    transform: rotate(-45deg);
     transform-origin: right center;
 }
 
 .arrow-up::after {
     right: -10px;
-    transform: rotate(-45deg);
+    transform: rotate(45deg);
     transform-origin: left center;
 }
