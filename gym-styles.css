@@ -232,7 +232,6 @@
     position: fixed;
     top: 50%;
     left: 16px;
-    transform: translateY(-50%) scale(0.8);
     width: 50px;
     height: 50px;
     background: var(--tg-theme-secondary-bg-color);
@@ -245,7 +244,8 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -255,9 +255,8 @@
 .scroll-to-top.visible {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-50%) scale(1);
 }
 
 .scroll-to-top:active {
-    transform: translateY(-50%) scale(0.9);
+    transform: translateY(-50%) scale(0.95);
 }
