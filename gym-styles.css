@@ -232,13 +232,13 @@
     position: fixed;
     top: 50%;
     left: 16px;
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 70px;
     background: var(--tg-theme-secondary-bg-color);
     color: var(--tg-theme-text-color);
     border: none;
-    border-radius: 50%;
-    font-size: 24px;
+    border-radius: 35px;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -250,6 +250,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-bottom: 4px;
 }
 
 .scroll-to-top.visible {
