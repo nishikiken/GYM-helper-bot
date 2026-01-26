@@ -238,6 +238,9 @@
     color: var(--tg-theme-text-color);
     border: none;
     border-radius: 35px;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     opacity: 0;
@@ -248,6 +251,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    letter-spacing: -2px;
 }
 
 .scroll-to-top.visible {
@@ -257,36 +261,4 @@
 
 .scroll-to-top:active {
     transform: translateY(-50%) scale(0.95);
-}
-
-/* Кастомная стрелка с длинной толстой палочкой */
-.arrow-up {
-    position: relative;
-    width: 4px;
-    height: 40px;
-    background: var(--tg-theme-text-color);
-    border-radius: 2px;
-}
-
-.arrow-up::before,
-.arrow-up::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 12px;
-    height: 3px;
-    background: var(--tg-theme-text-color);
-    border-radius: 2px;
-}
-
-.arrow-up::before {
-    left: -10px;
-    transform: rotate(-45deg);
-    transform-origin: right center;
-}
-
-.arrow-up::after {
-    right: -10px;
-    transform: rotate(45deg);
-    transform-origin: left center;
 }
