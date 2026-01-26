@@ -793,16 +793,24 @@ function haptic(type = 'selection') {
 // === КНОПКА "ВВЕРХ" ===
 function initScrollToTop(pageId) {
     const button = document.getElementById(`scroll-to-top-${pageId}`);
-    if (!button) return;
+    if (!button) {
+        console.error('Scroll to top button not found:', `scroll-to-top-${pageId}`);
+        return;
+    }
     
-    const container = document.querySelector('.container');
+    const header = document.querySelector(`#step-${pageId} .header`);
+    if (!header) {
+        console.error('Header not found for page:', pageId);
+        return;
+    }
     
     // Отслеживаем скролл
     const handleScroll = () => {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const headerRect = header.getBoundingClientRect();
         
-        // Показываем кнопку если прокрутили больше 300px
-        if (scrollTop > 300) {
+        // Показываем кнопку если header ушел за верхнюю границу экрана
+        if (headerRect.bottom < 0) {
             button.classList.add('visible');
         } else {
             button.classList.remove('visible');
@@ -811,20 +819,26 @@ function initScrollToTop(pageId) {
     
     // Добавляем обработчик
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Проверяем сразу
+    
+    // Сохраняем обработчик чтобы можно было удалить
+    button.dataset.scrollHandler = 'active';
     
     // Удаляем обработчик при уходе со страницы
-    const observer = new MutationObserver(() => {
-        const faqStep = document.getElementById('step-faq');
-        if (faqStep && !faqStep.classList.contains('active')) {
+    const checkPageActive = () => {
+        const pageStep = document.getElementById(`step-${pageId}`);
+        if (pageStep && !pageStep.classList.contains('active')) {
             window.removeEventListener('scroll', handleScroll);
             button.classList.remove('visible');
+            button.dataset.scrollHandler = '';
         }
-    });
+    };
     
-    observer.observe(document.getElementById('step-faq'), {
-        attributes: true,
-        attributeFilter: ['class']
-    });
+    // Проверяем каждые 500ms
+    const intervalId = setInterval(checkPageActive, 500);
+    
+    // Очищаем интервал через 30 секунд (на случай если что-то пойдет не так)
+    setTimeout(() => clearInterval(intervalId), 30000);
 }
 
 function scrollToTop(pageId) {
