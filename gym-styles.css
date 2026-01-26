@@ -238,8 +238,8 @@
     color: var(--tg-theme-text-color);
     border: none;
     border-radius: 35px;
-    font-size: 32px;
-    font-weight: bold;
+    font-size: 38px;
+    font-weight: 900;
     line-height: 1;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -251,7 +251,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: -2px;
 }
 
 .scroll-to-top.visible {
