@@ -272,21 +272,21 @@
 .arrow-up::after {
     content: '';
     position: absolute;
-    top: -1px;
-    width: 14px;
-    height: 4px;
+    top: 0;
+    width: 12px;
+    height: 3px;
     background: var(--tg-theme-text-color);
     border-radius: 2px;
 }
 
 .arrow-up::before {
-    left: -7px;
+    left: -10px;
     transform: rotate(45deg);
     transform-origin: right center;
 }
 
 .arrow-up::after {
-    right: -7px;
+    right: -10px;
     transform: rotate(-45deg);
     transform-origin: left center;
 }
