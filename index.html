@@ -153,7 +153,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v18</div>
+                        <div class="user-version">v19</div>
                     </div>
                 </div>
             </div>
@@ -345,14 +345,20 @@
 
         <!-- Активная тренировка -->
         <div id="step-active-workout" class="step">
-            <!-- Компактная плашка сверху -->
-            <div class="workout-top-panel" id="workout-top-panel">
+            <!-- Красивая плашка сверху в стиле профиля -->
+            <div class="workout-profile-card" id="workout-profile-card">
                 <button class="workout-close-btn" onclick="stopWorkout()">✕</button>
-                <div class="workout-panel-info">
-                    <h2 id="active-workout-title">Тренировка</h2>
-                    <p id="active-workout-description">Описание</p>
+                <div class="workout-particles-bg"></div>
+                <div class="workout-card-content">
+                    <div class="workout-info-section">
+                        <div class="workout-day-name" id="active-workout-title">Тренировка</div>
+                        <div class="workout-day-desc" id="active-workout-description">Описание</div>
+                    </div>
+                    <div class="workout-timer-section">
+                        <div class="workout-timer-label">Время</div>
+                        <div class="workout-timer" id="workout-timer">00:00</div>
+                    </div>
                 </div>
-                <div class="workout-timer" id="workout-timer">00:00</div>
             </div>
             
             <!-- Таймер отдыха (появляется при нажатии) -->

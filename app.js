@@ -1697,18 +1697,72 @@ function startWorkout() {
     };
     
     // Применяем цвет бейджа к плашке тренировки
-    const topPanel = document.getElementById('workout-top-panel');
+    const profileCard = document.getElementById('workout-profile-card');
     if (userInventory.equippedBadge) {
         const badgeItem = shopItems.badges.find(i => i.id === userInventory.equippedBadge);
         if (badgeItem) {
-            topPanel.className = 'workout-top-panel ' + badgeItem.class;
+            profileCard.className = 'workout-profile-card ' + badgeItem.class;
         }
+    } else {
+        profileCard.className = 'workout-profile-card';
     }
+    
+    // Создаем частицы для плашки
+    createWorkoutParticles();
     
     renderActiveWorkout();
     showStep('step-active-workout');
     startWorkoutTimer();
     haptic();
+}
+
+// Создание частиц для плашки тренировки
+function createWorkoutParticles() {
+    const particlesContainer = document.querySelector('.workout-particles-bg');
+    if (!particlesContainer) return;
+    
+    // Очищаем старые частицы
+    particlesContainer.innerHTML = '';
+    
+    const particleCount = 15;
+    const colors = [
+        'rgba(135, 206, 250, 0.4)',
+        'rgba(173, 216, 230, 0.35)',
+        'rgba(176, 224, 230, 0.3)',
+    ];
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 2.5 + 1.5;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        const duration = Math.random() * 8 + 12;
+        const delay = Math.random() * 5;
+        
+        const moveX = (Math.random() - 0.5) * 40;
+        const moveY = (Math.random() - 0.5) * 30;
+        
+        particle.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            background: ${color};
+            border-radius: 50%;
+            left: ${startX}%;
+            top: ${startY}%;
+            animation: gentleFloat ${duration}s infinite ease-in-out;
+            animation-delay: ${delay}s;
+            box-shadow: 0 0 ${size * 3}px ${color};
+            pointer-events: none;
+            --move-x: ${moveX}px;
+            --move-y: ${moveY}px;
+        `;
+        
+        particlesContainer.appendChild(particle);
+    }
 }
 
 // Остановить тренировку
