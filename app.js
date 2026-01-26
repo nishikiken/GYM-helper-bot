@@ -1688,19 +1688,20 @@ function startWorkout() {
     activeWorkout = {
         dayId: currentDayId,
         dayName: day.name,
+        dayDescription: day.description,
         startTime: Date.now(),
         exercises: day.exercises.map(ex => ({
             ...ex,
-            completedSets: []
+            completedSets: 0
         }))
     };
     
     // Применяем цвет бейджа к плашке тренировки
-    const glassPanel = document.getElementById('active-workout-glass');
+    const topPanel = document.getElementById('workout-top-panel');
     if (userInventory.equippedBadge) {
         const badgeItem = shopItems.badges.find(i => i.id === userInventory.equippedBadge);
         if (badgeItem) {
-            glassPanel.className = 'active-workout-glass ' + badgeItem.class;
+            topPanel.className = 'workout-top-panel ' + badgeItem.class;
         }
     }
     
@@ -1755,16 +1756,16 @@ function startWorkoutTimer() {
 
 // Таймер отдыха
 function toggleRestTimer() {
-    const container = document.getElementById('rest-timer-container');
+    const banner = document.getElementById('rest-timer-banner');
     const btn = document.getElementById('rest-btn');
     
     if (restTimerInterval) {
         // Остановить отдых
         clearInterval(restTimerInterval);
         restTimerInterval = null;
-        container.classList.remove('active');
+        banner.classList.remove('active');
         btn.classList.remove('active');
-        btn.textContent = '⏱️ Отдых';
+        btn.textContent = '⏱️ Отдых (1:30)';
     } else {
         // Начать отдых
         let timeLeft = restDuration;
@@ -1778,18 +1779,18 @@ function toggleRestTimer() {
             if (timeLeft <= 0) {
                 clearInterval(restTimerInterval);
                 restTimerInterval = null;
-                container.classList.remove('active');
+                banner.classList.remove('active');
                 btn.classList.remove('active');
-                btn.textContent = '⏱️ Отдых';
+                btn.textContent = '⏱️ Отдых (1:30)';
                 haptic('success');
             }
             
             timeLeft--;
         };
         
-        container.classList.add('active');
+        banner.classList.add('active');
         btn.classList.add('active');
-        btn.textContent = '⏹️ Стоп';
+        btn.textContent = '⏹️ Стоп отдых';
         updateRestTimer();
         restTimerInterval = setInterval(updateRestTimer, 1000);
     }
@@ -1800,45 +1801,42 @@ function toggleRestTimer() {
 // Отрисовка активной тренировки
 function renderActiveWorkout() {
     document.getElementById('active-workout-title').textContent = activeWorkout.dayName;
+    document.getElementById('active-workout-description').textContent = activeWorkout.dayDescription;
     
     const container = document.getElementById('active-exercises-list');
     container.innerHTML = activeWorkout.exercises.map((exercise, exIndex) => {
-        const allCompleted = exercise.completedSets.length >= exercise.sets;
+        const allCompleted = exercise.completedSets >= exercise.sets;
         
         return `
             <div class="active-exercise-card ${allCompleted ? 'completed' : ''}">
                 <h3>${exercise.name}</h3>
-                <div class="sets-grid">
-                    ${Array.from({ length: exercise.sets }, (_, setIndex) => {
-                        const isCompleted = exercise.completedSets.includes(setIndex);
-                        return `
-                            <div class="set-item ${isCompleted ? 'completed' : ''}" 
-                                 onclick="toggleSet(${exIndex}, ${setIndex})">
-                                <div class="set-number">Подход ${setIndex + 1}</div>
-                                <div class="set-reps">${exercise.reps}</div>
-                            </div>
-                        `;
-                    }).join('')}
+                <div class="exercise-progress">
+                    <span class="progress-text">Подходы</span>
+                    <span class="progress-count">${exercise.completedSets} / ${exercise.sets}</span>
                 </div>
+                <div class="exercise-progress">
+                    <span class="progress-text">Повторения</span>
+                    <span class="progress-count">${exercise.reps}</span>
+                </div>
+                <button class="complete-set-btn" 
+                        onclick="completeSet(${exIndex})"
+                        ${allCompleted ? 'disabled' : ''}>
+                    ${allCompleted ? '✓ Завершено' : 'Выполнил подход'}
+                </button>
             </div>
         `;
     }).join('');
 }
 
-// Отметить/снять подход
-function toggleSet(exerciseIndex, setIndex) {
+// Отметить выполненный подход
+function completeSet(exerciseIndex) {
     const exercise = activeWorkout.exercises[exerciseIndex];
-    const completedIndex = exercise.completedSets.indexOf(setIndex);
     
-    if (completedIndex > -1) {
-        exercise.completedSets.splice(completedIndex, 1);
-    } else {
-        exercise.completedSets.push(setIndex);
-        exercise.completedSets.sort((a, b) => a - b);
+    if (exercise.completedSets < exercise.sets) {
+        exercise.completedSets++;
+        renderActiveWorkout();
+        haptic('success');
     }
-    
-    renderActiveWorkout();
-    haptic();
 }
 
 // Удалить упражнение
@@ -2030,7 +2028,7 @@ window.saveExercise = saveExercise;
 window.startWorkout = startWorkout;
 window.stopWorkout = stopWorkout;
 window.toggleRestTimer = toggleRestTimer;
-window.toggleSet = toggleSet;
+window.completeSet = completeSet;
 window.removeExercise = removeExercise;
 window.openCatalog = openCatalog;
 window.closeCatalog = closeCatalog;

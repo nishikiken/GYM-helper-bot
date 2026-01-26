@@ -465,63 +465,42 @@
 }
 
 /* === АКТИВНАЯ ТРЕНИРОВКА === */
-.active-workout-overlay {
-    position: fixed;
+.workout-top-panel {
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 3000;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.active-workout-glass {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 24px;
-    max-width: 500px;
-    margin: 0 auto;
-    min-height: calc(100vh - 40px);
-    position: relative;
+    border-radius: 0 0 20px 20px;
+    padding: 16px 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 /* Цвета для плашки тренировки (как бейджи) */
-.active-workout-glass.badge-blue {
+.workout-top-panel.badge-blue {
     background: rgba(10, 132, 255, 0.15);
     border-color: rgba(10, 132, 255, 0.3);
 }
 
-.active-workout-glass.badge-red {
+.workout-top-panel.badge-red {
     background: rgba(255, 59, 48, 0.15);
     border-color: rgba(255, 59, 48, 0.3);
 }
 
-.active-workout-glass.badge-purple {
+.workout-top-panel.badge-purple {
     background: rgba(168, 85, 247, 0.15);
     border-color: rgba(168, 85, 247, 0.3);
 }
 
-.active-workout-glass.badge-green {
+.workout-top-panel.badge-green {
     background: rgba(34, 197, 94, 0.15);
     border-color: rgba(34, 197, 94, 0.3);
 }
 
-.workout-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 24px;
-    position: relative;
-}
-
 .workout-close-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
     width: 36px;
     height: 36px;
     background: rgba(255, 255, 255, 0.1);
@@ -531,6 +510,7 @@
     font-size: 20px;
     cursor: pointer;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .workout-close-btn:active {
@@ -538,51 +518,73 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-.workout-header h2 {
-    font-size: 22px;
+.workout-panel-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.workout-panel-info h2 {
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workout-panel-info p {
+    font-size: 13px;
+    color: var(--tg-theme-hint-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .workout-timer {
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--tg-theme-button-color);
     font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
 }
 
-.rest-timer-container {
+.rest-timer-banner {
     background: rgba(255, 149, 0, 0.2);
     border: 2px solid rgba(255, 149, 0, 0.5);
     border-radius: 16px;
-    padding: 16px;
+    padding: 12px;
     text-align: center;
-    margin-bottom: 24px;
+    margin: 16px 16px 0;
     display: none;
 }
 
-.rest-timer-container.active {
+.rest-timer-banner.active {
     display: block;
 }
 
 .rest-timer-display {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 700;
     color: #ff9500;
     font-variant-numeric: tabular-nums;
 }
 
 .rest-timer-label {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--tg-theme-hint-color);
-    margin-top: 4px;
+    margin-top: 2px;
+}
+
+.active-exercises-scroll {
+    overflow-y: auto;
+    padding: 16px;
+    padding-bottom: 100px;
 }
 
 .active-exercises-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 80px;
 }
 
 .active-exercise-card {
@@ -604,40 +606,44 @@
     margin-bottom: 12px;
 }
 
-.sets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 8px;
+.exercise-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-.set-item {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+.progress-text {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color);
+}
+
+.progress-count {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--tg-theme-button-color);
+}
+
+.complete-set-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+    border: none;
     border-radius: 12px;
-    padding: 12px 8px;
-    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
 }
 
-.set-item:active {
-    transform: scale(0.95);
+.complete-set-btn:active {
+    transform: scale(0.98);
 }
 
-.set-item.completed {
-    background: var(--tg-theme-button-color);
-    border-color: var(--tg-theme-button-color);
-}
-
-.set-number {
-    font-size: 12px;
-    color: var(--tg-theme-hint-color);
-    margin-bottom: 4px;
-}
-
-.set-reps {
-    font-size: 18px;
-    font-weight: 700;
+.complete-set-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .rest-btn {
@@ -675,9 +681,10 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    background: var(--tg-theme-button-color);
-    color: white;
-    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--tg-theme-text-color);
     border-radius: 50%;
     font-size: 28px;
     cursor: pointer;

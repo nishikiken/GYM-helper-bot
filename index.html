@@ -153,7 +153,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v17</div>
+                        <div class="user-version">v18</div>
                     </div>
                 </div>
             </div>
@@ -345,28 +345,33 @@
 
         <!-- Активная тренировка -->
         <div id="step-active-workout" class="step">
-            <div class="active-workout-overlay">
-                <div class="active-workout-glass" id="active-workout-glass">
-                    <div class="workout-header">
-                        <button class="workout-close-btn" onclick="stopWorkout()">✕</button>
-                        <h2 id="active-workout-title">Тренировка</h2>
-                        <div class="workout-timer" id="workout-timer">00:00</div>
-                    </div>
-                    
-                    <div class="rest-timer-container" id="rest-timer-container">
-                        <div class="rest-timer-display" id="rest-timer-display">01:30</div>
-                        <div class="rest-timer-label">Отдых</div>
-                    </div>
-                    
-                    <div class="active-exercises-list" id="active-exercises-list">
-                        <!-- Упражнения с подходами -->
-                    </div>
-                    
-                    <button class="rest-btn" id="rest-btn" onclick="toggleRestTimer()">
-                        ⏱️ Отдых
-                    </button>
+            <!-- Компактная плашка сверху -->
+            <div class="workout-top-panel" id="workout-top-panel">
+                <button class="workout-close-btn" onclick="stopWorkout()">✕</button>
+                <div class="workout-panel-info">
+                    <h2 id="active-workout-title">Тренировка</h2>
+                    <p id="active-workout-description">Описание</p>
+                </div>
+                <div class="workout-timer" id="workout-timer">00:00</div>
+            </div>
+            
+            <!-- Таймер отдыха (появляется при нажатии) -->
+            <div class="rest-timer-banner" id="rest-timer-banner">
+                <div class="rest-timer-display" id="rest-timer-display">01:30</div>
+                <div class="rest-timer-label">Отдых</div>
+            </div>
+            
+            <!-- Список упражнений -->
+            <div class="active-exercises-scroll">
+                <div class="active-exercises-list" id="active-exercises-list">
+                    <!-- Упражнения с подходами -->
                 </div>
             </div>
+            
+            <!-- Кнопка отдыха -->
+            <button class="rest-btn" id="rest-btn" onclick="toggleRestTimer()">
+                ⏱️ Отдых (1:30)
+            </button>
         </div>
 
         <!-- Каталог тренировок -->
