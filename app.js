@@ -716,6 +716,12 @@ function goToMain() {
 
 function goToFAQ() {
     showStep('step-faq');
+    
+    // Инициализируем отслеживание скролла для кнопки "Вверх"
+    setTimeout(() => {
+        initScrollToTop('faq');
+    }, 100);
+    
     haptic();
 }
 
@@ -782,6 +788,51 @@ function haptic(type = 'selection') {
             tg.HapticFeedback.selectionChanged();
         }
     }
+}
+
+// === КНОПКА "ВВЕРХ" ===
+function initScrollToTop(pageId) {
+    const button = document.getElementById(`scroll-to-top-${pageId}`);
+    if (!button) return;
+    
+    const container = document.querySelector('.container');
+    
+    // Отслеживаем скролл
+    const handleScroll = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Показываем кнопку если прокрутили больше 300px
+        if (scrollTop > 300) {
+            button.classList.add('visible');
+        } else {
+            button.classList.remove('visible');
+        }
+    };
+    
+    // Добавляем обработчик
+    window.addEventListener('scroll', handleScroll);
+    
+    // Удаляем обработчик при уходе со страницы
+    const observer = new MutationObserver(() => {
+        const faqStep = document.getElementById('step-faq');
+        if (faqStep && !faqStep.classList.contains('active')) {
+            window.removeEventListener('scroll', handleScroll);
+            button.classList.remove('visible');
+        }
+    });
+    
+    observer.observe(document.getElementById('step-faq'), {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+}
+
+function scrollToTop(pageId) {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    haptic();
 }
 
 

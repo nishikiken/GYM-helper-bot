@@ -1,6 +1,6 @@
 /* === КАЛЬКУЛЯТОР БЖУ === */
 .calories-container {
-    padding: 0 20px 100px;
+    padding: 0 12px 100px;
 }
 
 .calories-card {
@@ -8,9 +8,10 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    padding: 24px;
+    padding: 20px;
     position: relative;
     min-height: 500px;
+    max-width: 100%;
 }
 
 .calories-tabs {
@@ -130,9 +131,9 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
     position: absolute;
-    width: calc(100% - 48px);
+    width: calc(100% - 40px);
     top: 80px;
-    left: 24px;
+    left: 20px;
 }
 
 .calories-result.active {
@@ -223,4 +224,37 @@
     border-radius: 12px;
     margin-bottom: 8px;
     font-size: 15px;
+}
+
+
+/* === КНОПКА "ВВЕРХ" === */
+.scroll-to-top {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.scroll-to-top:active {
+    transform: scale(0.9);
 }
