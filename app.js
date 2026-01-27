@@ -1968,7 +1968,8 @@ function startWorkoutTimer() {
 function toggleRestTimer() {
     const inline = document.getElementById('rest-timer-inline');
     const btn = document.getElementById('rest-btn');
-    const setTimeLabel = document.getElementById('set-time-label');
+    const stopBtn = document.getElementById('rest-stop-btn');
+    const display = document.getElementById('rest-timer-display');
     
     if (restTimerInterval) {
         // Остановить отдых
@@ -1977,10 +1978,11 @@ function toggleRestTimer() {
         inline.classList.remove('active');
         btn.classList.remove('active');
         btn.textContent = '⏱️ Отдых (1:30)';
+        display.textContent = '--:--';
         
-        // Показываем "Время подхода"
-        if (setTimeLabel) {
-            setTimeLabel.classList.remove('hidden');
+        // Скрываем кнопку "Стоп"
+        if (stopBtn) {
+            stopBtn.style.display = 'none';
         }
     } else {
         // Начать отдых
@@ -1989,7 +1991,7 @@ function toggleRestTimer() {
         const updateRestTimer = () => {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('rest-timer-display').textContent = 
+            display.textContent = 
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             
             if (timeLeft <= 0) {
@@ -1998,10 +2000,11 @@ function toggleRestTimer() {
                 inline.classList.remove('active');
                 btn.classList.remove('active');
                 btn.textContent = '⏱️ Отдых (1:30)';
+                display.textContent = '--:--';
                 
-                // Показываем "Время подхода"
-                if (setTimeLabel) {
-                    setTimeLabel.classList.remove('hidden');
+                // Скрываем кнопку "Стоп"
+                if (stopBtn) {
+                    stopBtn.style.display = 'none';
                 }
                 
                 // Воспроизводим звук окончания отдыха
@@ -2017,9 +2020,9 @@ function toggleRestTimer() {
         btn.classList.add('active');
         btn.textContent = '⏸️ Отдых';
         
-        // Скрываем "Время подхода"
-        if (setTimeLabel) {
-            setTimeLabel.classList.add('hidden');
+        // Показываем кнопку "Стоп"
+        if (stopBtn) {
+            stopBtn.style.display = 'block';
         }
         
         updateRestTimer();

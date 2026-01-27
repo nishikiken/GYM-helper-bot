@@ -153,7 +153,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v23</div>
+                        <div class="user-version">v24</div>
                     </div>
                 </div>
             </div>
@@ -361,18 +361,13 @@
                     </div>
                 </div>
                 
-                <!-- Таймер отдыха внутри плашки -->
+                <!-- Таймер отдыха внутри плашки (всегда видимый) -->
                 <div class="rest-timer-inline" id="rest-timer-inline">
                     <div class="rest-timer-content">
                         <div class="rest-timer-label-inline">Отдых</div>
-                        <div class="rest-timer-display-inline" id="rest-timer-display">01:30</div>
+                        <div class="rest-timer-display-inline" id="rest-timer-display">--:--</div>
                     </div>
-                    <button class="rest-stop-btn" onclick="toggleRestTimer()">Стоп</button>
-                </div>
-                
-                <!-- Текст "Время подхода" когда отдых не активен -->
-                <div class="set-time-label" id="set-time-label">
-                    Время подхода
+                    <button class="rest-stop-btn" id="rest-stop-btn" onclick="toggleRestTimer()" style="display: none;">Стоп</button>
                 </div>
             </div>
             
