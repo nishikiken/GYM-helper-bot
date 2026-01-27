@@ -1803,11 +1803,14 @@ function startWorkout() {
     if (userInventory.equippedBadge) {
         const badgeItem = shopItems.badges.find(i => i.id === userInventory.equippedBadge);
         if (badgeItem) {
-            profileCard.className = 'workout-profile-card ' + badgeItem.class;
+            profileCard.className = 'workout-profile-card-fixed ' + badgeItem.class;
         }
     } else {
-        profileCard.className = 'workout-profile-card';
+        profileCard.className = 'workout-profile-card-fixed';
     }
+    
+    // Скрываем кнопку каталога
+    document.getElementById('catalog-fab').classList.remove('visible');
     
     // Создаем частицы для плашки
     createWorkoutParticles();

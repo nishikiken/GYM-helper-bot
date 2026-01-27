@@ -153,7 +153,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v20</div>
+                        <div class="user-version">v21</div>
                     </div>
                 </div>
             </div>
@@ -298,10 +298,10 @@
         <div id="step-exercises" class="step">
             <div class="header">
                 <button class="back-btn" onclick="goToMain()">←</button>
-                <button class="edit-btn" id="edit-days-btn" onclick="toggleEditDays()">✎</button>
                 <div class="icon">🏋️</div>
                 <h1>Упражнения</h1>
                 <p class="subtitle">Мои тренировки</p>
+                <button class="edit-btn" id="edit-days-btn" onclick="toggleEditDays()">Edit</button>
             </div>
             
             <div class="exercises-container">
@@ -321,10 +321,10 @@
         <div id="step-workout-day" class="step">
             <div class="header">
                 <button class="back-btn" onclick="goToExercises()">←</button>
-                <button class="edit-btn" id="edit-exercises-btn" onclick="toggleEditExercises()">✎</button>
                 <div class="icon">💪</div>
                 <h1 id="workout-day-title">День тренировки</h1>
                 <p class="subtitle" id="workout-day-subtitle">Описание</p>
+                <button class="edit-btn" id="edit-exercises-btn" onclick="toggleEditExercises()">Edit</button>
             </div>
             
             <div class="workout-day-container">
@@ -347,8 +347,8 @@
 
         <!-- Активная тренировка -->
         <div id="step-active-workout" class="step">
-            <!-- Красивая плашка сверху в стиле профиля -->
-            <div class="workout-profile-card" id="workout-profile-card">
+            <!-- Красивая плашка сверху в стиле профиля (FIXED поверх всего) -->
+            <div class="workout-profile-card-fixed" id="workout-profile-card">
                 <div class="workout-particles-bg"></div>
                 <div class="workout-card-content">
                     <div class="workout-info-section">
@@ -371,8 +371,8 @@
                 </div>
             </div>
             
-            <!-- Список упражнений -->
-            <div class="active-exercises-scroll">
+            <!-- Список упражнений (с отступом сверху под плашку) -->
+            <div class="active-exercises-scroll-with-fixed">
                 <div class="active-exercises-list" id="active-exercises-list">
                     <!-- Упражнения с подходами -->
                 </div>
