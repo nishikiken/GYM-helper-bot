@@ -1439,6 +1439,8 @@ let activeWorkout = null;
 let workoutTimerInterval = null;
 let restTimerInterval = null;
 let restDuration = 90; // секунды
+let editDaysMode = false;
+let editExercisesMode = false;
 
 // Каталог готовых программ
 const workoutCatalog = {
@@ -1533,12 +1535,64 @@ function renderWorkoutDays() {
     }
     
     container.innerHTML = workoutDays.map(day => `
-        <div class="workout-day-card" onclick="openWorkoutDay('${day.id}')">
+        <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
             <h3>${day.name}</h3>
             <p>${day.description}</p>
             <div class="exercises-count">${day.exercises.length} упражнений</div>
+            <button class="edit-day-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">⋮</button>
         </div>
     `).join('');
+}
+
+// Переключение режима редактирования дней
+function toggleEditDays() {
+    editDaysMode = !editDaysMode;
+    const btn = document.getElementById('edit-days-btn');
+    
+    if (editDaysMode) {
+        btn.classList.add('active');
+    } else {
+        btn.classList.remove('active');
+    }
+    
+    renderWorkoutDays();
+    haptic();
+}
+
+// Показать меню редактирования дня
+function showDayEditMenu(dayId) {
+    const day = workoutDays.find(d => d.id === dayId);
+    if (!day) return;
+    
+    if (tg?.showPopup) {
+        tg.showPopup({
+            title: day.name,
+            message: 'Выбери действие',
+            buttons: [
+                { id: 'delete', type: 'destructive', text: 'Удалить' },
+                { id: 'cancel', type: 'cancel' }
+            ]
+        }, (buttonId) => {
+            if (buttonId === 'delete') {
+                removeDay(dayId);
+            }
+        });
+    } else {
+        if (confirm(`Удалить "${day.name}"?`)) {
+            removeDay(dayId);
+        }
+    }
+}
+
+// Удалить день
+function removeDay(dayId) {
+    const index = workoutDays.findIndex(d => d.id === dayId);
+    if (index > -1) {
+        workoutDays.splice(index, 1);
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic('success');
+    }
 }
 
 // Показать модальное окно добавления дня
@@ -1608,7 +1662,7 @@ function renderExercisesList(exercises) {
     }
     
     container.innerHTML = exercises.map((exercise, index) => `
-        <div class="exercise-card">
+        <div class="exercise-card ${editExercisesMode ? 'edit-mode' : ''}">
             <h3>${exercise.name}</h3>
             <div class="exercise-stats">
                 <div class="exercise-stat">
@@ -1620,11 +1674,59 @@ function renderExercisesList(exercises) {
                     <span>${exercise.reps}</span>
                 </div>
             </div>
-            <button class="btn-cancel" onclick="removeExercise(${index})" style="width: 100%; margin-top: 12px; padding: 10px;">
-                Удалить
-            </button>
+            <button class="edit-exercise-btn" onclick="showExerciseEditMenu(${index})">⋮</button>
         </div>
     `).join('');
+}
+
+// Переключение режима редактирования упражнений
+function toggleEditExercises() {
+    editExercisesMode = !editExercisesMode;
+    const btn = document.getElementById('edit-exercises-btn');
+    
+    if (editExercisesMode) {
+        btn.classList.add('active');
+    } else {
+        btn.classList.remove('active');
+    }
+    
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (day) {
+        renderExercisesList(day.exercises);
+    }
+    haptic();
+}
+
+// Показать меню редактирования упражнения
+function showExerciseEditMenu(exerciseIndex) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day) return;
+    
+    const exercise = day.exercises[exerciseIndex];
+    
+    if (tg?.showPopup) {
+        tg.showPopup({
+            title: exercise.name,
+            message: 'Выбери действие',
+            buttons: [
+                { id: 'delete', type: 'destructive', text: 'Удалить' },
+                { id: 'cancel', type: 'cancel' }
+            ]
+        }, (buttonId) => {
+            if (buttonId === 'delete') {
+                executeRemoveExercise(exerciseIndex);
+            }
+        });
+    } else {
+        if (confirm(`Удалить "${exercise.name}"?`)) {
+            executeRemoveExercise(exerciseIndex);
+        }
+    }
+}
+
+// Удалить упражнение
+function removeExercise(exerciseIndex) {
+    showExerciseEditMenu(exerciseIndex);
 }
 
 // Показать модальное окно добавления упражнения
@@ -1810,14 +1912,14 @@ function startWorkoutTimer() {
 
 // Таймер отдыха
 function toggleRestTimer() {
-    const banner = document.getElementById('rest-timer-banner');
+    const inline = document.getElementById('rest-timer-inline');
     const btn = document.getElementById('rest-btn');
     
     if (restTimerInterval) {
         // Остановить отдых
         clearInterval(restTimerInterval);
         restTimerInterval = null;
-        banner.classList.remove('active');
+        inline.classList.remove('active');
         btn.classList.remove('active');
         btn.textContent = '⏱️ Отдых (1:30)';
     } else {
@@ -1833,7 +1935,7 @@ function toggleRestTimer() {
             if (timeLeft <= 0) {
                 clearInterval(restTimerInterval);
                 restTimerInterval = null;
-                banner.classList.remove('active');
+                inline.classList.remove('active');
                 btn.classList.remove('active');
                 btn.textContent = '⏱️ Отдых (1:30)';
                 haptic('success');
@@ -1842,9 +1944,9 @@ function toggleRestTimer() {
             timeLeft--;
         };
         
-        banner.classList.add('active');
+        inline.classList.add('active');
         btn.classList.add('active');
-        btn.textContent = '⏹️ Стоп отдых';
+        btn.textContent = '⏸️ Отдых';
         updateRestTimer();
         restTimerInterval = setInterval(updateRestTimer, 1000);
     }
@@ -2089,3 +2191,7 @@ window.closeCatalog = closeCatalog;
 window.showAddFromCatalog = showAddFromCatalog;
 window.closeAddFromCatalogModal = closeAddFromCatalogModal;
 window.addExerciseFromCatalog = addExerciseFromCatalog;
+window.toggleEditDays = toggleEditDays;
+window.toggleEditExercises = toggleEditExercises;
+window.showDayEditMenu = showDayEditMenu;
+window.showExerciseEditMenu = showExerciseEditMenu;
