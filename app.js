@@ -1680,9 +1680,86 @@ function renderExercisesList(exercises) {
                     <span>${exercise.reps}</span>
                 </div>
             </div>
-            <button class="edit-exercise-btn" onclick="showExerciseEditMenu(${index})">🗑️</button>
+            <button class="edit-exercise-btn" onclick="openEditExerciseModal(${index})">✏️</button>
         </div>
     `).join('');
+}
+
+// Открыть модальное окно редактирования упражнения
+let editingExerciseIndex = null;
+
+function openEditExerciseModal(exerciseIndex) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day) return;
+    
+    const exercise = day.exercises[exerciseIndex];
+    editingExerciseIndex = exerciseIndex;
+    
+    document.getElementById('edit-exercise-name').value = exercise.name;
+    document.getElementById('edit-exercise-sets').value = exercise.sets;
+    document.getElementById('edit-exercise-reps').value = exercise.reps;
+    
+    document.getElementById('edit-exercise-modal').classList.add('active');
+    haptic();
+}
+
+function closeEditExerciseModal() {
+    document.getElementById('edit-exercise-modal').classList.remove('active');
+    editingExerciseIndex = null;
+    haptic();
+}
+
+function saveEditedExercise() {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || editingExerciseIndex === null) return;
+    
+    const name = document.getElementById('edit-exercise-name').value.trim();
+    const sets = parseInt(document.getElementById('edit-exercise-sets').value) || 3;
+    const reps = parseInt(document.getElementById('edit-exercise-reps').value) || 12;
+    
+    if (!name) {
+        if (tg?.showAlert) {
+            tg.showAlert('Введи название упражнения!');
+        }
+        return;
+    }
+    
+    day.exercises[editingExerciseIndex] = {
+        ...day.exercises[editingExerciseIndex],
+        name: name,
+        sets: sets,
+        reps: reps
+    };
+    
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    closeEditExerciseModal();
+    haptic('success');
+}
+
+function deleteExerciseFromEdit() {
+    if (tg?.showConfirm) {
+        tg.showConfirm('Удалить упражнение?', (confirmed) => {
+            if (confirmed) {
+                executeDeleteExercise();
+            }
+        });
+    } else {
+        if (confirm('Удалить упражнение?')) {
+            executeDeleteExercise();
+        }
+    }
+}
+
+function executeDeleteExercise() {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || editingExerciseIndex === null) return;
+    
+    day.exercises.splice(editingExerciseIndex, 1);
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    closeEditExerciseModal();
+    haptic('success');
 }
 
 // Переключение режима редактирования упражнений
@@ -1785,12 +1862,14 @@ function saveExercise() {
 // Начать тренировку
 function startWorkout() {
     const day = workoutDays.find(d => d.id === currentDayId);
-    if (!day || day.exercises.length === 0) {
+    if (!day) {
         if (tg?.showAlert) {
-            tg.showAlert('Добавь хотя бы одно упражнение!');
+            tg.showAlert('День тренировки не найден!');
         }
         return;
     }
+    
+    // Разрешаем начинать тренировку даже без упражнений (для кардио и т.д.)
     
     // Инициализируем активную тренировку
     activeWorkout = {
