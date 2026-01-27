@@ -1968,6 +1968,7 @@ function startWorkoutTimer() {
 function toggleRestTimer() {
     const inline = document.getElementById('rest-timer-inline');
     const btn = document.getElementById('rest-btn');
+    const setTimeLabel = document.getElementById('set-time-label');
     
     if (restTimerInterval) {
         // Остановить отдых
@@ -1976,6 +1977,11 @@ function toggleRestTimer() {
         inline.classList.remove('active');
         btn.classList.remove('active');
         btn.textContent = '⏱️ Отдых (1:30)';
+        
+        // Показываем "Время подхода"
+        if (setTimeLabel) {
+            setTimeLabel.classList.remove('hidden');
+        }
     } else {
         // Начать отдых
         let timeLeft = restDuration;
@@ -1993,6 +1999,11 @@ function toggleRestTimer() {
                 btn.classList.remove('active');
                 btn.textContent = '⏱️ Отдых (1:30)';
                 
+                // Показываем "Время подхода"
+                if (setTimeLabel) {
+                    setTimeLabel.classList.remove('hidden');
+                }
+                
                 // Воспроизводим звук окончания отдыха
                 playRestEndSound();
                 
@@ -2005,6 +2016,12 @@ function toggleRestTimer() {
         inline.classList.add('active');
         btn.classList.add('active');
         btn.textContent = '⏸️ Отдых';
+        
+        // Скрываем "Время подхода"
+        if (setTimeLabel) {
+            setTimeLabel.classList.add('hidden');
+        }
+        
         updateRestTimer();
         restTimerInterval = setInterval(updateRestTimer, 1000);
     }
