@@ -1545,7 +1545,7 @@ function renderWorkoutDays() {
             <h3>${day.name}</h3>
             <p>${day.description}</p>
             <div class="exercises-count">${day.exercises.length} упражнений</div>
-            <button class="edit-day-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">⋮</button>
+            <button class="edit-day-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
         </div>
     `).join('');
 }
@@ -1680,7 +1680,7 @@ function renderExercisesList(exercises) {
                     <span>${exercise.reps}</span>
                 </div>
             </div>
-            <button class="edit-exercise-btn" onclick="showExerciseEditMenu(${index})">⋮</button>
+            <button class="edit-exercise-btn" onclick="showExerciseEditMenu(${index})">🗑️</button>
         </div>
     `).join('');
 }
@@ -1844,6 +1844,9 @@ function loadActiveWorkout() {
         try {
             activeWorkout = JSON.parse(saved);
             
+            // Устанавливаем currentDayId для корректного закрытия
+            currentDayId = activeWorkout.dayId;
+            
             // Применяем цвет бейджа
             const profileCard = document.getElementById('workout-profile-card');
             if (userInventory.equippedBadge) {
@@ -1863,7 +1866,7 @@ function loadActiveWorkout() {
             showStep('step-active-workout');
             startWorkoutTimer();
             
-            console.log('Active workout restored');
+            console.log('Active workout restored, currentDayId:', currentDayId);
         } catch (e) {
             console.error('Error loading active workout:', e);
             localStorage.removeItem('activeWorkout');
@@ -1942,9 +1945,19 @@ function executeStopWorkout() {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
     }
+    
+    const dayId = currentDayId || (activeWorkout ? activeWorkout.dayId : null);
+    
     activeWorkout = null;
     localStorage.removeItem('activeWorkout');
-    openWorkoutDay(currentDayId);
+    
+    // Если есть dayId, открываем день, иначе идем в упражнения
+    if (dayId) {
+        openWorkoutDay(dayId);
+    } else {
+        goToExercises();
+    }
+    
     haptic();
 }
 
