@@ -1817,8 +1817,8 @@ function showAddExerciseModal() {
     const modal = document.getElementById('add-exercise-modal');
     modal.classList.add('active');
     document.getElementById('exercise-name').value = '';
-    document.getElementById('exercise-sets').value = '3';
-    document.getElementById('exercise-reps').value = '12';
+    document.getElementById('exercise-sets').value = '';
+    document.getElementById('exercise-reps').value = '';
     haptic();
 }
 
