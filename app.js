@@ -322,6 +322,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initSwipeGesture();
     renderLeaderboard();
     
+    // Загружаем активную тренировку если есть
+    setTimeout(() => {
+        loadActiveWorkout();
+    }, 500);
+    
     // Восстанавливаем кастомизацию если возвращаемся с другой страницы
     const savedCustomization = sessionStorage.getItem('userCustomization');
     if (savedCustomization) {
@@ -1441,6 +1446,7 @@ let restTimerInterval = null;
 let restDuration = 90; // секунды
 let editDaysMode = false;
 let editExercisesMode = false;
+let currentCatalogTab = 'chest';
 
 // Каталог готовых программ
 const workoutCatalog = {
@@ -1798,6 +1804,9 @@ function startWorkout() {
         }))
     };
     
+    // Сохраняем в localStorage
+    saveActiveWorkout();
+    
     // Применяем цвет бейджа к плашке тренировки
     const profileCard = document.getElementById('workout-profile-card');
     if (userInventory.equippedBadge) {
@@ -1819,6 +1828,47 @@ function startWorkout() {
     showStep('step-active-workout');
     startWorkoutTimer();
     haptic();
+}
+
+// Сохранить активную тренировку
+function saveActiveWorkout() {
+    if (activeWorkout) {
+        localStorage.setItem('activeWorkout', JSON.stringify(activeWorkout));
+    }
+}
+
+// Загрузить активную тренировку
+function loadActiveWorkout() {
+    const saved = localStorage.getItem('activeWorkout');
+    if (saved) {
+        try {
+            activeWorkout = JSON.parse(saved);
+            
+            // Применяем цвет бейджа
+            const profileCard = document.getElementById('workout-profile-card');
+            if (userInventory.equippedBadge) {
+                const badgeItem = shopItems.badges.find(i => i.id === userInventory.equippedBadge);
+                if (badgeItem) {
+                    profileCard.className = 'workout-profile-card-fixed ' + badgeItem.class;
+                }
+            } else {
+                profileCard.className = 'workout-profile-card-fixed';
+            }
+            
+            // Создаем частицы
+            createWorkoutParticles();
+            
+            // Отрисовываем и запускаем таймер
+            renderActiveWorkout();
+            showStep('step-active-workout');
+            startWorkoutTimer();
+            
+            console.log('Active workout restored');
+        } catch (e) {
+            console.error('Error loading active workout:', e);
+            localStorage.removeItem('activeWorkout');
+        }
+    }
 }
 
 // Создание частиц для плашки тренировки
@@ -1893,6 +1943,7 @@ function executeStopWorkout() {
         restTimerInterval = null;
     }
     activeWorkout = null;
+    localStorage.removeItem('activeWorkout');
     openWorkoutDay(currentDayId);
     haptic();
 }
@@ -1941,6 +1992,10 @@ function toggleRestTimer() {
                 inline.classList.remove('active');
                 btn.classList.remove('active');
                 btn.textContent = '⏱️ Отдых (1:30)';
+                
+                // Воспроизводим звук окончания отдыха
+                playRestEndSound();
+                
                 haptic('success');
             }
             
@@ -1955,6 +2010,19 @@ function toggleRestTimer() {
     }
     
     haptic();
+}
+
+// Воспроизвести звук окончания отдыха
+function playRestEndSound() {
+    try {
+        const audio = document.getElementById('rest-end-sound');
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Could not play sound:', e));
+        }
+    } catch (e) {
+        console.log('Sound playback error:', e);
+    }
 }
 
 // Отрисовка активной тренировки
@@ -1993,6 +2061,7 @@ function completeSet(exerciseIndex) {
     
     if (exercise.completedSets < exercise.sets) {
         exercise.completedSets++;
+        saveActiveWorkout(); // Сохраняем прогресс
         renderActiveWorkout();
         haptic('success');
     }
@@ -2035,24 +2104,45 @@ function closeCatalog() {
 }
 
 function renderCatalog() {
-    const container = document.getElementById('catalog-categories');
+    switchCatalogTab(currentCatalogTab);
+}
+
+// Переключение вкладки каталога
+function switchCatalogTab(tabKey) {
+    currentCatalogTab = tabKey;
     
-    container.innerHTML = Object.entries(workoutCatalog).map(([key, category]) => `
-        <div class="catalog-category">
-            <h3>${category.icon} ${category.name}</h3>
-            <div class="catalog-exercises">
-                ${category.exercises.map(exercise => `
-                    <div class="catalog-exercise-item" onclick='showAddFromCatalog(${JSON.stringify(exercise)})'>
-                        <h4>${exercise.name}</h4>
-                        <div class="catalog-exercise-stats">
-                            <span>Подходы: ${exercise.sets}</span>
-                            <span>Повторения: ${exercise.reps}</span>
-                        </div>
-                    </div>
-                `).join('')}
+    // Обновляем активную вкладку
+    document.querySelectorAll('.catalog-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event?.target?.classList.add('active');
+    
+    // Если вызвано программно, находим нужную вкладку
+    if (!event) {
+        const tabs = document.querySelectorAll('.catalog-tab');
+        const tabIndex = Object.keys(workoutCatalog).indexOf(tabKey);
+        if (tabs[tabIndex]) {
+            tabs[tabIndex].classList.add('active');
+        }
+    }
+    
+    // Отрисовываем упражнения выбранной категории
+    const container = document.getElementById('catalog-content');
+    const category = workoutCatalog[tabKey];
+    
+    if (!category) return;
+    
+    container.innerHTML = category.exercises.map(exercise => `
+        <div class="catalog-exercise-item" onclick='showAddFromCatalog(${JSON.stringify(exercise)})'>
+            <h4>${exercise.name}</h4>
+            <div class="catalog-exercise-stats">
+                <span>Подходы: ${exercise.sets}</span>
+                <span>Повторения: ${exercise.reps}</span>
             </div>
         </div>
     `).join('');
+    
+    haptic();
 }
 
 // Показать модальное окно добавления из каталога
@@ -2198,3 +2288,4 @@ window.toggleEditDays = toggleEditDays;
 window.toggleEditExercises = toggleEditExercises;
 window.showDayEditMenu = showDayEditMenu;
 window.showExerciseEditMenu = showExerciseEditMenu;
+window.switchCatalogTab = switchCatalogTab;

@@ -665,6 +665,26 @@
     padding-bottom: 140px;
 }
 
+.active-exercises-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding-top: 180px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 140px;
+    -webkit-overflow-scrolling: touch;
+}
+
+#step-active-workout {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
 .workout-particles-bg {
     position: absolute;
     top: 0;
@@ -943,34 +963,53 @@
     padding: 0 16px 100px;
 }
 
-.catalog-categories {
+.catalog-tabs {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
 }
 
-.catalog-category {
+.catalog-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.catalog-tab {
+    flex-shrink: 0;
+    padding: 10px 20px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 20px;
+    color: var(--tg-theme-hint-color);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
 }
 
-.catalog-category h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
+.catalog-tab:active {
+    transform: scale(0.95);
 }
 
-.catalog-exercises {
+.catalog-tab.active {
+    background: var(--tg-theme-button-color);
+    border-color: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+}
+
+.catalog-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .catalog-exercise-item {
     background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px;
