@@ -2421,6 +2421,12 @@ async function loadCommunityPrograms() {
     container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Загрузка...</div>';
     
     try {
+        console.log('Loading community programs...');
+        
+        if (!supabaseClient) {
+            throw new Error('Supabase client not initialized');
+        }
+        
         let query = supabaseClient
             .from('shared_workout_programs')
             .select('*');
@@ -2438,7 +2444,24 @@ async function loadCommunityPrograms() {
         
         const { data: programs, error } = await query;
         
-        if (error) throw error;
+        console.log('Query result:', { programs, error });
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            
+            // Проверяем если таблица не существует
+            if (error.code === '42P01' || error.message?.includes('does not exist')) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+                        <p style="margin-bottom: 16px;">⚠️ Таблица программ еще не создана</p>
+                        <p style="font-size: 14px;">Выполни SQL из файла<br>shared_programs_table.sql<br>в Supabase Dashboard</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            throw error;
+        }
         
         if (!programs || programs.length === 0) {
             container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Пока нет опубликованных программ.<br>Будь первым!</div>';
@@ -2466,9 +2489,23 @@ async function loadCommunityPrograms() {
             `;
         }).join('');
         
+        console.log('Programs loaded successfully');
+        
     } catch (error) {
         console.error('Error loading community programs:', error);
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Ошибка загрузки программ</div>';
+        console.error('Error details:', {
+            message: error?.message,
+            code: error?.code,
+            details: error?.details,
+            hint: error?.hint
+        });
+        
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+                <p style="margin-bottom: 8px;">Ошибка загрузки программ</p>
+                <p style="font-size: 12px; opacity: 0.7;">${error?.message || 'Unknown error'}</p>
+            </div>
+        `;
     }
 }
 
