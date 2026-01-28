@@ -2659,35 +2659,13 @@ async function downloadProgram() {
     try {
         console.log('Downloading program:', currentViewingProgram.id);
         
-        // Проверяем, не скачана ли уже эта программа
-        const programDays = currentViewingProgram.days || [];
-        const programDayNames = programDays.map(d => d.name.toLowerCase().trim());
-        
-        // Проверяем есть ли уже дни с такими же названиями
-        const hasDuplicates = workoutDays.some(existingDay => 
-            programDayNames.includes(existingDay.name.toLowerCase().trim())
-        );
-        
-        if (hasDuplicates) {
-            if (tg?.showConfirm) {
-                tg.showConfirm(
-                    'У тебя уже есть дни с такими же названиями. Все равно добавить?',
-                    async (confirmed) => {
-                        if (confirmed) {
-                            await executeProgramDownload();
-                        }
-                    }
-                );
-            } else {
-                const confirmed = confirm('У тебя уже есть дни с такими же названиями. Все равно добавить?');
-                if (confirmed) {
-                    await executeProgramDownload();
-                }
-            }
-            return;
+        // Если у пользователя уже есть программа - предлагаем варианты
+        if (workoutDays.length > 0) {
+            showProgramReplaceModal();
+        } else {
+            // Если программы нет - просто скачиваем
+            await executeProgramDownload('add');
         }
-        
-        await executeProgramDownload();
         
     } catch (error) {
         console.error('Error downloading program:', error);
@@ -2697,9 +2675,144 @@ async function downloadProgram() {
     }
 }
 
+// Показать модальное окно выбора действия при замене программы
+function showProgramReplaceModal() {
+    const programName = currentViewingProgram?.program_name || 'программа';
+    
+    if (tg?.showPopup) {
+        tg.showPopup({
+            title: 'У тебя уже есть программа',
+            message: `Что сделать с текущей программой (${workoutDays.length} дней)?`,
+            buttons: [
+                { id: 'archive', type: 'default', text: '📦 В архив' },
+                { id: 'replace', type: 'destructive', text: '🗑️ Удалить' },
+                { id: 'add', type: 'default', text: '➕ Добавить' },
+                { id: 'cancel', type: 'cancel' }
+            ]
+        }, async (buttonId) => {
+            if (buttonId === 'archive') {
+                await executeProgramDownload('archive');
+            } else if (buttonId === 'replace') {
+                await executeProgramDownload('replace');
+            } else if (buttonId === 'add') {
+                await executeProgramDownload('add');
+            }
+        });
+    } else {
+        // Fallback для браузера
+        const choice = confirm(
+            `У тебя уже есть программа (${workoutDays.length} дней).\n\n` +
+            `OK - Сохранить в архив и заменить\n` +
+            `Отмена - Добавить к текущей`
+        );
+        
+        if (choice) {
+            executeProgramDownload('archive');
+        } else {
+            executeProgramDownload('add');
+        }
+    }
+}
+
+// Выполнить копирование программы
+async function executeProgramDownload(mode = 'add') {
+    try {
+        const programName = currentViewingProgram?.program_name || 'программа';
+        
+        // Сохраняем текущую программу в архив если нужно
+        if (mode === 'archive' && workoutDays.length > 0) {
+            saveCurrentProgramToArchive();
+        }
+        
+        // Увеличиваем счетчик скачиваний (только если пользователь еще не скачивал)
+        const { data: downloadResult, error: rpcError } = await supabaseClient.rpc('increment_program_downloads_once', {
+            program_id_param: currentViewingProgram.id,
+            user_id_param: window.currentUserId
+        });
+        
+        console.log('Download increment result:', downloadResult);
+        
+        if (rpcError) {
+            console.error('Error incrementing downloads:', rpcError);
+        }
+        
+        // Очищаем текущую программу если режим замены или архива
+        if (mode === 'replace' || mode === 'archive') {
+            workoutDays = [];
+        }
+        
+        // Копируем дни программы к пользователю
+        const programDays = currentViewingProgram.days || [];
+        
+        programDays.forEach(day => {
+            const newDay = {
+                id: Date.now().toString() + Math.random(),
+                name: day.name,
+                description: day.description,
+                exercises: (day.exercises || []).map(ex => ({
+                    ...ex,
+                    id: Date.now().toString() + Math.random()
+                }))
+            };
+            workoutDays.push(newDay);
+        });
+        
+        saveWorkoutDays();
+        renderWorkoutDays();
+        
+        closeViewProgramModal();
+        goToExercises();
+        
+        let message = `Программа "${programName}" добавлена! 🎉`;
+        if (mode === 'archive') {
+            message = `Старая программа в архиве!\nНовая программа "${programName}" загружена! 🎉`;
+        } else if (mode === 'replace') {
+            message = `Программа "${programName}" загружена! 🎉`;
+        }
+        
+        if (tg?.showAlert) {
+            tg.showAlert(message);
+        }
+        
+        haptic('success');
+        showConfetti();
+        
+    } catch (error) {
+        console.error('Error in executeProgramDownload:', error);
+        console.error('Error details:', {
+            message: error?.message,
+            code: error?.code,
+            details: error?.details
+        });
+        
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка: ' + (error?.message || 'Unknown error'));
+        }
+    }
+}
+
+// Сохранить текущую программу в архив
+function saveCurrentProgramToArchive() {
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    
+    const archiveEntry = {
+        id: Date.now().toString(),
+        name: `Архив ${new Date().toLocaleDateString('ru-RU')}`,
+        savedAt: Date.now(),
+        days: JSON.parse(JSON.stringify(workoutDays)) // Глубокая копия
+    };
+    
+    archivedPrograms.push(archiveEntry);
+    localStorage.setItem('archivedPrograms', JSON.stringify(archivedPrograms));
+    
+    console.log('Program saved to archive:', archiveEntry);
+}
+
 // Выполнить копирование программы
 async function executeProgramDownload() {
     try {
+        const programName = currentViewingProgram?.program_name || 'программа';
+        
         // Увеличиваем счетчик скачиваний (только если пользователь еще не скачивал)
         const { data: downloadResult, error: rpcError } = await supabaseClient.rpc('increment_program_downloads_once', {
             program_id_param: currentViewingProgram.id,
@@ -2736,8 +2849,8 @@ async function executeProgramDownload() {
         goToExercises();
         
         const downloadMessage = downloadResult 
-            ? `Программа "${currentViewingProgram.program_name}" добавлена! 🎉`
-            : `Программа "${currentViewingProgram.program_name}" добавлена! (Ты уже скачивал ее ранее)`;
+            ? `Программа "${programName}" добавлена! 🎉`
+            : `Программа "${programName}" добавлена! (Ты уже скачивал ее ранее)`;
         
         if (tg?.showAlert) {
             tg.showAlert(downloadMessage);
@@ -2776,3 +2889,159 @@ window.publishProgram = publishProgram;
 window.viewProgram = viewProgram;
 window.closeViewProgramModal = closeViewProgramModal;
 window.downloadProgram = downloadProgram;
+
+
+// === АРХИВ ПРОГРАММ ===
+// Перейти к архиву
+function goToArchive() {
+    showStep('step-archive');
+    loadArchivedPrograms();
+    haptic();
+}
+
+// Загрузить архивные программы
+function loadArchivedPrograms() {
+    const container = document.getElementById('archive-programs-list');
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    
+    if (archivedPrograms.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Архив пуст<br><br>Сохраненные программы появятся здесь</div>';
+        return;
+    }
+    
+    // Сортируем по дате (новые сверху)
+    archivedPrograms.sort((a, b) => b.savedAt - a.savedAt);
+    
+    container.innerHTML = archivedPrograms.map((program, index) => {
+        const daysCount = program.days?.length || 0;
+        const totalExercises = program.days?.reduce((sum, day) => sum + (day.exercises?.length || 0), 0) || 0;
+        const date = new Date(program.savedAt).toLocaleDateString('ru-RU', { 
+            day: 'numeric', 
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        return `
+            <div class="community-program-card archive-program-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <h3 style="margin-bottom: 4px;">📦 ${escapeHtml(program.name)}</h3>
+                        <div class="program-author" style="margin-bottom: 8px;">${date}</div>
+                        <div class="program-meta">
+                            <span class="program-days-count">${daysCount} дней</span>
+                            <span>${totalExercises} упражнений</span>
+                        </div>
+                    </div>
+                    <button class="archive-action-btn" onclick="event.stopPropagation(); showArchiveActions(${index})" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px 12px; color: var(--tg-theme-text-color); font-size: 14px; cursor: pointer;">⋯</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Показать действия с архивной программой
+function showArchiveActions(index) {
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    const program = archivedPrograms[index];
+    
+    if (!program) return;
+    
+    if (tg?.showPopup) {
+        tg.showPopup({
+            title: program.name,
+            message: 'Выбери действие',
+            buttons: [
+                { id: 'restore', type: 'default', text: '↩️ Восстановить' },
+                { id: 'delete', type: 'destructive', text: '🗑️ Удалить' },
+                { id: 'cancel', type: 'cancel' }
+            ]
+        }, (buttonId) => {
+            if (buttonId === 'restore') {
+                restoreFromArchive(index);
+            } else if (buttonId === 'delete') {
+                deleteFromArchive(index);
+            }
+        });
+    } else {
+        const action = confirm(`Восстановить программу "${program.name}"?\n\nOK - Восстановить\nОтмена - Удалить`);
+        if (action) {
+            restoreFromArchive(index);
+        } else {
+            if (confirm('Точно удалить из архива?')) {
+                deleteFromArchive(index);
+            }
+        }
+    }
+    
+    haptic();
+}
+
+// Восстановить программу из архива
+function restoreFromArchive(index) {
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    const program = archivedPrograms[index];
+    
+    if (!program) return;
+    
+    // Если есть текущая программа - спрашиваем что делать
+    if (workoutDays.length > 0) {
+        if (tg?.showConfirm) {
+            tg.showConfirm(
+                `У тебя уже есть программа (${workoutDays.length} дней). Заменить ее?`,
+                (confirmed) => {
+                    if (confirmed) {
+                        executeRestoreFromArchive(program, index);
+                    }
+                }
+            );
+        } else {
+            const confirmed = confirm(`У тебя уже есть программа (${workoutDays.length} дней). Заменить ее?`);
+            if (confirmed) {
+                executeRestoreFromArchive(program, index);
+            }
+        }
+    } else {
+        executeRestoreFromArchive(program, index);
+    }
+}
+
+// Выполнить восстановление из архива
+function executeRestoreFromArchive(program, index) {
+    // Заменяем текущую программу
+    workoutDays = JSON.parse(JSON.stringify(program.days)); // Глубокая копия
+    saveWorkoutDays();
+    renderWorkoutDays();
+    
+    // Удаляем из архива
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    archivedPrograms.splice(index, 1);
+    localStorage.setItem('archivedPrograms', JSON.stringify(archivedPrograms));
+    
+    goToExercises();
+    
+    if (tg?.showAlert) {
+        tg.showAlert(`Программа "${program.name}" восстановлена! 🎉`);
+    }
+    
+    haptic('success');
+    showConfetti();
+}
+
+// Удалить программу из архива
+function deleteFromArchive(index) {
+    const archivedPrograms = JSON.parse(localStorage.getItem('archivedPrograms') || '[]');
+    archivedPrograms.splice(index, 1);
+    localStorage.setItem('archivedPrograms', JSON.stringify(archivedPrograms));
+    
+    loadArchivedPrograms();
+    
+    if (tg?.showAlert) {
+        tg.showAlert('Программа удалена из архива');
+    }
+    
+    haptic();
+}
+
+// Делаем функции глобальными
+window.goToArchive = goToArchive;
+window.showArchiveActions = showArchiveActions;

@@ -160,7 +160,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v33</div>
+                        <div class="user-version">v34</div>
                     </div>
                 </div>
             </div>
@@ -445,6 +445,7 @@
                 <div class="icon">🌟</div>
                 <h1>Программы сообщества</h1>
                 <p class="subtitle">Готовые программы от других</p>
+                <button class="edit-btn" id="archive-btn" onclick="goToArchive()">📦 Архив</button>
             </div>
             
             <div class="community-container">
@@ -459,6 +460,25 @@
                 <div class="community-programs-list" id="community-programs-list">
                     <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
                         Загрузка программ...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Архив программ -->
+        <div id="step-archive" class="step">
+            <div class="header">
+                <button class="back-btn" onclick="goToCommunityPrograms()">←</button>
+                <div class="icon">📦</div>
+                <h1>Архив программ</h1>
+                <p class="subtitle">Сохраненные программы</p>
+            </div>
+            
+            <div class="community-container">
+                <!-- Список архивных программ -->
+                <div class="community-programs-list" id="archive-programs-list">
+                    <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+                        Архив пуст
                     </div>
                 </div>
             </div>
@@ -635,6 +655,6 @@
             </div>
         </div>
     </div>
-    <script src="app.js?v=33"></script>
+    <script src="app.js?v=34"></script>
 </body>
 </html>
