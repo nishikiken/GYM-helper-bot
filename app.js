@@ -1569,24 +1569,23 @@ function renderWorkoutDays() {
     }
     
     container.innerHTML = workoutDays.map((day, index) => `
-        <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" 
-             data-index="${index}"
-             ${editDaysMode ? 'draggable="true"' : ''}
-             onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
-            <h3>${day.name}</h3>
-            <p>${day.description}</p>
-            <div class="exercises-count">${day.exercises.length} упражнений</div>
+        <div class="workout-item-wrapper">
+            <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
+                <h3>${day.name}</h3>
+                <p>${day.description}</p>
+                <div class="exercises-count">${day.exercises.length} упражнений</div>
+                ${editDaysMode ? `
+                    <button class="delete-btn-inline" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                ` : ''}
+            </div>
             ${editDaysMode ? `
-                <div class="edit-controls">
-                    <button class="delete-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                <div class="move-controls">
+                    ${index > 0 ? `<button class="move-btn-side" onclick="moveDayUp(${index})">↑</button>` : '<div class="move-btn-placeholder"></div>'}
+                    ${index < workoutDays.length - 1 ? `<button class="move-btn-side" onclick="moveDayDown(${index})">↓</button>` : '<div class="move-btn-placeholder"></div>'}
                 </div>
             ` : ''}
         </div>
     `).join('');
-    
-    if (editDaysMode) {
-        initDaysDragAndDrop();
-    }
 }
 
 // Переключение режима редактирования дней
@@ -1804,31 +1803,31 @@ function renderExercisesList(exercises) {
     }
     
     container.innerHTML = exercises.map((exercise, index) => `
-        <div class="exercise-card ${editExercisesMode ? 'edit-mode' : ''}"
-             data-index="${index}"
-             ${editExercisesMode ? 'draggable="true"' : ''}>
-            <h3>${exercise.name}</h3>
-            <div class="exercise-stats">
-                <div class="exercise-stat">
-                    <span>Подходы:</span>
-                    <span>${exercise.sets}</span>
+        <div class="workout-item-wrapper">
+            <div class="exercise-card ${editExercisesMode ? 'edit-mode' : ''}">
+                <h3>${exercise.name}</h3>
+                <div class="exercise-stats">
+                    <div class="exercise-stat">
+                        <span>Подходы:</span>
+                        <span>${exercise.sets}</span>
+                    </div>
+                    <div class="exercise-stat">
+                        <span>Повторения:</span>
+                        <span>${exercise.reps}</span>
+                    </div>
                 </div>
-                <div class="exercise-stat">
-                    <span>Повторения:</span>
-                    <span>${exercise.reps}</span>
-                </div>
+                ${editExercisesMode ? `
+                    <button class="edit-btn-inline" onclick="openEditExerciseModal(${index})">✏️</button>
+                ` : ''}
             </div>
             ${editExercisesMode ? `
-                <div class="edit-controls">
-                    <button class="edit-btn-icon" onclick="openEditExerciseModal(${index})">✏️</button>
+                <div class="move-controls">
+                    ${index > 0 ? `<button class="move-btn-side" onclick="moveExerciseUp(${index})">↑</button>` : '<div class="move-btn-placeholder"></div>'}
+                    ${index < exercises.length - 1 ? `<button class="move-btn-side" onclick="moveExerciseDown(${index})">↓</button>` : '<div class="move-btn-placeholder"></div>'}
                 </div>
             ` : ''}
         </div>
     `).join('');
-    
-    if (editExercisesMode) {
-        initExercisesDragAndDrop();
-    }
 }
 
 // Открыть модальное окно редактирования упражнения
