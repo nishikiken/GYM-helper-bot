@@ -1569,19 +1569,24 @@ function renderWorkoutDays() {
     }
     
     container.innerHTML = workoutDays.map((day, index) => `
-        <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
+        <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" 
+             data-index="${index}"
+             ${editDaysMode ? 'draggable="true"' : ''}
+             onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
             <h3>${day.name}</h3>
             <p>${day.description}</p>
             <div class="exercises-count">${day.exercises.length} упражнений</div>
             ${editDaysMode ? `
                 <div class="edit-controls">
-                    ${index > 0 ? `<button class="move-btn move-up" onclick="event.stopPropagation(); moveDayUp(${index})">↑</button>` : ''}
-                    ${index < workoutDays.length - 1 ? `<button class="move-btn move-down" onclick="event.stopPropagation(); moveDayDown(${index})">↓</button>` : ''}
                     <button class="delete-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
                 </div>
             ` : ''}
         </div>
     `).join('');
+    
+    if (editDaysMode) {
+        initDaysDragAndDrop();
+    }
 }
 
 // Переключение режима редактирования дней
@@ -1599,28 +1604,101 @@ function toggleEditDays() {
     haptic();
 }
 
-// Переместить день вверх
-function moveDayUp(index) {
-    if (index > 0) {
-        const temp = workoutDays[index];
-        workoutDays[index] = workoutDays[index - 1];
-        workoutDays[index - 1] = temp;
-        saveWorkoutDays();
-        renderWorkoutDays();
-        haptic();
-    }
+// Drag and Drop для дней тренировок
+let draggedDayIndex = null;
+
+function initDaysDragAndDrop() {
+    const cards = document.querySelectorAll('.workout-day-card[draggable="true"]');
+    
+    cards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            draggedDayIndex = parseInt(card.dataset.index);
+            card.style.opacity = '0.5';
+            haptic();
+        });
+        
+        card.addEventListener('dragend', (e) => {
+            card.style.opacity = '1';
+            draggedDayIndex = null;
+        });
+        
+        card.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const targetIndex = parseInt(card.dataset.index);
+            if (draggedDayIndex !== null && draggedDayIndex !== targetIndex) {
+                card.style.borderTop = '3px solid var(--tg-theme-button-color)';
+            }
+        });
+        
+        card.addEventListener('dragleave', (e) => {
+            card.style.borderTop = '';
+        });
+        
+        card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            card.style.borderTop = '';
+            
+            const targetIndex = parseInt(card.dataset.index);
+            if (draggedDayIndex !== null && draggedDayIndex !== targetIndex) {
+                const temp = workoutDays[draggedDayIndex];
+                workoutDays.splice(draggedDayIndex, 1);
+                workoutDays.splice(targetIndex, 0, temp);
+                saveWorkoutDays();
+                renderWorkoutDays();
+                haptic('success');
+            }
+        });
+    });
 }
 
-// Переместить день вниз
-function moveDayDown(index) {
-    if (index < workoutDays.length - 1) {
-        const temp = workoutDays[index];
-        workoutDays[index] = workoutDays[index + 1];
-        workoutDays[index + 1] = temp;
-        saveWorkoutDays();
-        renderWorkoutDays();
-        haptic();
-    }
+// Drag and Drop для упражнений
+let draggedExerciseIndex = null;
+
+function initExercisesDragAndDrop() {
+    const cards = document.querySelectorAll('.exercise-card[draggable="true"]');
+    
+    cards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            draggedExerciseIndex = parseInt(card.dataset.index);
+            card.style.opacity = '0.5';
+            haptic();
+        });
+        
+        card.addEventListener('dragend', (e) => {
+            card.style.opacity = '1';
+            draggedExerciseIndex = null;
+        });
+        
+        card.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const targetIndex = parseInt(card.dataset.index);
+            if (draggedExerciseIndex !== null && draggedExerciseIndex !== targetIndex) {
+                card.style.borderTop = '3px solid var(--tg-theme-button-color)';
+            }
+        });
+        
+        card.addEventListener('dragleave', (e) => {
+            card.style.borderTop = '';
+        });
+        
+        card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            card.style.borderTop = '';
+            
+            const day = workoutDays.find(d => d.id === currentDayId);
+            if (!day) return;
+            
+            const targetIndex = parseInt(card.dataset.index);
+            if (draggedExerciseIndex !== null && draggedExerciseIndex !== targetIndex) {
+                const temp = day.exercises[draggedExerciseIndex];
+                day.exercises.splice(draggedExerciseIndex, 1);
+                day.exercises.splice(targetIndex, 0, temp);
+                saveWorkoutDays();
+                renderExercisesList(day.exercises);
+                haptic('success');
+            }
+        });
+    });
 }
 
 // Показать меню редактирования дня
@@ -1726,7 +1804,9 @@ function renderExercisesList(exercises) {
     }
     
     container.innerHTML = exercises.map((exercise, index) => `
-        <div class="exercise-card ${editExercisesMode ? 'edit-mode' : ''}">
+        <div class="exercise-card ${editExercisesMode ? 'edit-mode' : ''}"
+             data-index="${index}"
+             ${editExercisesMode ? 'draggable="true"' : ''}>
             <h3>${exercise.name}</h3>
             <div class="exercise-stats">
                 <div class="exercise-stat">
@@ -1740,43 +1820,19 @@ function renderExercisesList(exercises) {
             </div>
             ${editExercisesMode ? `
                 <div class="edit-controls">
-                    ${index > 0 ? `<button class="move-btn move-up" onclick="moveExerciseUp(${index})">↑</button>` : ''}
-                    ${index < exercises.length - 1 ? `<button class="move-btn move-down" onclick="moveExerciseDown(${index})">↓</button>` : ''}
                     <button class="edit-btn-icon" onclick="openEditExerciseModal(${index})">✏️</button>
                 </div>
             ` : ''}
         </div>
     `).join('');
+    
+    if (editExercisesMode) {
+        initExercisesDragAndDrop();
+    }
 }
 
 // Открыть модальное окно редактирования упражнения
 let editingExerciseIndex = null;
-
-// Переместить упражнение вверх
-function moveExerciseUp(index) {
-    const day = workoutDays.find(d => d.id === currentDayId);
-    if (!day || index <= 0) return;
-    
-    const temp = day.exercises[index];
-    day.exercises[index] = day.exercises[index - 1];
-    day.exercises[index - 1] = temp;
-    saveWorkoutDays();
-    renderExercisesList(day.exercises);
-    haptic();
-}
-
-// Переместить упражнение вниз
-function moveExerciseDown(index) {
-    const day = workoutDays.find(d => d.id === currentDayId);
-    if (!day || index >= day.exercises.length - 1) return;
-    
-    const temp = day.exercises[index];
-    day.exercises[index] = day.exercises[index + 1];
-    day.exercises[index + 1] = temp;
-    saveWorkoutDays();
-    renderExercisesList(day.exercises);
-    haptic();
-}
 
 function openEditExerciseModal(exerciseIndex) {
     const day = workoutDays.find(d => d.id === currentDayId);
