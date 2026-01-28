@@ -2679,40 +2679,53 @@ async function downloadProgram() {
 function showProgramReplaceModal() {
     const programName = currentViewingProgram?.program_name || 'программа';
     
-    if (tg?.showPopup) {
-        tg.showPopup({
-            title: 'У тебя уже есть программа',
-            message: `Что сделать с текущей программой (${workoutDays.length} дней)?`,
-            buttons: [
-                { id: 'archive', type: 'default', text: '📦 В архив' },
-                { id: 'replace', type: 'destructive', text: '🗑️ Удалить' },
-                { id: 'add', type: 'default', text: '➕ Добавить' },
-                { id: 'cancel', type: 'cancel' }
-            ]
-        }, async (buttonId) => {
-            if (buttonId === 'archive') {
-                await executeProgramDownload('archive');
-            } else if (buttonId === 'replace') {
-                await executeProgramDownload('replace');
-            } else if (buttonId === 'add') {
-                await executeProgramDownload('add');
-            }
-        });
-    } else {
-        // Fallback для браузера
-        const choice = confirm(
-            `У тебя уже есть программа (${workoutDays.length} дней).\n\n` +
-            `OK - Сохранить в архив и заменить\n` +
-            `Отмена - Добавить к текущей`
-        );
-        
-        if (choice) {
-            executeProgramDownload('archive');
-        } else {
-            executeProgramDownload('add');
-        }
-    }
+    // Создаем кастомное модальное окно с кнопками выбора
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>У тебя уже есть программа</h2>
+            <p style="margin: 12px 0 20px; color: var(--tg-theme-hint-color);">
+                Что сделать с текущей программой (${workoutDays.length} дней)?
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-save" onclick="handleProgramReplace('archive')" style="width: 100%;">
+                    📦 Сохранить в архив
+                </button>
+                <button class="btn-delete" onclick="handleProgramReplace('replace')" style="width: 100%;">
+                    🗑️ Удалить и заменить
+                </button>
+                <button class="btn-save" onclick="handleProgramReplace('add')" style="width: 100%; background: rgba(255, 255, 255, 0.1);">
+                    ➕ Добавить к текущей
+                </button>
+                <button class="btn-cancel" onclick="closeProgramReplaceModal()" style="width: 100%; margin-top: 8px;">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.id = 'program-replace-modal-temp';
+    haptic();
 }
+
+function closeProgramReplaceModal() {
+    const modal = document.getElementById('program-replace-modal-temp');
+    if (modal) {
+        modal.remove();
+    }
+    haptic();
+}
+
+async function handleProgramReplace(mode) {
+    closeProgramReplaceModal();
+    await executeProgramDownload(mode);
+}
+
+// Делаем функции глобальными
+window.handleProgramReplace = handleProgramReplace;
+window.closeProgramReplaceModal = closeProgramReplaceModal;
 
 // Выполнить копирование программы
 async function executeProgramDownload(mode = 'add') {
@@ -2807,72 +2820,6 @@ function saveCurrentProgramToArchive() {
     
     console.log('Program saved to archive:', archiveEntry);
 }
-
-// Выполнить копирование программы
-async function executeProgramDownload() {
-    try {
-        const programName = currentViewingProgram?.program_name || 'программа';
-        
-        // Увеличиваем счетчик скачиваний (только если пользователь еще не скачивал)
-        const { data: downloadResult, error: rpcError } = await supabaseClient.rpc('increment_program_downloads_once', {
-            program_id_param: currentViewingProgram.id,
-            user_id_param: window.currentUserId
-        });
-        
-        console.log('Download increment result:', downloadResult);
-        
-        if (rpcError) {
-            console.error('Error incrementing downloads:', rpcError);
-            // Продолжаем даже если не удалось увеличить счетчик
-        }
-        
-        // Копируем дни программы к пользователю
-        const programDays = currentViewingProgram.days || [];
-        
-        programDays.forEach(day => {
-            const newDay = {
-                id: Date.now().toString() + Math.random(),
-                name: day.name,
-                description: day.description,
-                exercises: (day.exercises || []).map(ex => ({
-                    ...ex,
-                    id: Date.now().toString() + Math.random()
-                }))
-            };
-            workoutDays.push(newDay);
-        });
-        
-        saveWorkoutDays();
-        renderWorkoutDays();
-        
-        closeViewProgramModal();
-        goToExercises();
-        
-        const downloadMessage = downloadResult 
-            ? `Программа "${programName}" добавлена! 🎉`
-            : `Программа "${programName}" добавлена! (Ты уже скачивал ее ранее)`;
-        
-        if (tg?.showAlert) {
-            tg.showAlert(downloadMessage);
-        }
-        
-        haptic('success');
-        showConfetti();
-        
-    } catch (error) {
-        console.error('Error in executeProgramDownload:', error);
-        console.error('Error details:', {
-            message: error?.message,
-            code: error?.code,
-            details: error?.details
-        });
-        
-        if (tg?.showAlert) {
-            tg.showAlert('Ошибка: ' + (error?.message || 'Unknown error'));
-        }
-    }
-}
-
 // Экранирование HTML для безопасности
 function escapeHtml(text) {
     const div = document.createElement('div');
