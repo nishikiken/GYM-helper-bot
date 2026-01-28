@@ -1545,3 +1545,77 @@
     transform: scale(0.98);
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* === EDIT CONTROLS === */
+.edit-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.move-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--tg-theme-text-color);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.move-btn:active {
+    transform: scale(0.9);
+    background: rgba(10, 132, 255, 0.3);
+}
+
+.delete-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 59, 48, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 59, 48, 0.4);
+}
+
+.edit-btn-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--tg-theme-text-color);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn-icon:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}

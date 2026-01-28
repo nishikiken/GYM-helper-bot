@@ -1568,12 +1568,18 @@ function renderWorkoutDays() {
         return;
     }
     
-    container.innerHTML = workoutDays.map(day => `
+    container.innerHTML = workoutDays.map((day, index) => `
         <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
             <h3>${day.name}</h3>
             <p>${day.description}</p>
             <div class="exercises-count">${day.exercises.length} упражнений</div>
-            <button class="edit-day-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+            ${editDaysMode ? `
+                <div class="edit-controls">
+                    ${index > 0 ? `<button class="move-btn move-up" onclick="event.stopPropagation(); moveDayUp(${index})">↑</button>` : ''}
+                    ${index < workoutDays.length - 1 ? `<button class="move-btn move-down" onclick="event.stopPropagation(); moveDayDown(${index})">↓</button>` : ''}
+                    <button class="delete-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                </div>
+            ` : ''}
         </div>
     `).join('');
 }
@@ -1591,6 +1597,30 @@ function toggleEditDays() {
     
     renderWorkoutDays();
     haptic();
+}
+
+// Переместить день вверх
+function moveDayUp(index) {
+    if (index > 0) {
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index - 1];
+        workoutDays[index - 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
+    }
+}
+
+// Переместить день вниз
+function moveDayDown(index) {
+    if (index < workoutDays.length - 1) {
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index + 1];
+        workoutDays[index + 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
+    }
 }
 
 // Показать меню редактирования дня
@@ -1708,13 +1738,45 @@ function renderExercisesList(exercises) {
                     <span>${exercise.reps}</span>
                 </div>
             </div>
-            <button class="edit-exercise-btn" onclick="openEditExerciseModal(${index})">✏️</button>
+            ${editExercisesMode ? `
+                <div class="edit-controls">
+                    ${index > 0 ? `<button class="move-btn move-up" onclick="moveExerciseUp(${index})">↑</button>` : ''}
+                    ${index < exercises.length - 1 ? `<button class="move-btn move-down" onclick="moveExerciseDown(${index})">↓</button>` : ''}
+                    <button class="edit-btn-icon" onclick="openEditExerciseModal(${index})">✏️</button>
+                </div>
+            ` : ''}
         </div>
     `).join('');
 }
 
 // Открыть модальное окно редактирования упражнения
 let editingExerciseIndex = null;
+
+// Переместить упражнение вверх
+function moveExerciseUp(index) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || index <= 0) return;
+    
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index - 1];
+    day.exercises[index - 1] = temp;
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
+}
+
+// Переместить упражнение вниз
+function moveExerciseDown(index) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || index >= day.exercises.length - 1) return;
+    
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index + 1];
+    day.exercises[index + 1] = temp;
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
+}
 
 function openEditExerciseModal(exerciseIndex) {
     const day = workoutDays.find(d => d.id === currentDayId);
