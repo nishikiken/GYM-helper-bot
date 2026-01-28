@@ -2152,9 +2152,6 @@ function loadActiveWorkout() {
             showStep('step-active-workout');
             startWorkoutTimer();
             
-            // Восстанавливаем таймер отдыха если был активен
-            restoreRestTimer();
-            
             console.log('Active workout restored, currentDayId:', currentDayId);
         } catch (e) {
             console.error('Error loading active workout:', e);
@@ -2239,7 +2236,6 @@ function executeStopWorkout() {
     
     activeWorkout = null;
     localStorage.removeItem('activeWorkout');
-    localStorage.removeItem('restTimer'); // Очищаем таймер отдыха
     
     // Если есть dayId, открываем день, иначе идем в упражнения
     if (dayId) {
