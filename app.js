@@ -1569,23 +1569,46 @@ function renderWorkoutDays() {
     }
     
     container.innerHTML = workoutDays.map((day, index) => `
-        <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" 
-             data-index="${index}"
-             ${editDaysMode ? 'draggable="true"' : ''}
-             onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
-            <h3>${day.name}</h3>
-            <p>${day.description}</p>
-            <div class="exercises-count">${day.exercises.length} упражнений</div>
+        <div class="workout-item-wrapper">
+            <div class="workout-day-card ${editDaysMode ? 'edit-mode' : ''}" onclick="${editDaysMode ? '' : `openWorkoutDay('${day.id}')`}">
+                <h3>${day.name}</h3>
+                <p>${day.description}</p>
+                <div class="exercises-count">${day.exercises.length} упражнений</div>
+                ${editDaysMode ? `
+                    <button class="delete-btn-inline" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                ` : ''}
+            </div>
             ${editDaysMode ? `
-                <div class="edit-controls">
-                    <button class="delete-btn" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                <div class="move-controls">
+                    ${index > 0 ? `<button class="move-btn-side" onclick="moveDayUp(${index})">↑</button>` : '<div class="move-btn-placeholder"></div>'}
+                    ${index < workoutDays.length - 1 ? `<button class="move-btn-side" onclick="moveDayDown(${index})">↓</button>` : '<div class="move-btn-placeholder"></div>'}
                 </div>
             ` : ''}
         </div>
     `).join('');
-    
-    if (editDaysMode) {
-        initDaysDragAndDrop();
+}
+
+// Переместить день вверх
+function moveDayUp(index) {
+    if (index > 0) {
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index - 1];
+        workoutDays[index - 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
+    }
+}
+
+// Переместить день вниз
+function moveDayDown(index) {
+    if (index < workoutDays.length - 1) {
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index + 1];
+        workoutDays[index + 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
     }
 }
 
@@ -1833,6 +1856,32 @@ function renderExercisesList(exercises) {
 
 // Открыть модальное окно редактирования упражнения
 let editingExerciseIndex = null;
+
+// Переместить упражнение вверх
+function moveExerciseUp(index) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || index <= 0) return;
+    
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index - 1];
+    day.exercises[index - 1] = temp;
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
+}
+
+// Переместить упражнение вниз
+function moveExerciseDown(index) {
+    const day = workoutDays.find(d => d.id === currentDayId);
+    if (!day || index >= day.exercises.length - 1) return;
+    
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index + 1];
+    day.exercises[index + 1] = temp;
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
+}
 
 function openEditExerciseModal(exerciseIndex) {
     const day = workoutDays.find(d => d.id === currentDayId);

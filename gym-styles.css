@@ -1610,3 +1610,98 @@
     transform: scale(0.9);
     background: rgba(255, 255, 255, 0.2) !important;
 }
+
+/* === WORKOUT ITEM ROW WITH SIDE BUTTONS === */
+.workout-item-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.workout-item-wrapper .workout-day-card,
+.workout-item-wrapper .exercise-card {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.move-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.move-btn-side {
+    width: 40px;
+    height: 40px;
+    background: rgba(10, 132, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    border-radius: 12px;
+    color: var(--tg-theme-button-color);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.move-btn-side:active {
+    transform: scale(0.9);
+    background: rgba(10, 132, 255, 0.3);
+}
+
+.move-btn-placeholder {
+    width: 40px;
+    height: 40px;
+}
+
+.delete-btn-inline {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 59, 48, 0.2) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 59, 48, 0.3) !important;
+    border-radius: 8px;
+    color: #ffffff !important;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn-inline:active {
+    transform: scale(0.9);
+    background: rgba(255, 59, 48, 0.4) !important;
+}
+
+.edit-btn-inline {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px;
+    color: var(--tg-theme-text-color) !important;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn-inline:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2) !important;
+}
