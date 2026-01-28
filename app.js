@@ -2649,14 +2649,68 @@ function closeViewProgramModal() {
 async function downloadProgram() {
     if (!currentViewingProgram) return;
     
+    if (!window.currentUserId) {
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка: пользователь не определен');
+        }
+        return;
+    }
+    
     try {
-        // Увеличиваем счетчик скачиваний
-        const { error: rpcError } = await supabaseClient.rpc('increment_program_downloads', {
-            program_id_param: currentViewingProgram.id
+        console.log('Downloading program:', currentViewingProgram.id);
+        
+        // Проверяем, не скачана ли уже эта программа
+        const programDays = currentViewingProgram.days || [];
+        const programDayNames = programDays.map(d => d.name.toLowerCase().trim());
+        
+        // Проверяем есть ли уже дни с такими же названиями
+        const hasDuplicates = workoutDays.some(existingDay => 
+            programDayNames.includes(existingDay.name.toLowerCase().trim())
+        );
+        
+        if (hasDuplicates) {
+            if (tg?.showConfirm) {
+                tg.showConfirm(
+                    'У тебя уже есть дни с такими же названиями. Все равно добавить?',
+                    async (confirmed) => {
+                        if (confirmed) {
+                            await executeProgramDownload();
+                        }
+                    }
+                );
+            } else {
+                const confirmed = confirm('У тебя уже есть дни с такими же названиями. Все равно добавить?');
+                if (confirmed) {
+                    await executeProgramDownload();
+                }
+            }
+            return;
+        }
+        
+        await executeProgramDownload();
+        
+    } catch (error) {
+        console.error('Error downloading program:', error);
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка копирования программы');
+        }
+    }
+}
+
+// Выполнить копирование программы
+async function executeProgramDownload() {
+    try {
+        // Увеличиваем счетчик скачиваний (только если пользователь еще не скачивал)
+        const { data: downloadResult, error: rpcError } = await supabaseClient.rpc('increment_program_downloads_once', {
+            program_id_param: currentViewingProgram.id,
+            user_id_param: window.currentUserId
         });
+        
+        console.log('Download increment result:', downloadResult);
         
         if (rpcError) {
             console.error('Error incrementing downloads:', rpcError);
+            // Продолжаем даже если не удалось увеличить счетчик
         }
         
         // Копируем дни программы к пользователю
@@ -2667,7 +2721,7 @@ async function downloadProgram() {
                 id: Date.now().toString() + Math.random(),
                 name: day.name,
                 description: day.description,
-                exercises: day.exercises.map(ex => ({
+                exercises: (day.exercises || []).map(ex => ({
                     ...ex,
                     id: Date.now().toString() + Math.random()
                 }))
@@ -2681,17 +2735,27 @@ async function downloadProgram() {
         closeViewProgramModal();
         goToExercises();
         
+        const downloadMessage = downloadResult 
+            ? `Программа "${currentViewingProgram.program_name}" добавлена! 🎉`
+            : `Программа "${currentViewingProgram.program_name}" добавлена! (Ты уже скачивал ее ранее)`;
+        
         if (tg?.showAlert) {
-            tg.showAlert(`Программа "${currentViewingProgram.program_name}" добавлена! 🎉`);
+            tg.showAlert(downloadMessage);
         }
         
         haptic('success');
         showConfetti();
         
     } catch (error) {
-        console.error('Error downloading program:', error);
+        console.error('Error in executeProgramDownload:', error);
+        console.error('Error details:', {
+            message: error?.message,
+            code: error?.code,
+            details: error?.details
+        });
+        
         if (tg?.showAlert) {
-            tg.showAlert('Ошибка копирования программы');
+            tg.showAlert('Ошибка: ' + (error?.message || 'Unknown error'));
         }
     }
 }
