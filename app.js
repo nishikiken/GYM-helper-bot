@@ -1590,68 +1590,30 @@ function renderWorkoutDays() {
 
 // Переместить день вверх
 function moveDayUp(index) {
-    if (index > 0) {
-        const container = document.getElementById('workout-days-list');
-        const items = container.querySelectorAll('.workout-item-wrapper');
-        const currentItem = items[index];
-        const targetItem = items[index - 1];
-        
-        // Получаем высоты элементов
-        const currentHeight = currentItem.offsetHeight;
-        const targetHeight = targetItem.offsetHeight;
-        const gap = 12; // gap между элементами
-        
-        // Анимация: текущий элемент движется вверх, целевой вниз
-        currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-        targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-        currentItem.style.transform = `translateY(-${targetHeight + gap}px)`;
-        currentItem.style.opacity = '0.7';
-        targetItem.style.transform = `translateY(${currentHeight + gap}px)`;
-        targetItem.style.opacity = '0.7';
-        
-        setTimeout(() => {
-            // Меняем местами в массиве
-            const temp = workoutDays[index];
-            workoutDays[index] = workoutDays[index - 1];
-            workoutDays[index - 1] = temp;
-            saveWorkoutDays();
-            renderWorkoutDays();
-            haptic();
-        }, 300);
-    }
+    if (index <= 0) return;
+    
+    // Меняем местами в массиве
+    const temp = workoutDays[index];
+    workoutDays[index] = workoutDays[index - 1];
+    workoutDays[index - 1] = temp;
+    
+    saveWorkoutDays();
+    renderWorkoutDays();
+    haptic();
 }
 
 // Переместить день вниз
 function moveDayDown(index) {
-    if (index < workoutDays.length - 1) {
-        const container = document.getElementById('workout-days-list');
-        const items = container.querySelectorAll('.workout-item-wrapper');
-        const currentItem = items[index];
-        const targetItem = items[index + 1];
-        
-        // Получаем высоты элементов
-        const currentHeight = currentItem.offsetHeight;
-        const targetHeight = targetItem.offsetHeight;
-        const gap = 12; // gap между элементами
-        
-        // Анимация: текущий элемент движется вниз, целевой вверх
-        currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-        targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-        currentItem.style.transform = `translateY(${targetHeight + gap}px)`;
-        currentItem.style.opacity = '0.7';
-        targetItem.style.transform = `translateY(-${currentHeight + gap}px)`;
-        targetItem.style.opacity = '0.7';
-        
-        setTimeout(() => {
-            // Меняем местами в массиве
-            const temp = workoutDays[index];
-            workoutDays[index] = workoutDays[index + 1];
-            workoutDays[index + 1] = temp;
-            saveWorkoutDays();
-            renderWorkoutDays();
-            haptic();
-        }, 300);
-    }
+    if (index >= workoutDays.length - 1) return;
+    
+    // Меняем местами в массиве
+    const temp = workoutDays[index];
+    workoutDays[index] = workoutDays[index + 1];
+    workoutDays[index + 1] = temp;
+    
+    saveWorkoutDays();
+    renderWorkoutDays();
+    haptic();
 }
 
 // Переключение режима редактирования дней
@@ -1904,33 +1866,14 @@ function moveExerciseUp(index) {
     const day = workoutDays.find(d => d.id === currentDayId);
     if (!day || index <= 0) return;
     
-    const container = document.getElementById('exercises-list');
-    const items = container.querySelectorAll('.workout-item-wrapper');
-    const currentItem = items[index];
-    const targetItem = items[index - 1];
+    // Меняем местами в массиве
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index - 1];
+    day.exercises[index - 1] = temp;
     
-    // Получаем высоты элементов
-    const currentHeight = currentItem.offsetHeight;
-    const targetHeight = targetItem.offsetHeight;
-    const gap = 12; // gap между элементами
-    
-    // Анимация: текущий элемент движется вверх, целевой вниз
-    currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    currentItem.style.transform = `translateY(-${targetHeight + gap}px)`;
-    currentItem.style.opacity = '0.7';
-    targetItem.style.transform = `translateY(${currentHeight + gap}px)`;
-    targetItem.style.opacity = '0.7';
-    
-    setTimeout(() => {
-        // Меняем местами в массиве
-        const temp = day.exercises[index];
-        day.exercises[index] = day.exercises[index - 1];
-        day.exercises[index - 1] = temp;
-        saveWorkoutDays();
-        renderExercisesList(day.exercises);
-        haptic();
-    }, 300);
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
 }
 
 // Переместить упражнение вниз
@@ -1938,33 +1881,14 @@ function moveExerciseDown(index) {
     const day = workoutDays.find(d => d.id === currentDayId);
     if (!day || index >= day.exercises.length - 1) return;
     
-    const container = document.getElementById('exercises-list');
-    const items = container.querySelectorAll('.workout-item-wrapper');
-    const currentItem = items[index];
-    const targetItem = items[index + 1];
+    // Меняем местами в массиве
+    const temp = day.exercises[index];
+    day.exercises[index] = day.exercises[index + 1];
+    day.exercises[index + 1] = temp;
     
-    // Получаем высоты элементов
-    const currentHeight = currentItem.offsetHeight;
-    const targetHeight = targetItem.offsetHeight;
-    const gap = 12; // gap между элементами
-    
-    // Анимация: текущий элемент движется вниз, целевой вверх
-    currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    currentItem.style.transform = `translateY(${targetHeight + gap}px)`;
-    currentItem.style.opacity = '0.7';
-    targetItem.style.transform = `translateY(-${currentHeight + gap}px)`;
-    targetItem.style.opacity = '0.7';
-    
-    setTimeout(() => {
-        // Меняем местами в массиве
-        const temp = day.exercises[index];
-        day.exercises[index] = day.exercises[index + 1];
-        day.exercises[index + 1] = temp;
-        saveWorkoutDays();
-        renderExercisesList(day.exercises);
-        haptic();
-    }, 300);
+    saveWorkoutDays();
+    renderExercisesList(day.exercises);
+    haptic();
 }
         renderExercisesList(day.exercises);
         haptic();
@@ -2228,6 +2152,9 @@ function loadActiveWorkout() {
             showStep('step-active-workout');
             startWorkoutTimer();
             
+            // Восстанавливаем таймер отдыха если был активен
+            restoreRestTimer();
+            
             console.log('Active workout restored, currentDayId:', currentDayId);
         } catch (e) {
             console.error('Error loading active workout:', e);
@@ -2312,6 +2239,7 @@ function executeStopWorkout() {
     
     activeWorkout = null;
     localStorage.removeItem('activeWorkout');
+    localStorage.removeItem('restTimer'); // Очищаем таймер отдыха
     
     // Если есть dayId, открываем день, иначе идем в упражнения
     if (dayId) {
@@ -2355,15 +2283,29 @@ function toggleRestTimer() {
         btn.textContent = '⏱️ Отдых (1:30)';
         display.textContent = '--:--';
         
+        // Удаляем из localStorage
+        localStorage.removeItem('restTimer');
+        
         // Скрываем кнопку "Стоп"
         if (stopBtn) {
             stopBtn.style.display = 'none';
         }
     } else {
         // Начать отдых
-        let timeLeft = restDuration;
+        const startTime = Date.now();
+        const endTime = startTime + (restDuration * 1000);
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('restTimer', JSON.stringify({
+            startTime,
+            endTime,
+            duration: restDuration
+        }));
         
         const updateRestTimer = () => {
+            const now = Date.now();
+            const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+            
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             display.textContent = 
@@ -2377,6 +2319,9 @@ function toggleRestTimer() {
                 btn.textContent = '⏱️ Отдых (1:30)';
                 display.textContent = '--:--';
                 
+                // Удаляем из localStorage
+                localStorage.removeItem('restTimer');
+                
                 // Скрываем кнопку "Стоп"
                 if (stopBtn) {
                     stopBtn.style.display = 'none';
@@ -2387,8 +2332,6 @@ function toggleRestTimer() {
                 
                 haptic('success');
             }
-            
-            timeLeft--;
         };
         
         inline.classList.add('active');
@@ -2405,6 +2348,74 @@ function toggleRestTimer() {
     }
     
     haptic();
+}
+
+// Восстановить таймер отдыха при загрузке
+function restoreRestTimer() {
+    const saved = localStorage.getItem('restTimer');
+    if (!saved) return;
+    
+    try {
+        const { endTime } = JSON.parse(saved);
+        const now = Date.now();
+        const timeLeft = Math.floor((endTime - now) / 1000);
+        
+        if (timeLeft <= 0) {
+            // Таймер истек пока приложение было закрыто
+            localStorage.removeItem('restTimer');
+            playRestEndSound();
+            return;
+        }
+        
+        // Восстанавливаем таймер
+        const inline = document.getElementById('rest-timer-inline');
+        const btn = document.getElementById('rest-btn');
+        const stopBtn = document.getElementById('rest-stop-btn');
+        const display = document.getElementById('rest-timer-display');
+        
+        const updateRestTimer = () => {
+            const now = Date.now();
+            const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            display.textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(restTimerInterval);
+                restTimerInterval = null;
+                inline.classList.remove('active');
+                btn.classList.remove('active');
+                btn.textContent = '⏱️ Отдых (1:30)';
+                display.textContent = '--:--';
+                
+                localStorage.removeItem('restTimer');
+                
+                if (stopBtn) {
+                    stopBtn.style.display = 'none';
+                }
+                
+                playRestEndSound();
+                haptic('success');
+            }
+        };
+        
+        inline.classList.add('active');
+        btn.classList.add('active');
+        btn.textContent = '⏸️ Отдых';
+        
+        if (stopBtn) {
+            stopBtn.style.display = 'block';
+        }
+        
+        updateRestTimer();
+        restTimerInterval = setInterval(updateRestTimer, 1000);
+        
+    } catch (e) {
+        console.error('Error restoring rest timer:', e);
+        localStorage.removeItem('restTimer');
+    }
 }
 
 // Воспроизвести звук окончания отдыха
