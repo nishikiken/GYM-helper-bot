@@ -1015,16 +1015,16 @@ function loadSavedCaloriesData() {
 // === МАГАЗИН КАСТОМИЗАЦИИ ===
 const shopItems = {
     colors: [
-        { id: 'blue', name: 'Синий неон', price: 15, class: 'neon-blue' },
-        { id: 'red', name: 'Красный неон', price: 15, class: 'neon-red' },
-        { id: 'purple', name: 'Фиолетовый неон', price: 25, class: 'neon-purple' },
-        { id: 'green', name: 'Зеленый неон', price: 25, class: 'neon-green' }
+        { id: 'blue', name: 'Синий неон', price: 1500, class: 'neon-blue' },
+        { id: 'red', name: 'Красный неон', price: 1500, class: 'neon-red' },
+        { id: 'purple', name: 'Фиолетовый неон', price: 2500, class: 'neon-purple' },
+        { id: 'green', name: 'Зеленый неон', price: 2500, class: 'neon-green' }
     ],
     badges: [
-        { id: 'blue', name: 'Синее стекло', price: 30, class: 'badge-blue' },
-        { id: 'red', name: 'Красное стекло', price: 30, class: 'badge-red' },
-        { id: 'purple', name: 'Фиолетовое стекло', price: 50, class: 'badge-purple' },
-        { id: 'green', name: 'Зеленое стекло', price: 50, class: 'badge-green' }
+        { id: 'blue', name: 'Синее стекло', price: 3000, class: 'badge-blue' },
+        { id: 'red', name: 'Красное стекло', price: 3000, class: 'badge-red' },
+        { id: 'purple', name: 'Фиолетовое стекло', price: 5000, class: 'badge-purple' },
+        { id: 'green', name: 'Зеленое стекло', price: 5000, class: 'badge-green' }
     ]
 };
 
@@ -1069,7 +1069,7 @@ function renderShopColors() {
                             ${equipped ? '✓ Снять' : 'Надеть'}
                         </button>` :
                         `<button class="shop-action-btn btn-buy" onclick="buyItem('colors', '${item.id}', ${item.price})">
-                            Купить ${item.price} 🎟️
+                            Купить ${item.price} ⭐
                         </button>`
                     }
                 </div>
@@ -1096,7 +1096,7 @@ function renderShopBadges() {
                             ${equipped ? '✓ Снять' : 'Надеть'}
                         </button>` :
                         `<button class="shop-action-btn btn-buy" onclick="buyItem('badges', '${item.id}', ${item.price})">
-                            Купить ${item.price} 🎟️
+                            Купить ${item.price} ⭐
                         </button>`
                     }
                 </div>
@@ -1106,11 +1106,11 @@ function renderShopBadges() {
 }
 
 async function buyItem(type, itemId, price) {
-    const currentTokens = parseInt(document.getElementById('user-tokens').textContent) || 0;
+    const currentRating = parseInt(document.getElementById('user-rating').textContent) || 0;
     
-    if (currentTokens < price) {
+    if (currentRating < price) {
         if (tg?.showAlert) {
-            tg.showAlert(`Недостаточно токенов! Нужно ${price} 🎟️`);
+            tg.showAlert(`Недостаточно рейтинга! Нужно ${price} ⭐`);
         }
         haptic();
         return;
@@ -1118,7 +1118,7 @@ async function buyItem(type, itemId, price) {
     
     const item = shopItems[type].find(i => i.id === itemId);
     if (tg?.showConfirm) {
-        tg.showConfirm(`Купить "${item.name}" за ${price} 🎟️?`, async (confirmed) => {
+        tg.showConfirm(`Купить "${item.name}" за ${price} ⭐?`, async (confirmed) => {
             if (confirmed) {
                 await purchaseItem(type, itemId, price);
             }
@@ -1175,8 +1175,8 @@ async function purchaseItem(type, itemId, price) {
         console.log('=== PURCHASE START ===');
         console.log('Type:', type, 'ItemId:', itemId, 'Price:', price);
         
-        const currentTokens = parseInt(document.getElementById('user-tokens').textContent) || 0;
-        const newTokens = currentTokens - price;
+        const currentRating = parseInt(document.getElementById('user-rating').textContent) || 0;
+        const newRating = currentRating - price;
         
         if (userInventory[type].includes(itemId)) {
             console.log('Item already owned');
@@ -1214,9 +1214,9 @@ async function purchaseItem(type, itemId, price) {
         
         console.log('RPC success - item added to array');
         
-        console.log('Updating tokens and equipped items...');
+        console.log('Updating rating and equipped items...');
         const updateData = {
-            tokens: newTokens,
+            rating: newRating,
             name_color: userInventory.equippedColor,
             badge_color: userInventory.equippedBadge
         };
@@ -1252,7 +1252,7 @@ async function purchaseItem(type, itemId, price) {
             ownedBadges: userInventory.badges
         }));
         
-        document.getElementById('user-tokens').textContent = newTokens;
+        document.getElementById('user-rating').textContent = newRating;
         
         const leaderboardView = document.getElementById('step-leaderboard');
         if (leaderboardView.classList.contains('active')) {
@@ -2232,7 +2232,7 @@ function executeRemoveExercise(exerciseIndex) {
 
 // === КАТАЛОГ ТРЕНИРОВОК ===
 function openCatalog() {
-    renderCatalog();
+    showCatalogHub();
     showStep('step-catalog');
     document.getElementById('catalog-fab').classList.remove('visible');
     haptic();
@@ -2243,30 +2243,31 @@ function closeCatalog() {
     haptic();
 }
 
-function renderCatalog() {
-    switchCatalogTab(currentCatalogTab);
+function showCatalogHub() {
+    document.getElementById('catalog-hub').style.display = 'block';
+    document.getElementById('catalog-exercises-view').style.display = 'none';
 }
 
-// Переключение вкладки каталога
-function switchCatalogTab(tabKey) {
-    currentCatalogTab = tabKey;
+function selectMuscleGroup(muscleGroup) {
+    document.getElementById('catalog-hub').style.display = 'none';
+    document.getElementById('catalog-exercises-view').style.display = 'block';
     
-    // Обновляем активную вкладку
-    document.querySelectorAll('.catalog-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    event?.target?.classList.add('active');
+    currentCatalogTab = muscleGroup;
+    renderCatalogExercises(muscleGroup);
     
-    // Если вызвано программно, находим нужную вкладку
-    if (!event) {
-        const tabs = document.querySelectorAll('.catalog-tab');
-        const tabIndex = Object.keys(workoutCatalog).indexOf(tabKey);
-        if (tabs[tabIndex]) {
-            tabs[tabIndex].classList.add('active');
-        }
-    }
-    
-    // Отрисовываем упражнения выбранной категории
+    haptic();
+}
+
+function backToCatalogHub() {
+    showCatalogHub();
+    haptic();
+}
+
+function renderCatalog() {
+    showCatalogHub();
+}
+
+function renderCatalogExercises(tabKey) {
     const container = document.getElementById('catalog-content');
     const category = workoutCatalog[tabKey];
     
@@ -2281,8 +2282,11 @@ function switchCatalogTab(tabKey) {
             </div>
         </div>
     `).join('');
-    
-    haptic();
+}
+
+// Переключение вкладки каталога (старая функция - больше не используется, но оставляем для совместимости)
+function switchCatalogTab(tabKey) {
+    selectMuscleGroup(tabKey);
 }
 
 // Показать модальное окно добавления из каталога

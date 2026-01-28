@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css?v=1">
-    <link rel="stylesheet" href="gym-styles.css?v=36">
+    <link rel="stylesheet" href="gym-styles.css?v=38">
     <style>
         /* Встроенная консоль для отладки */
         #debug-console {
@@ -160,7 +160,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v36</div>
+                        <div class="user-version">v38</div>
                     </div>
                 </div>
             </div>
@@ -416,20 +416,54 @@
             </div>
             
             <div class="catalog-container">
-                <!-- Вкладки категорий -->
-                <div class="catalog-tabs" id="catalog-tabs">
-                    <div class="catalog-tab active" onclick="switchCatalogTab('chest')">Грудь</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('triceps')">Трицепс</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('biceps')">Бицепс</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('shoulders')">Плечи</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('back')">Спина</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('legs')">Ноги</div>
-                    <div class="catalog-tab" onclick="switchCatalogTab('abs')">Пресс</div>
+                <!-- Хаб выбора группы мышц -->
+                <div class="catalog-hub" id="catalog-hub">
+                    <div class="catalog-hub-message">
+                        <h2>Выбери группу мышц</h2>
+                        <p>Упражнения для которой тебе интересны</p>
+                    </div>
+                    <div class="catalog-muscle-groups">
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('chest')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Грудь</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('triceps')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Трицепс</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('biceps')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Бицепс</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('shoulders')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Плечи</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('back')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Спина</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('legs')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Ноги</div>
+                        </div>
+                        <div class="muscle-group-card" onclick="selectMuscleGroup('abs')">
+                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-name">Пресс</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Содержимое вкладок -->
-                <div class="catalog-content" id="catalog-content">
-                    <!-- Упражнения будут здесь -->
+                <!-- Список упражнений (скрыт по умолчанию) -->
+                <div class="catalog-exercises-view" id="catalog-exercises-view" style="display: none;">
+                    <button class="back-to-hub-btn" onclick="backToCatalogHub()">
+                        ← Назад к группам мышц
+                    </button>
+                    
+                    <!-- Содержимое вкладок -->
+                    <div class="catalog-content" id="catalog-content">
+                        <!-- Упражнения будут здесь -->
+                    </div>
                 </div>
             </div>
         </div>
