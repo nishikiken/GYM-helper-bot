@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css?v=1">
-    <link rel="stylesheet" href="gym-styles.css?v=39">
+    <link rel="stylesheet" href="gym-styles.css?v=40">
     <style>
         /* Встроенная консоль для отладки */
         #debug-console {
@@ -160,7 +160,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v39</div>
+                        <div class="user-version">v40</div>
                     </div>
                 </div>
             </div>
@@ -428,7 +428,7 @@
                             <div class="muscle-name">Грудь</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('triceps')">
-                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-icon">🔥</div>
                             <div class="muscle-name">Трицепс</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('biceps')">
@@ -436,19 +436,19 @@
                             <div class="muscle-name">Бицепс</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('shoulders')">
-                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-icon">🏋️</div>
                             <div class="muscle-name">Плечи</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('back')">
-                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-icon">🦾</div>
                             <div class="muscle-name">Спина</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('legs')">
-                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-icon">🦵</div>
                             <div class="muscle-name">Ноги</div>
                         </div>
                         <div class="muscle-group-card" onclick="selectMuscleGroup('abs')">
-                            <div class="muscle-icon">💪</div>
+                            <div class="muscle-icon">⚡</div>
                             <div class="muscle-name">Пресс</div>
                         </div>
                     </div>
@@ -548,11 +548,11 @@
                 </div>
                 <div class="form-group">
                     <label>Подходы</label>
-                    <input type="number" id="exercise-sets" placeholder="Кол-во" min="1" max="10">
+                    <input type="text" id="exercise-sets" placeholder="Кол-во (например: 3 или 3-4)" pattern="[0-9\-]+" maxlength="10">
                 </div>
                 <div class="form-group">
                     <label>Повторения</label>
-                    <input type="number" id="exercise-reps" placeholder="Кол-во" min="1" max="50">
+                    <input type="text" id="exercise-reps" placeholder="Кол-во (например: 12 или 12-15)" pattern="[0-9\-]+" maxlength="10">
                 </div>
                 <div class="modal-actions">
                     <button class="btn-cancel" onclick="closeAddExerciseModal()">Отмена</button>
@@ -571,11 +571,11 @@
                 </div>
                 <div class="form-group">
                     <label>Подходы</label>
-                    <input type="number" id="edit-exercise-sets" placeholder="Кол-во" min="1" max="10">
+                    <input type="text" id="edit-exercise-sets" placeholder="Кол-во (например: 3 или 3-4)" pattern="[0-9\-]+" maxlength="10">
                 </div>
                 <div class="form-group">
                     <label>Повторения</label>
-                    <input type="number" id="edit-exercise-reps" placeholder="Кол-во" min="1" max="50">
+                    <input type="text" id="edit-exercise-reps" placeholder="Кол-во (например: 12 или 12-15)" pattern="[0-9\-]+" maxlength="10">
                 </div>
                 <div class="modal-actions">
                     <button class="btn-cancel" onclick="closeEditExerciseModal()">Отмена</button>

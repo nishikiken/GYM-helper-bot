@@ -743,7 +743,7 @@ function goToExchange() {
     const input = document.getElementById('exchange-amount');
     input.addEventListener('input', () => {
         const amount = parseInt(input.value) || 0;
-        const tokens = Math.floor(amount / 100);
+        const tokens = Math.floor(amount / 50);
         document.getElementById('exchange-tokens').textContent = tokens;
     });
 }
@@ -1363,16 +1363,16 @@ async function loadCustomization(userData) {
 async function performExchange() {
     const amount = parseInt(document.getElementById('exchange-amount').value) || 0;
     
-    if (amount < 100) {
+    if (amount < 50) {
         if (tg?.showAlert) {
-            tg.showAlert('Минимум 100 рейтинга для обмена!');
+            tg.showAlert('Минимум 50 рейтинга для обмена!');
         }
         return;
     }
     
-    if (amount % 100 !== 0) {
+    if (amount % 50 !== 0) {
         if (tg?.showAlert) {
-            tg.showAlert('Количество должно быть кратно 100!');
+            tg.showAlert('Количество должно быть кратно 50!');
         }
         return;
     }
@@ -1386,7 +1386,7 @@ async function performExchange() {
         return;
     }
     
-    const tokensToAdd = Math.floor(amount / 100);
+    const tokensToAdd = Math.floor(amount / 50);
     
     if (tg?.showConfirm) {
         tg.showConfirm(`Обменять ${amount} ⭐ на ${tokensToAdd} 🎟️?`, async (confirmed) => {
@@ -1742,8 +1742,8 @@ function saveEditedExercise() {
     if (!day || editingExerciseIndex === null) return;
     
     const name = document.getElementById('edit-exercise-name').value.trim();
-    const sets = parseInt(document.getElementById('edit-exercise-sets').value) || 3;
-    const reps = parseInt(document.getElementById('edit-exercise-reps').value) || 12;
+    const sets = document.getElementById('edit-exercise-sets').value.trim() || '3';
+    const reps = document.getElementById('edit-exercise-reps').value.trim() || '12';
     
     if (!name) {
         if (tg?.showAlert) {
@@ -1860,8 +1860,8 @@ function closeAddExerciseModal() {
 // Сохранить новое упражнение
 function saveExercise() {
     const name = document.getElementById('exercise-name').value.trim();
-    const sets = parseInt(document.getElementById('exercise-sets').value) || 3;
-    const reps = parseInt(document.getElementById('exercise-reps').value) || 12;
+    const sets = document.getElementById('exercise-sets').value.trim() || '3';
+    const reps = document.getElementById('exercise-reps').value.trim() || '12';
     
     if (!name) {
         if (tg?.showAlert) {
@@ -2392,7 +2392,7 @@ function goToExchange() {
     const input = document.getElementById('exchange-amount');
     input.addEventListener('input', () => {
         const amount = parseInt(input.value) || 0;
-        const tokens = Math.floor(amount / 100);
+        const tokens = Math.floor(amount / 50);
         document.getElementById('exchange-tokens').textContent = tokens;
     });
 }

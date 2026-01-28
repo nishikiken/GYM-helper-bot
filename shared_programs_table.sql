@@ -88,7 +88,7 @@ CREATE POLICY "Users can remove likes" ON public.program_likes
     FOR DELETE USING (true);
 
 -- Функция для увеличения счетчика скачиваний (только если пользователь еще не скачивал)
--- Дает автору +1500 рейтинга за каждое уникальное скачивание (15 токенов через обменник)
+-- Дает автору +750 рейтинга за каждое уникальное скачивание (15 токенов через обменник)
 CREATE OR REPLACE FUNCTION increment_program_downloads_once(program_id_param BIGINT, user_id_param BIGINT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -110,14 +110,14 @@ BEGIN
         SET downloads = downloads + 1
         WHERE id = program_id_param;
         
-        -- Даем автору +1500 рейтинга (15 токенов через обменник)
+        -- Даем автору +750 рейтинга (15 токенов через обменник)
         SELECT author_id INTO author_id_var
         FROM public.shared_workout_programs
         WHERE id = program_id_param;
         
         IF author_id_var IS NOT NULL AND author_id_var != user_id_param THEN
             UPDATE public.gym_users
-            SET rating = rating + 1500
+            SET rating = rating + 750
             WHERE telegram_id = author_id_var;
         END IF;
         
@@ -129,7 +129,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Функция для переключения лайка (лайк/анлайк)
--- Дает автору +900 рейтинга за первый лайк от каждого пользователя (9 токенов через обменник)
+-- Дает автору +450 рейтинга за первый лайк от каждого пользователя (9 токенов через обменник)
 -- При снятии лайка рейтинг НЕ отбирается
 CREATE OR REPLACE FUNCTION toggle_program_like(program_id_param BIGINT, user_id_param BIGINT)
 RETURNS BOOLEAN AS $$
@@ -170,7 +170,7 @@ BEGIN
         -- Даем рейтинг автору (только если это не он сам)
         IF author_id_var IS NOT NULL AND author_id_var != user_id_param THEN
             UPDATE public.gym_users
-            SET rating = rating + 900
+            SET rating = rating + 450
             WHERE telegram_id = author_id_var;
         END IF;
         
