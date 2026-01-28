@@ -209,34 +209,51 @@
 
 .workout-day-card {
     position: relative;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(10, 132, 255, 0.08) 0%, rgba(10, 132, 255, 0.02) 100%);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 16px;
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 20px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .workout-day-card:active {
     transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .workout-day-card h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.workout-day-card h3::before {
+    content: '💪';
+    font-size: 24px;
 }
 
 .workout-day-card p {
     font-size: 14px;
     color: var(--tg-theme-hint-color);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    padding-left: 32px;
 }
 
 .workout-day-card .exercises-count {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--tg-theme-button-color);
+    background: rgba(10, 132, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-left: 32px;
+    font-weight: 600;
 }
 
 .workout-day-card .edit-day-btn {
@@ -300,30 +317,46 @@
 
 .exercise-card {
     position: relative;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
-    padding: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .exercise-card h3 {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    color: var(--tg-theme-text-color);
 }
 
 .exercise-stats {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     font-size: 14px;
-    color: var(--tg-theme-hint-color);
 }
 
 .exercise-stat {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    background: rgba(10, 132, 255, 0.08);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.exercise-stat span:first-child {
+    color: var(--tg-theme-hint-color);
+    font-size: 12px;
+}
+
+.exercise-stat span:last-child {
+    color: var(--tg-theme-button-color);
+    font-weight: 700;
+    font-size: 15px;
 }
 
 .exercise-card .edit-exercise-btn {
@@ -1083,4 +1116,183 @@
 .catalog-day-item:active {
     transform: scale(0.98);
     background: var(--tg-theme-button-color);
+}
+
+
+/* === КНОПКА ПОДЕЛИТЬСЯ ПРОГРАММОЙ === */
+.share-program-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 16px;
+    color: var(--tg-theme-text-color);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+}
+
+.share-program-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+}
+
+/* === ПРОГРАММЫ СООБЩЕСТВА === */
+.community-container {
+    padding: 0 16px 100px;
+}
+
+.community-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.community-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: var(--tg-theme-hint-color);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn:active {
+    transform: scale(0.95);
+}
+
+.filter-btn.active {
+    background: var(--tg-theme-button-color);
+    border-color: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+}
+
+.community-programs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.community-program-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.community-program-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.community-program-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.community-program-card .program-author {
+    font-size: 13px;
+    color: var(--tg-theme-hint-color);
+    margin-bottom: 8px;
+}
+
+.community-program-card .program-description {
+    font-size: 14px;
+    color: var(--tg-theme-text-color);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.community-program-card .program-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--tg-theme-hint-color);
+}
+
+.community-program-card .program-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.program-days-count {
+    background: rgba(10, 132, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 10px;
+    color: var(--tg-theme-button-color);
+    font-weight: 600;
+}
+
+/* === МОДАЛЬНОЕ ОКНО ПРОСМОТРА ПРОГРАММЫ === */
+.program-view-modal {
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.program-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.program-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.program-days-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.program-day-preview {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.program-day-preview h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.program-day-preview p {
+    font-size: 13px;
+    color: var(--tg-theme-hint-color);
+    margin-bottom: 8px;
+}
+
+.program-day-preview .exercises-preview {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color);
 }

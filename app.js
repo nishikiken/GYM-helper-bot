@@ -2401,3 +2401,277 @@ window.toggleEditExercises = toggleEditExercises;
 window.showDayEditMenu = showDayEditMenu;
 window.showExerciseEditMenu = showExerciseEditMenu;
 window.switchCatalogTab = switchCatalogTab;
+
+
+// === ПРОГРАММЫ СООБЩЕСТВА ===
+let currentProgramFilter = 'popular';
+let currentViewingProgram = null;
+
+// Перейти к программам сообщества
+function goToCommunityPrograms() {
+    showStep('step-community-programs');
+    document.getElementById('catalog-fab').classList.remove('visible');
+    loadCommunityPrograms();
+    haptic();
+}
+
+// Загрузить программы сообщества
+async function loadCommunityPrograms() {
+    const container = document.getElementById('community-programs-list');
+    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Загрузка...</div>';
+    
+    try {
+        let query = supabaseClient
+            .from('shared_workout_programs')
+            .select('*');
+        
+        // Применяем сортировку
+        if (currentProgramFilter === 'popular') {
+            query = query.order('likes', { ascending: false });
+        } else if (currentProgramFilter === 'recent') {
+            query = query.order('created_at', { ascending: false });
+        } else if (currentProgramFilter === 'downloads') {
+            query = query.order('downloads', { ascending: false });
+        }
+        
+        query = query.limit(50);
+        
+        const { data: programs, error } = await query;
+        
+        if (error) throw error;
+        
+        if (!programs || programs.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Пока нет опубликованных программ.<br>Будь первым!</div>';
+            return;
+        }
+        
+        container.innerHTML = programs.map(program => {
+            const daysCount = Array.isArray(program.days) ? program.days.length : 0;
+            const totalExercises = Array.isArray(program.days) 
+                ? program.days.reduce((sum, day) => sum + (day.exercises?.length || 0), 0)
+                : 0;
+            
+            return `
+                <div class="community-program-card" onclick="viewProgram(${program.id})">
+                    <h3>${escapeHtml(program.program_name)}</h3>
+                    <div class="program-author">от ${escapeHtml(program.author_name)}</div>
+                    <div class="program-description">${escapeHtml(program.program_description || 'Без описания')}</div>
+                    <div class="program-meta">
+                        <span class="program-days-count">${daysCount} дней</span>
+                        <span>${totalExercises} упражнений</span>
+                        <span>❤️ ${program.likes || 0}</span>
+                        <span>⬇️ ${program.downloads || 0}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading community programs:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">Ошибка загрузки программ</div>';
+    }
+}
+
+// Фильтрация программ
+function filterCommunityPrograms(filter) {
+    currentProgramFilter = filter;
+    
+    // Обновляем активную кнопку
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    loadCommunityPrograms();
+    haptic();
+}
+
+// Показать модальное окно публикации программы
+function showShareProgramModal() {
+    if (workoutDays.length === 0) {
+        if (tg?.showAlert) {
+            tg.showAlert('Сначала создай хотя бы один день тренировки!');
+        }
+        return;
+    }
+    
+    const modal = document.getElementById('share-program-modal');
+    document.getElementById('program-name').value = '';
+    document.getElementById('program-description').value = '';
+    modal.classList.add('active');
+    haptic();
+}
+
+function closeShareProgramModal() {
+    document.getElementById('share-program-modal').classList.remove('active');
+    haptic();
+}
+
+// Опубликовать программу
+async function publishProgram() {
+    const name = document.getElementById('program-name').value.trim();
+    const description = document.getElementById('program-description').value.trim();
+    
+    if (!name) {
+        if (tg?.showAlert) {
+            tg.showAlert('Введи название программы!');
+        }
+        return;
+    }
+    
+    if (!window.currentUserId) {
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка: пользователь не определен');
+        }
+        return;
+    }
+    
+    try {
+        const userName = document.getElementById('user-name').textContent || 'Аноним';
+        
+        const { data, error } = await supabaseClient
+            .from('shared_workout_programs')
+            .insert([{
+                author_id: window.currentUserId,
+                author_name: userName,
+                program_name: name,
+                program_description: description,
+                days: workoutDays
+            }])
+            .select();
+        
+        if (error) throw error;
+        
+        closeShareProgramModal();
+        
+        if (tg?.showAlert) {
+            tg.showAlert('Программа опубликована! 🎉');
+        }
+        
+        haptic('success');
+        showConfetti();
+        
+    } catch (error) {
+        console.error('Error publishing program:', error);
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка публикации: ' + (error?.message || 'Unknown error'));
+        }
+    }
+}
+
+// Просмотр программы
+async function viewProgram(programId) {
+    try {
+        const { data: program, error } = await supabaseClient
+            .from('shared_workout_programs')
+            .select('*')
+            .eq('id', programId)
+            .single();
+        
+        if (error) throw error;
+        
+        currentViewingProgram = program;
+        
+        document.getElementById('view-program-name').textContent = program.program_name;
+        document.getElementById('view-program-author').textContent = `от ${program.author_name}`;
+        document.getElementById('view-program-description').textContent = program.program_description || 'Без описания';
+        document.getElementById('view-program-likes').textContent = program.likes || 0;
+        document.getElementById('view-program-downloads').textContent = program.downloads || 0;
+        
+        const daysContainer = document.getElementById('view-program-days');
+        const days = program.days || [];
+        
+        daysContainer.innerHTML = days.map(day => {
+            const exercisesText = day.exercises?.map(ex => `${ex.name} (${ex.sets}×${ex.reps})`).join(', ') || 'Нет упражнений';
+            
+            return `
+                <div class="program-day-preview">
+                    <h4>${escapeHtml(day.name)}</h4>
+                    <p>${escapeHtml(day.description)}</p>
+                    <div class="exercises-preview">${escapeHtml(exercisesText)}</div>
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('view-program-modal').classList.add('active');
+        haptic();
+        
+    } catch (error) {
+        console.error('Error viewing program:', error);
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка загрузки программы');
+        }
+    }
+}
+
+function closeViewProgramModal() {
+    document.getElementById('view-program-modal').classList.remove('active');
+    currentViewingProgram = null;
+    haptic();
+}
+
+// Скачать (скопировать) программу себе
+async function downloadProgram() {
+    if (!currentViewingProgram) return;
+    
+    try {
+        // Увеличиваем счетчик скачиваний
+        const { error: rpcError } = await supabaseClient.rpc('increment_program_downloads', {
+            program_id_param: currentViewingProgram.id
+        });
+        
+        if (rpcError) {
+            console.error('Error incrementing downloads:', rpcError);
+        }
+        
+        // Копируем дни программы к пользователю
+        const programDays = currentViewingProgram.days || [];
+        
+        programDays.forEach(day => {
+            const newDay = {
+                id: Date.now().toString() + Math.random(),
+                name: day.name,
+                description: day.description,
+                exercises: day.exercises.map(ex => ({
+                    ...ex,
+                    id: Date.now().toString() + Math.random()
+                }))
+            };
+            workoutDays.push(newDay);
+        });
+        
+        saveWorkoutDays();
+        renderWorkoutDays();
+        
+        closeViewProgramModal();
+        goToExercises();
+        
+        if (tg?.showAlert) {
+            tg.showAlert(`Программа "${currentViewingProgram.program_name}" добавлена! 🎉`);
+        }
+        
+        haptic('success');
+        showConfetti();
+        
+    } catch (error) {
+        console.error('Error downloading program:', error);
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка копирования программы');
+        }
+    }
+}
+
+// Экранирование HTML для безопасности
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Делаем функции глобальными
+window.goToCommunityPrograms = goToCommunityPrograms;
+window.filterCommunityPrograms = filterCommunityPrograms;
+window.showShareProgramModal = showShareProgramModal;
+window.closeShareProgramModal = closeShareProgramModal;
+window.publishProgram = publishProgram;
+window.viewProgram = viewProgram;
+window.closeViewProgramModal = closeViewProgramModal;
+window.downloadProgram = downloadProgram;

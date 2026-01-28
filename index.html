@@ -82,6 +82,13 @@
                         <p>Тренировки и пресеты</p>
                     </div>
                 </div>
+                <div class="menu-card" onclick="goToCommunityPrograms()">
+                    <div class="menu-icon">🌟</div>
+                    <div class="menu-info">
+                        <h3>Программы сообщества</h3>
+                        <p>Готовые программы от других</p>
+                    </div>
+                </div>
                 <div class="menu-card" onclick="goToFAQ()">
                     <div class="menu-icon">❓</div>
                     <div class="menu-info">
@@ -153,7 +160,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v29</div>
+                        <div class="user-version">v30</div>
                     </div>
                 </div>
             </div>
@@ -305,6 +312,11 @@
             </div>
             
             <div class="exercises-container">
+                <!-- Кнопка поделиться программой -->
+                <button class="share-program-btn" onclick="showShareProgramModal()" id="share-program-btn">
+                    📤 Поделиться программой
+                </button>
+                
                 <!-- Список дней тренировок -->
                 <div class="workout-days-list" id="workout-days-list">
                     <!-- Дни будут здесь -->
@@ -426,6 +438,32 @@
             🛒
         </button>
 
+        <!-- Программы сообщества -->
+        <div id="step-community-programs" class="step">
+            <div class="header">
+                <button class="back-btn" onclick="goToMain()">←</button>
+                <div class="icon">🌟</div>
+                <h1>Программы сообщества</h1>
+                <p class="subtitle">Готовые программы от других</p>
+            </div>
+            
+            <div class="community-container">
+                <!-- Фильтры сортировки -->
+                <div class="community-filters">
+                    <button class="filter-btn active" onclick="filterCommunityPrograms('popular')">🔥 Популярные</button>
+                    <button class="filter-btn" onclick="filterCommunityPrograms('recent')">🆕 Новые</button>
+                    <button class="filter-btn" onclick="filterCommunityPrograms('downloads')">⬇️ Скачивания</button>
+                </div>
+                
+                <!-- Список программ -->
+                <div class="community-programs-list" id="community-programs-list">
+                    <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+                        Загрузка программ...
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Модальное окно: Добавить день -->
         <div class="modal" id="add-day-modal">
             <div class="modal-content">
@@ -504,6 +542,47 @@
             </div>
         </div>
 
+        <!-- Модальное окно: Поделиться программой -->
+        <div class="modal" id="share-program-modal">
+            <div class="modal-content">
+                <h2>Поделиться программой</h2>
+                <div class="form-group">
+                    <label>Название программы</label>
+                    <input type="text" id="program-name" placeholder="Например: Программа на массу">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="program-description" placeholder="Расскажи о своей программе..." rows="3" style="width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: var(--tg-theme-text-color); font-size: 16px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeShareProgramModal()">Отмена</button>
+                    <button class="btn-save" onclick="publishProgram()">Опубликовать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно: Просмотр программы -->
+        <div class="modal" id="view-program-modal">
+            <div class="modal-content program-view-modal">
+                <div class="program-header">
+                    <h2 id="view-program-name">Название программы</h2>
+                    <p id="view-program-author" style="color: var(--tg-theme-hint-color); margin: 8px 0;"></p>
+                    <p id="view-program-description" style="color: var(--tg-theme-hint-color); margin-bottom: 16px;"></p>
+                    <div class="program-stats">
+                        <span>❤️ <span id="view-program-likes">0</span></span>
+                        <span>⬇️ <span id="view-program-downloads">0</span></span>
+                    </div>
+                </div>
+                <div class="program-days-preview" id="view-program-days">
+                    <!-- Дни программы -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeViewProgramModal()">Закрыть</button>
+                    <button class="btn-save" onclick="downloadProgram()">📥 Скопировать себе</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Магазин кастомизации -->
         <div id="step-shop" class="step">
             <div class="header">
@@ -556,6 +635,6 @@
             </div>
         </div>
     </div>
-    <script src="app.js?v=29"></script>
+    <script src="app.js?v=30"></script>
 </body>
 </html>
