@@ -1015,16 +1015,16 @@ function loadSavedCaloriesData() {
 // === МАГАЗИН КАСТОМИЗАЦИИ ===
 const shopItems = {
     colors: [
-        { id: 'blue', name: 'Синий неон', price: 50, class: 'neon-blue' },
-        { id: 'red', name: 'Красный неон', price: 50, class: 'neon-red' },
-        { id: 'purple', name: 'Фиолетовый неон', price: 75, class: 'neon-purple' },
-        { id: 'green', name: 'Зеленый неон', price: 75, class: 'neon-green' }
+        { id: 'blue', name: 'Синий неон', price: 15, class: 'neon-blue' },
+        { id: 'red', name: 'Красный неон', price: 15, class: 'neon-red' },
+        { id: 'purple', name: 'Фиолетовый неон', price: 25, class: 'neon-purple' },
+        { id: 'green', name: 'Зеленый неон', price: 25, class: 'neon-green' }
     ],
     badges: [
-        { id: 'blue', name: 'Синее стекло', price: 100, class: 'badge-blue' },
-        { id: 'red', name: 'Красное стекло', price: 100, class: 'badge-red' },
-        { id: 'purple', name: 'Фиолетовое стекло', price: 150, class: 'badge-purple' },
-        { id: 'green', name: 'Зеленое стекло', price: 150, class: 'badge-green' }
+        { id: 'blue', name: 'Синее стекло', price: 30, class: 'badge-blue' },
+        { id: 'red', name: 'Красное стекло', price: 30, class: 'badge-red' },
+        { id: 'purple', name: 'Фиолетовое стекло', price: 50, class: 'badge-purple' },
+        { id: 'green', name: 'Зеленое стекло', price: 50, class: 'badge-green' }
     ]
 };
 
@@ -1455,19 +1455,24 @@ const workoutCatalog = {
         icon: '💪',
         exercises: [
             { name: 'Жим штанги лежа', sets: 4, reps: 10 },
+            { name: 'Жим гантелей лежа', sets: 4, reps: 12 },
             { name: 'Жим гантелей на наклонной', sets: 3, reps: 12 },
-            { name: 'Разводка гантелей', sets: 3, reps: 15 },
-            { name: 'Отжимания на брусьях', sets: 3, reps: 12 }
+            { name: 'Разводка гантелей лежа', sets: 3, reps: 15 },
+            { name: 'Отжимания на брусьях', sets: 3, reps: 12 },
+            { name: 'Отжимания от пола', sets: 3, reps: 20 },
+            { name: 'Кроссоверы', sets: 3, reps: 15 }
         ]
     },
     triceps: {
         name: 'Трицепс',
         icon: '💪',
         exercises: [
-            { name: 'Французский жим', sets: 3, reps: 12 },
+            { name: 'Французский жим лежа', sets: 3, reps: 12 },
+            { name: 'Французский жим стоя', sets: 3, reps: 12 },
             { name: 'Разгибания на блоке', sets: 3, reps: 15 },
             { name: 'Жим узким хватом', sets: 4, reps: 10 },
-            { name: 'Отжимания обратные', sets: 3, reps: 15 }
+            { name: 'Отжимания обратные', sets: 3, reps: 15 },
+            { name: 'Разгибания с гантелью', sets: 3, reps: 12 }
         ]
     },
     biceps: {
@@ -1475,9 +1480,11 @@ const workoutCatalog = {
         icon: '💪',
         exercises: [
             { name: 'Подъем штанги на бицепс', sets: 4, reps: 10 },
+            { name: 'Подъем гантелей сидя', sets: 3, reps: 12 },
             { name: 'Молотки с гантелями', sets: 3, reps: 12 },
             { name: 'Концентрированный подъем', sets: 3, reps: 12 },
-            { name: 'Подъем на скамье Скотта', sets: 3, reps: 12 }
+            { name: 'Подъем на скамье Скотта', sets: 3, reps: 12 },
+            { name: 'Подъем на блоке', sets: 3, reps: 15 }
         ]
     },
     shoulders: {
@@ -1485,9 +1492,12 @@ const workoutCatalog = {
         icon: '💪',
         exercises: [
             { name: 'Жим штанги стоя', sets: 4, reps: 10 },
+            { name: 'Жим гантелей сидя', sets: 4, reps: 10 },
             { name: 'Махи гантелями в стороны', sets: 3, reps: 15 },
             { name: 'Махи в наклоне', sets: 3, reps: 15 },
-            { name: 'Тяга к подбородку', sets: 3, reps: 12 }
+            { name: 'Махи перед собой', sets: 3, reps: 12 },
+            { name: 'Тяга к подбородку', sets: 3, reps: 12 },
+            { name: 'Шраги со штангой', sets: 4, reps: 15 }
         ]
     },
     back: {
@@ -1497,7 +1507,10 @@ const workoutCatalog = {
             { name: 'Становая тяга', sets: 4, reps: 8 },
             { name: 'Подтягивания', sets: 4, reps: 10 },
             { name: 'Тяга штанги в наклоне', sets: 4, reps: 10 },
-            { name: 'Тяга верхнего блока', sets: 3, reps: 12 }
+            { name: 'Тяга гантели в наклоне', sets: 3, reps: 12 },
+            { name: 'Тяга верхнего блока', sets: 3, reps: 12 },
+            { name: 'Тяга нижнего блока', sets: 3, reps: 12 },
+            { name: 'Гиперэкстензия', sets: 3, reps: 15 }
         ]
     },
     legs: {
@@ -1506,8 +1519,23 @@ const workoutCatalog = {
         exercises: [
             { name: 'Приседания со штангой', sets: 4, reps: 10 },
             { name: 'Жим ногами', sets: 4, reps: 12 },
+            { name: 'Выпады с гантелями', sets: 3, reps: 12 },
             { name: 'Разгибания ног', sets: 3, reps: 15 },
-            { name: 'Сгибания ног', sets: 3, reps: 15 }
+            { name: 'Сгибания ног', sets: 3, reps: 15 },
+            { name: 'Подъемы на носки стоя', sets: 4, reps: 20 },
+            { name: 'Румынская тяга', sets: 3, reps: 12 }
+        ]
+    },
+    abs: {
+        name: 'Пресс',
+        icon: '🔥',
+        exercises: [
+            { name: 'Скручивания', sets: 3, reps: 20 },
+            { name: 'Подъем ног в висе', sets: 3, reps: 15 },
+            { name: 'Планка', sets: 3, reps: 60 },
+            { name: 'Боковая планка', sets: 3, reps: 45 },
+            { name: 'Велосипед', sets: 3, reps: 20 },
+            { name: 'Русский твист', sets: 3, reps: 20 }
         ]
     }
 };
@@ -2476,18 +2504,28 @@ async function loadCommunityPrograms() {
             
             return `
                 <div class="community-program-card" onclick="viewProgram(${program.id})">
-                    <h3>${escapeHtml(program.program_name)}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <h3 style="margin: 0; flex: 1;">${escapeHtml(program.program_name)}</h3>
+                        <button class="like-btn" onclick="toggleProgramLike(${program.id}, event)" data-program-id="${program.id}" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 6px 12px; color: var(--tg-theme-text-color); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                            <span class="like-icon">❤️</span>
+                            <span class="like-count">${program.likes || 0}</span>
+                        </button>
+                    </div>
                     <div class="program-author">от ${escapeHtml(program.author_name)}</div>
                     <div class="program-description">${escapeHtml(program.program_description || 'Без описания')}</div>
                     <div class="program-meta">
                         <span class="program-days-count">${daysCount} дней</span>
                         <span>${totalExercises} упражнений</span>
-                        <span>❤️ ${program.likes || 0}</span>
                         <span>⬇️ ${program.downloads || 0}</span>
                     </div>
                 </div>
             `;
         }).join('');
+        
+        // Проверяем какие программы лайкнуты пользователем
+        if (window.currentUserId) {
+            checkLikedPrograms();
+        }
         
         console.log('Programs loaded successfully');
         
@@ -2992,3 +3030,102 @@ function deleteFromArchive(index) {
 // Делаем функции глобальными
 window.goToArchive = goToArchive;
 window.showArchiveActions = showArchiveActions;
+
+
+// === СИСТЕМА ЛАЙКОВ ===
+// Переключить лайк программы
+async function toggleProgramLike(programId, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    
+    if (!window.currentUserId) {
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка: пользователь не определен');
+        }
+        return;
+    }
+    
+    try {
+        console.log('Toggling like for program:', programId);
+        
+        const { data: isLiked, error } = await supabaseClient.rpc('toggle_program_like', {
+            program_id_param: programId,
+            user_id_param: window.currentUserId
+        });
+        
+        if (error) {
+            console.error('Error toggling like:', error);
+            throw error;
+        }
+        
+        console.log('Like toggled, is now liked:', isLiked);
+        
+        // Обновляем UI
+        await loadCommunityPrograms();
+        
+        // Обновляем рейтинг пользователя
+        await loadUserDataFromAPI(window.currentUserId, document.getElementById('user-name').textContent, null);
+        
+        haptic('success');
+        
+    } catch (error) {
+        console.error('Error in toggleProgramLike:', error);
+        if (tg?.showAlert) {
+            tg.showAlert('Ошибка: ' + (error?.message || 'Unknown error'));
+        }
+    }
+}
+
+// Проверить лайкнул ли пользователь программу
+async function checkIfLiked(programId) {
+    if (!window.currentUserId) return false;
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('program_likes')
+            .select('*')
+            .eq('program_id', programId)
+            .eq('user_id', window.currentUserId)
+            .single();
+        
+        return !error && data;
+    } catch (error) {
+        return false;
+    }
+}
+
+// Проверить все лайкнутые программы и обновить UI
+async function checkLikedPrograms() {
+    if (!window.currentUserId) return;
+    
+    try {
+        const { data: likedPrograms, error } = await supabaseClient
+            .from('program_likes')
+            .select('program_id')
+            .eq('user_id', window.currentUserId);
+        
+        if (error) {
+            console.error('Error checking liked programs:', error);
+            return;
+        }
+        
+        const likedIds = likedPrograms.map(p => p.program_id);
+        
+        // Обновляем UI для лайкнутых программ
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            const programId = parseInt(btn.dataset.programId);
+            if (likedIds.includes(programId)) {
+                btn.classList.add('liked');
+                btn.style.background = 'rgba(255, 59, 48, 0.2)';
+                btn.style.borderColor = 'rgba(255, 59, 48, 0.4)';
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error in checkLikedPrograms:', error);
+    }
+}
+
+// Делаем функции глобальными
+window.toggleProgramLike = toggleProgramLike;

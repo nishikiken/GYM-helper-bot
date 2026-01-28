@@ -1375,3 +1375,27 @@
     font-size: 14px;
     font-weight: 700;
 }
+
+
+/* === КНОПКА ЛАЙКА === */
+.like-btn {
+    transition: all 0.3s;
+}
+
+.like-btn:active {
+    transform: scale(0.9);
+}
+
+.like-btn.liked {
+    background: rgba(255, 59, 48, 0.2) !important;
+    border-color: rgba(255, 59, 48, 0.4) !important;
+}
+
+.like-btn.liked .like-icon {
+    animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
