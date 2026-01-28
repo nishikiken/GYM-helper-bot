@@ -1432,18 +1432,33 @@
 }
 
 .muscle-group-card {
-    background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, rgba(10, 132, 255, 0.03) 100%);
+    position: relative;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(10, 132, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
-    padding: 32px 20px;
+    padding: 40px 20px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    min-height: 120px;
+}
+
+.muscle-group-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.9;
+    transition: opacity 0.3s;
+    z-index: 0;
 }
 
 .muscle-group-card:active {
@@ -1451,16 +1466,60 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.muscle-icon {
-    font-size: 48px;
-    line-height: 1;
+.muscle-group-card:active::before {
+    opacity: 1;
 }
 
-.muscle-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--tg-theme-text-color);
+.muscle-card-content {
+    position: relative;
+    z-index: 1;
     text-align: center;
+}
+
+.muscle-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 4px;
+}
+
+.muscle-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Градиенты для каждой группы мышц */
+.chest-card::before {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.triceps-card::before {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.biceps-card::before {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.shoulders-card::before {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.back-card::before {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.legs-card::before {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.abs-card::before {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
 }
 
 .catalog-exercises-view {
