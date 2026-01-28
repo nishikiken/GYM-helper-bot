@@ -1594,19 +1594,30 @@ function moveDayUp(index) {
         const container = document.getElementById('workout-days-list');
         const items = container.querySelectorAll('.workout-item-wrapper');
         const currentItem = items[index];
+        const targetItem = items[index - 1];
         
-        // Анимация
-        currentItem.style.transform = 'translateY(-10px)';
-        currentItem.style.opacity = '0.5';
+        // Получаем высоты элементов
+        const currentHeight = currentItem.offsetHeight;
+        const targetHeight = targetItem.offsetHeight;
+        const gap = 12; // gap между элементами
+        
+        // Анимация: текущий элемент движется вверх, целевой вниз
+        currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        currentItem.style.transform = `translateY(-${targetHeight + gap}px)`;
+        currentItem.style.opacity = '0.7';
+        targetItem.style.transform = `translateY(${currentHeight + gap}px)`;
+        targetItem.style.opacity = '0.7';
         
         setTimeout(() => {
+            // Меняем местами в массиве
             const temp = workoutDays[index];
             workoutDays[index] = workoutDays[index - 1];
             workoutDays[index - 1] = temp;
             saveWorkoutDays();
             renderWorkoutDays();
             haptic();
-        }, 150);
+        }, 300);
     }
 }
 
@@ -1616,19 +1627,30 @@ function moveDayDown(index) {
         const container = document.getElementById('workout-days-list');
         const items = container.querySelectorAll('.workout-item-wrapper');
         const currentItem = items[index];
+        const targetItem = items[index + 1];
         
-        // Анимация
-        currentItem.style.transform = 'translateY(10px)';
-        currentItem.style.opacity = '0.5';
+        // Получаем высоты элементов
+        const currentHeight = currentItem.offsetHeight;
+        const targetHeight = targetItem.offsetHeight;
+        const gap = 12; // gap между элементами
+        
+        // Анимация: текущий элемент движется вниз, целевой вверх
+        currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        currentItem.style.transform = `translateY(${targetHeight + gap}px)`;
+        currentItem.style.opacity = '0.7';
+        targetItem.style.transform = `translateY(-${currentHeight + gap}px)`;
+        targetItem.style.opacity = '0.7';
         
         setTimeout(() => {
+            // Меняем местами в массиве
             const temp = workoutDays[index];
             workoutDays[index] = workoutDays[index + 1];
             workoutDays[index + 1] = temp;
             saveWorkoutDays();
             renderWorkoutDays();
             haptic();
-        }, 150);
+        }, 300);
     }
 }
 
@@ -1885,19 +1907,30 @@ function moveExerciseUp(index) {
     const container = document.getElementById('exercises-list');
     const items = container.querySelectorAll('.workout-item-wrapper');
     const currentItem = items[index];
+    const targetItem = items[index - 1];
     
-    // Анимация
-    currentItem.style.transform = 'translateY(-10px)';
-    currentItem.style.opacity = '0.5';
+    // Получаем высоты элементов
+    const currentHeight = currentItem.offsetHeight;
+    const targetHeight = targetItem.offsetHeight;
+    const gap = 12; // gap между элементами
+    
+    // Анимация: текущий элемент движется вверх, целевой вниз
+    currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    currentItem.style.transform = `translateY(-${targetHeight + gap}px)`;
+    currentItem.style.opacity = '0.7';
+    targetItem.style.transform = `translateY(${currentHeight + gap}px)`;
+    targetItem.style.opacity = '0.7';
     
     setTimeout(() => {
+        // Меняем местами в массиве
         const temp = day.exercises[index];
         day.exercises[index] = day.exercises[index - 1];
         day.exercises[index - 1] = temp;
         saveWorkoutDays();
         renderExercisesList(day.exercises);
         haptic();
-    }, 150);
+    }, 300);
 }
 
 // Переместить упражнение вниз
@@ -1908,16 +1941,31 @@ function moveExerciseDown(index) {
     const container = document.getElementById('exercises-list');
     const items = container.querySelectorAll('.workout-item-wrapper');
     const currentItem = items[index];
+    const targetItem = items[index + 1];
     
-    // Анимация
-    currentItem.style.transform = 'translateY(10px)';
-    currentItem.style.opacity = '0.5';
+    // Получаем высоты элементов
+    const currentHeight = currentItem.offsetHeight;
+    const targetHeight = targetItem.offsetHeight;
+    const gap = 12; // gap между элементами
+    
+    // Анимация: текущий элемент движется вниз, целевой вверх
+    currentItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    targetItem.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    currentItem.style.transform = `translateY(${targetHeight + gap}px)`;
+    currentItem.style.opacity = '0.7';
+    targetItem.style.transform = `translateY(-${currentHeight + gap}px)`;
+    targetItem.style.opacity = '0.7';
     
     setTimeout(() => {
+        // Меняем местами в массиве
         const temp = day.exercises[index];
         day.exercises[index] = day.exercises[index + 1];
         day.exercises[index + 1] = temp;
         saveWorkoutDays();
+        renderExercisesList(day.exercises);
+        haptic();
+    }, 300);
+}
         renderExercisesList(day.exercises);
         haptic();
     }, 150);

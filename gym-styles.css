@@ -1493,33 +1493,33 @@
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Градиенты для каждой группы мышц - темные тона */
+/* Градиенты для каждой группы мышц - очень темные тона */
 .chest-card::before {
-    background: linear-gradient(135deg, #4a5fd8 0%, #5a3a7a 100%);
+    background: linear-gradient(135deg, #2a3d88 0%, #3a1a4a 100%);
 }
 
 .triceps-card::before {
-    background: linear-gradient(135deg, #c76dd9 0%, #c3405a 100%);
+    background: linear-gradient(135deg, #8d3d99 0%, #83203a 100%);
 }
 
 .biceps-card::before {
-    background: linear-gradient(135deg, #3a8ad2 0%, #00c0d2 100%);
+    background: linear-gradient(135deg, #1a5a92 0%, #008092 100%);
 }
 
 .shoulders-card::before {
-    background: linear-gradient(135deg, #35b869 0%, #2dc7a5 100%);
+    background: linear-gradient(135deg, #1a7839 0%, #1d8765 100%);
 }
 
 .back-card::before {
-    background: linear-gradient(135deg, #c85878 0%, #d6b428 100%);
+    background: linear-gradient(135deg, #883848 0%, #967418 100%);
 }
 
 .legs-card::before {
-    background: linear-gradient(135deg, #28a3a8 0%, #280655 100%);
+    background: linear-gradient(135deg, #186368 0%, #180435 100%);
 }
 
 .abs-card::before {
-    background: linear-gradient(135deg, #86bbb8 0%, #d6a4b1 100%);
+    background: linear-gradient(135deg, #567b78 0%, #966481 100%);
 }
 
 .catalog-exercises-view {
