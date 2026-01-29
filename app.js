@@ -1920,10 +1920,6 @@ function moveExerciseDown(index) {
         haptic();
     }, 150);
 }
-        renderExercisesList(day.exercises);
-        haptic();
-    }, 150);
-}
 
 function openEditExerciseModal(exerciseIndex) {
     const day = workoutDays.find(d => d.id === currentDayId);
