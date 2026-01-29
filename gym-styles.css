@@ -426,7 +426,7 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-.edit-btn.active {
+.header .edit-btn.active {
     background: var(--tg-theme-button-color);
     border-color: var(--tg-theme-button-color);
     color: var(--tg-theme-button-text-color);
@@ -1436,18 +1436,17 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
-    padding: 24px 20px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    min-height: 80px;
-    aspect-ratio: 2.5 / 1;
+    height: 70px;
 }
 
 .muscle-group-card::before {
@@ -1679,6 +1678,7 @@
     align-items: center !important;
     justify-content: center !important;
     z-index: 2 !important;
+    padding: 0 !important;
 }
 
 .workout-day-card .delete-btn-inline,
@@ -1710,6 +1710,7 @@
     align-items: center !important;
     justify-content: center !important;
     z-index: 2 !important;
+    padding: 0 !important;
 }
 
 .workout-day-card .edit-btn-inline,
@@ -1721,4 +1722,11 @@
 .edit-btn-inline:active {
     transform: scale(0.9) !important;
     background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Убираем синий фон от .edit-btn.active для inline кнопок */
+.edit-btn-inline.active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: var(--tg-theme-text-color) !important;
 }
