@@ -1761,24 +1761,24 @@
     padding: 0;
 }
 
-.day-delete-button {
+.workout-day-card .day-delete-button {
     background: rgba(255, 59, 48, 0.2);
     border: 1px solid rgba(255, 59, 48, 0.3);
     color: #ffffff;
 }
 
-.day-delete-button:active {
+.workout-day-card .day-delete-button:active {
     transform: scale(0.9);
     background: rgba(255, 59, 48, 0.4);
 }
 
-.exercise-edit-button {
+.exercise-card .exercise-edit-button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--tg-theme-text-color);
 }
 
-.exercise-edit-button:active {
+.exercise-card .exercise-edit-button:active {
     transform: scale(0.9);
     background: rgba(255, 255, 255, 0.2);
 }
