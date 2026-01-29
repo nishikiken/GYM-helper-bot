@@ -1595,20 +1595,24 @@ function moveDayUp(index) {
     const currentItem = items[index];
     const targetItem = items[index - 1];
     
+    // Получаем только карточки (не стрелочки)
+    const currentCard = currentItem.querySelector('.workout-day-card');
+    const targetCard = targetItem.querySelector('.workout-day-card');
+    
     // Получаем позиции элементов
-    const currentRect = currentItem.getBoundingClientRect();
-    const targetRect = targetItem.getBoundingClientRect();
+    const currentRect = currentCard.getBoundingClientRect();
+    const targetRect = targetCard.getBoundingClientRect();
     const distance = currentRect.top - targetRect.top;
     
     // Устанавливаем z-index для правильного наложения
-    currentItem.style.zIndex = '10';
-    targetItem.style.zIndex = '5';
+    currentCard.style.zIndex = '10';
+    targetCard.style.zIndex = '5';
     
-    // Анимация: текущий элемент движется вверх, целевой вниз
-    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    currentItem.style.transform = `translateY(-${distance}px)`;
-    targetItem.style.transform = `translateY(${currentRect.height + 12}px)`;
+    // Анимация: только карточки двигаются, стрелочки остаются на месте
+    currentCard.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetCard.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentCard.style.transform = `translateY(-${distance}px)`;
+    targetCard.style.transform = `translateY(${currentRect.height + 12}px)`;
     
     setTimeout(() => {
         // Меняем местами в массиве
@@ -1630,20 +1634,24 @@ function moveDayDown(index) {
     const currentItem = items[index];
     const targetItem = items[index + 1];
     
+    // Получаем только карточки (не стрелочки)
+    const currentCard = currentItem.querySelector('.workout-day-card');
+    const targetCard = targetItem.querySelector('.workout-day-card');
+    
     // Получаем позиции элементов
-    const currentRect = currentItem.getBoundingClientRect();
-    const targetRect = targetItem.getBoundingClientRect();
+    const currentRect = currentCard.getBoundingClientRect();
+    const targetRect = targetCard.getBoundingClientRect();
     const distance = targetRect.top - currentRect.top;
     
     // Устанавливаем z-index для правильного наложения
-    currentItem.style.zIndex = '10';
-    targetItem.style.zIndex = '5';
+    currentCard.style.zIndex = '10';
+    targetCard.style.zIndex = '5';
     
-    // Анимация: текущий элемент движется вниз, целевой вверх
-    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    currentItem.style.transform = `translateY(${distance}px)`;
-    targetItem.style.transform = `translateY(-${currentRect.height + 12}px)`;
+    // Анимация: только карточки двигаются, стрелочки остаются на месте
+    currentCard.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetCard.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentCard.style.transform = `translateY(${distance}px)`;
+    targetCard.style.transform = `translateY(-${currentRect.height + 12}px)`;
     
     setTimeout(() => {
         // Меняем местами в массиве

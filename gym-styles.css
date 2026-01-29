@@ -1431,6 +1431,12 @@
     padding: 0 16px;
 }
 
+.abs-card-centered {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 6px);
+    margin: 0 auto;
+}
+
 .muscle-group-card {
     position: relative;
     backdrop-filter: blur(20px);
