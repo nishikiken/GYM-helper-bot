@@ -1573,7 +1573,7 @@ function renderWorkoutDays() {
                 <p>${day.description}</p>
                 <div class="exercises-count">${day.exercises.length} упражнений</div>
                 ${editDaysMode ? `
-                    <button class="day-delete-button" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                    <button class="day-delete-button" style="background: rgba(255, 59, 48, 0.2) !important; border: 1px solid rgba(255, 59, 48, 0.3) !important; color: #ffffff !important;" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
                 ` : ''}
             </div>
             ${editDaysMode ? `
@@ -1893,7 +1893,7 @@ function renderExercisesList(exercises) {
                     </div>
                 </div>
                 ${editExercisesMode ? `
-                    <button class="exercise-edit-button" onclick="openEditExerciseModal(${index})">✏️</button>
+                    <button class="exercise-edit-button" style="background: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: var(--tg-theme-text-color) !important;" onclick="openEditExerciseModal(${index})">✏️</button>
                 ` : ''}
             </div>
             ${editExercisesMode ? `
