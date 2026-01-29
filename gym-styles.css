@@ -1431,6 +1431,10 @@
     padding: 0 16px;
 }
 
+.abs-full-width {
+    grid-column: 1 / -1;
+}
+
 .abs-card-centered {
     grid-column: 1 / -1;
     max-width: calc(50% - 6px);
