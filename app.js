@@ -1588,46 +1588,72 @@ function renderWorkoutDays() {
 
 // Переместить день вверх
 function moveDayUp(index) {
-    if (index > 0) {
-        const container = document.getElementById('workout-days-list');
-        const items = container.querySelectorAll('.workout-item-wrapper');
-        const currentItem = items[index];
-        
-        // Анимация
-        currentItem.style.transform = 'translateY(-10px)';
-        currentItem.style.opacity = '0.5';
-        
-        setTimeout(() => {
-            const temp = workoutDays[index];
-            workoutDays[index] = workoutDays[index - 1];
-            workoutDays[index - 1] = temp;
-            saveWorkoutDays();
-            renderWorkoutDays();
-            haptic();
-        }, 150);
-    }
+    if (index <= 0) return;
+    
+    const container = document.getElementById('workout-days-list');
+    const items = container.querySelectorAll('.workout-item-wrapper');
+    const currentItem = items[index];
+    const targetItem = items[index - 1];
+    
+    // Получаем позиции элементов
+    const currentRect = currentItem.getBoundingClientRect();
+    const targetRect = targetItem.getBoundingClientRect();
+    const distance = currentRect.top - targetRect.top;
+    
+    // Устанавливаем z-index для правильного наложения
+    currentItem.style.zIndex = '10';
+    targetItem.style.zIndex = '5';
+    
+    // Анимация: текущий элемент движется вверх, целевой вниз
+    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentItem.style.transform = `translateY(-${distance}px)`;
+    targetItem.style.transform = `translateY(${currentRect.height + 12}px)`;
+    
+    setTimeout(() => {
+        // Меняем местами в массиве
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index - 1];
+        workoutDays[index - 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
+    }, 400);
 }
 
 // Переместить день вниз
 function moveDayDown(index) {
-    if (index < workoutDays.length - 1) {
-        const container = document.getElementById('workout-days-list');
-        const items = container.querySelectorAll('.workout-item-wrapper');
-        const currentItem = items[index];
-        
-        // Анимация
-        currentItem.style.transform = 'translateY(10px)';
-        currentItem.style.opacity = '0.5';
-        
-        setTimeout(() => {
-            const temp = workoutDays[index];
-            workoutDays[index] = workoutDays[index + 1];
-            workoutDays[index + 1] = temp;
-            saveWorkoutDays();
-            renderWorkoutDays();
-            haptic();
-        }, 150);
-    }
+    if (index >= workoutDays.length - 1) return;
+    
+    const container = document.getElementById('workout-days-list');
+    const items = container.querySelectorAll('.workout-item-wrapper');
+    const currentItem = items[index];
+    const targetItem = items[index + 1];
+    
+    // Получаем позиции элементов
+    const currentRect = currentItem.getBoundingClientRect();
+    const targetRect = targetItem.getBoundingClientRect();
+    const distance = targetRect.top - currentRect.top;
+    
+    // Устанавливаем z-index для правильного наложения
+    currentItem.style.zIndex = '10';
+    targetItem.style.zIndex = '5';
+    
+    // Анимация: текущий элемент движется вниз, целевой вверх
+    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentItem.style.transform = `translateY(${distance}px)`;
+    targetItem.style.transform = `translateY(-${currentRect.height + 12}px)`;
+    
+    setTimeout(() => {
+        // Меняем местами в массиве
+        const temp = workoutDays[index];
+        workoutDays[index] = workoutDays[index + 1];
+        workoutDays[index + 1] = temp;
+        saveWorkoutDays();
+        renderWorkoutDays();
+        haptic();
+    }, 400);
 }
 
 // Переключение режима редактирования дней
@@ -1883,19 +1909,32 @@ function moveExerciseUp(index) {
     const container = document.getElementById('exercises-list');
     const items = container.querySelectorAll('.workout-item-wrapper');
     const currentItem = items[index];
+    const targetItem = items[index - 1];
     
-    // Анимация
-    currentItem.style.transform = 'translateY(-10px)';
-    currentItem.style.opacity = '0.5';
+    // Получаем позиции элементов
+    const currentRect = currentItem.getBoundingClientRect();
+    const targetRect = targetItem.getBoundingClientRect();
+    const distance = currentRect.top - targetRect.top;
+    
+    // Устанавливаем z-index для правильного наложения
+    currentItem.style.zIndex = '10';
+    targetItem.style.zIndex = '5';
+    
+    // Анимация: текущий элемент движется вверх, целевой вниз
+    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentItem.style.transform = `translateY(-${distance}px)`;
+    targetItem.style.transform = `translateY(${currentRect.height + 12}px)`;
     
     setTimeout(() => {
+        // Меняем местами в массиве
         const temp = day.exercises[index];
         day.exercises[index] = day.exercises[index - 1];
         day.exercises[index - 1] = temp;
         saveWorkoutDays();
         renderExercisesList(day.exercises);
         haptic();
-    }, 150);
+    }, 400);
 }
 
 // Переместить упражнение вниз
@@ -1906,19 +1945,32 @@ function moveExerciseDown(index) {
     const container = document.getElementById('exercises-list');
     const items = container.querySelectorAll('.workout-item-wrapper');
     const currentItem = items[index];
+    const targetItem = items[index + 1];
     
-    // Анимация
-    currentItem.style.transform = 'translateY(10px)';
-    currentItem.style.opacity = '0.5';
+    // Получаем позиции элементов
+    const currentRect = currentItem.getBoundingClientRect();
+    const targetRect = targetItem.getBoundingClientRect();
+    const distance = targetRect.top - currentRect.top;
+    
+    // Устанавливаем z-index для правильного наложения
+    currentItem.style.zIndex = '10';
+    targetItem.style.zIndex = '5';
+    
+    // Анимация: текущий элемент движется вниз, целевой вверх
+    currentItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    targetItem.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    currentItem.style.transform = `translateY(${distance}px)`;
+    targetItem.style.transform = `translateY(-${currentRect.height + 12}px)`;
     
     setTimeout(() => {
+        // Меняем местами в массиве
         const temp = day.exercises[index];
         day.exercises[index] = day.exercises[index + 1];
         day.exercises[index + 1] = temp;
         saveWorkoutDays();
         renderExercisesList(day.exercises);
         haptic();
-    }, 150);
+    }, 400);
 }
 
 function openEditExerciseModal(exerciseIndex) {

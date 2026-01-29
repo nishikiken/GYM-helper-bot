@@ -1493,33 +1493,33 @@
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Градиенты для каждой группы мышц - темные тона */
+/* Градиенты для каждой группы мышц - максимально темные тона */
 .chest-card::before {
-    background: linear-gradient(135deg, #4a5fd8 0%, #5a3a7a 100%);
+    background: linear-gradient(135deg, #1a2d68 0%, #2a0a3a 100%);
 }
 
 .triceps-card::before {
-    background: linear-gradient(135deg, #c76dd9 0%, #c3405a 100%);
+    background: linear-gradient(135deg, #6d2d79 0%, #63102a 100%);
 }
 
 .biceps-card::before {
-    background: linear-gradient(135deg, #3a8ad2 0%, #00c0d2 100%);
+    background: linear-gradient(135deg, #0a3a62 0%, #005062 100%);
 }
 
 .shoulders-card::before {
-    background: linear-gradient(135deg, #35b869 0%, #2dc7a5 100%);
+    background: linear-gradient(135deg, #0a5829 0%, #0d5745 100%);
 }
 
 .back-card::before {
-    background: linear-gradient(135deg, #c85878 0%, #d6b428 100%);
+    background: linear-gradient(135deg, #682838 0%, #765408 100%);
 }
 
 .legs-card::before {
-    background: linear-gradient(135deg, #28a3a8 0%, #280655 100%);
+    background: linear-gradient(135deg, #084348 0%, #100425 100%);
 }
 
 .abs-card::before {
-    background: linear-gradient(135deg, #86bbb8 0%, #d6a4b1 100%);
+    background: linear-gradient(135deg, #365b58 0%, #764461 100%);
 }
 
 .catalog-exercises-view {
@@ -1617,12 +1617,14 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
+    position: relative;
 }
 
 .workout-item-wrapper .workout-day-card,
 .workout-item-wrapper .exercise-card {
     flex: 1;
     margin-bottom: 0;
+    position: relative;
 }
 
 .move-controls {
