@@ -186,31 +186,18 @@ async function loadUserDataFromAPI(telegramId, name, avatarUrl) {
     try {
         console.log(`Loading user data for ${telegramId}...`);
         
-        // Таймаут на случай если запрос зависнет
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 5000)
-        );
-        
-        console.log('Fetching user from database...');
-        
         // Пытаемся получить данные пользователя из таблицы gym_users
-        const fetchPromise = supabaseClient
+        const { data: existingUser, error: fetchError } = await supabaseClient
             .from('gym_users')
             .select('*')
             .eq('telegram_id', telegramId)
             .single();
         
-        const { data: existingUser, error: fetchError } = await Promise.race([fetchPromise, timeoutPromise]);
-        
         console.log('Fetch result:', { existingUser, fetchError });
-        
-        if (fetchError && fetchError.code !== 'PGRST116') {
-            throw fetchError;
-        }
         
         let userData;
         
-        if (!existingUser) {
+        if (fetchError && fetchError.code === 'PGRST116') {
             // Пользователь не найден - создаем нового
             console.log('User not found, creating new user...');
             const { data: newUser, error: createError } = await supabaseClient
@@ -225,8 +212,14 @@ async function loadUserDataFromAPI(telegramId, name, avatarUrl) {
             
             console.log('Create result:', { newUser, createError });
             
-            if (createError) throw createError;
+            if (createError) {
+                console.error('Create error:', createError);
+                return;
+            }
             userData = newUser;
+        } else if (fetchError) {
+            console.error('Fetch error:', fetchError);
+            return;
         } else {
             // Обновляем данные существующего пользователя
             console.log('User found, updating...');
@@ -242,8 +235,13 @@ async function loadUserDataFromAPI(telegramId, name, avatarUrl) {
             
             console.log('Update result:', { updatedUser, updateError });
             
-            if (updateError) throw updateError;
-            userData = updatedUser;
+            if (updateError) {
+                console.error('Update error:', updateError);
+                // Используем старые данные если обновление не удалось
+                userData = existingUser;
+            } else {
+                userData = updatedUser;
+            }
         }
         
         console.log('User data loaded:', userData);
