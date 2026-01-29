@@ -1740,3 +1740,45 @@
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     color: var(--tg-theme-text-color) !important;
 }
+
+/* Новые уникальные классы для кнопок удаления и редактирования */
+.day-delete-button,
+.exercise-edit-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    padding: 0;
+}
+
+.day-delete-button {
+    background: rgba(255, 59, 48, 0.2);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: #ffffff;
+}
+
+.day-delete-button:active {
+    transform: scale(0.9);
+    background: rgba(255, 59, 48, 0.4);
+}
+
+.exercise-edit-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--tg-theme-text-color);
+}
+
+.exercise-edit-button:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
