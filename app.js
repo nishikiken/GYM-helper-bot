@@ -1590,30 +1590,46 @@ function renderWorkoutDays() {
 
 // Переместить день вверх
 function moveDayUp(index) {
-    if (index <= 0) return;
-    
-    // Меняем местами в массиве
-    const temp = workoutDays[index];
-    workoutDays[index] = workoutDays[index - 1];
-    workoutDays[index - 1] = temp;
-    
-    saveWorkoutDays();
-    renderWorkoutDays();
-    haptic();
+    if (index > 0) {
+        const container = document.getElementById('workout-days-list');
+        const items = container.querySelectorAll('.workout-item-wrapper');
+        const currentItem = items[index];
+        
+        // Анимация
+        currentItem.style.transform = 'translateY(-10px)';
+        currentItem.style.opacity = '0.5';
+        
+        setTimeout(() => {
+            const temp = workoutDays[index];
+            workoutDays[index] = workoutDays[index - 1];
+            workoutDays[index - 1] = temp;
+            saveWorkoutDays();
+            renderWorkoutDays();
+            haptic();
+        }, 150);
+    }
 }
 
 // Переместить день вниз
 function moveDayDown(index) {
-    if (index >= workoutDays.length - 1) return;
-    
-    // Меняем местами в массиве
-    const temp = workoutDays[index];
-    workoutDays[index] = workoutDays[index + 1];
-    workoutDays[index + 1] = temp;
-    
-    saveWorkoutDays();
-    renderWorkoutDays();
-    haptic();
+    if (index < workoutDays.length - 1) {
+        const container = document.getElementById('workout-days-list');
+        const items = container.querySelectorAll('.workout-item-wrapper');
+        const currentItem = items[index];
+        
+        // Анимация
+        currentItem.style.transform = 'translateY(10px)';
+        currentItem.style.opacity = '0.5';
+        
+        setTimeout(() => {
+            const temp = workoutDays[index];
+            workoutDays[index] = workoutDays[index + 1];
+            workoutDays[index + 1] = temp;
+            saveWorkoutDays();
+            renderWorkoutDays();
+            haptic();
+        }, 150);
+    }
 }
 
 // Переключение режима редактирования дней
@@ -1866,14 +1882,22 @@ function moveExerciseUp(index) {
     const day = workoutDays.find(d => d.id === currentDayId);
     if (!day || index <= 0) return;
     
-    // Меняем местами в массиве
-    const temp = day.exercises[index];
-    day.exercises[index] = day.exercises[index - 1];
-    day.exercises[index - 1] = temp;
+    const container = document.getElementById('exercises-list');
+    const items = container.querySelectorAll('.workout-item-wrapper');
+    const currentItem = items[index];
     
-    saveWorkoutDays();
-    renderExercisesList(day.exercises);
-    haptic();
+    // Анимация
+    currentItem.style.transform = 'translateY(-10px)';
+    currentItem.style.opacity = '0.5';
+    
+    setTimeout(() => {
+        const temp = day.exercises[index];
+        day.exercises[index] = day.exercises[index - 1];
+        day.exercises[index - 1] = temp;
+        saveWorkoutDays();
+        renderExercisesList(day.exercises);
+        haptic();
+    }, 150);
 }
 
 // Переместить упражнение вниз
@@ -1881,14 +1905,22 @@ function moveExerciseDown(index) {
     const day = workoutDays.find(d => d.id === currentDayId);
     if (!day || index >= day.exercises.length - 1) return;
     
-    // Меняем местами в массиве
-    const temp = day.exercises[index];
-    day.exercises[index] = day.exercises[index + 1];
-    day.exercises[index + 1] = temp;
+    const container = document.getElementById('exercises-list');
+    const items = container.querySelectorAll('.workout-item-wrapper');
+    const currentItem = items[index];
     
-    saveWorkoutDays();
-    renderExercisesList(day.exercises);
-    haptic();
+    // Анимация
+    currentItem.style.transform = 'translateY(10px)';
+    currentItem.style.opacity = '0.5';
+    
+    setTimeout(() => {
+        const temp = day.exercises[index];
+        day.exercises[index] = day.exercises[index + 1];
+        day.exercises[index + 1] = temp;
+        saveWorkoutDays();
+        renderExercisesList(day.exercises);
+        haptic();
+    }, 150);
 }
         renderExercisesList(day.exercises);
         haptic();
@@ -2279,29 +2311,15 @@ function toggleRestTimer() {
         btn.textContent = '⏱️ Отдых (1:30)';
         display.textContent = '--:--';
         
-        // Удаляем из localStorage
-        localStorage.removeItem('restTimer');
-        
         // Скрываем кнопку "Стоп"
         if (stopBtn) {
             stopBtn.style.display = 'none';
         }
     } else {
         // Начать отдых
-        const startTime = Date.now();
-        const endTime = startTime + (restDuration * 1000);
-        
-        // Сохраняем в localStorage
-        localStorage.setItem('restTimer', JSON.stringify({
-            startTime,
-            endTime,
-            duration: restDuration
-        }));
+        let timeLeft = restDuration;
         
         const updateRestTimer = () => {
-            const now = Date.now();
-            const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
-            
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             display.textContent = 
@@ -2315,9 +2333,6 @@ function toggleRestTimer() {
                 btn.textContent = '⏱️ Отдых (1:30)';
                 display.textContent = '--:--';
                 
-                // Удаляем из localStorage
-                localStorage.removeItem('restTimer');
-                
                 // Скрываем кнопку "Стоп"
                 if (stopBtn) {
                     stopBtn.style.display = 'none';
@@ -2328,6 +2343,8 @@ function toggleRestTimer() {
                 
                 haptic('success');
             }
+            
+            timeLeft--;
         };
         
         inline.classList.add('active');
@@ -2344,74 +2361,6 @@ function toggleRestTimer() {
     }
     
     haptic();
-}
-
-// Восстановить таймер отдыха при загрузке
-function restoreRestTimer() {
-    const saved = localStorage.getItem('restTimer');
-    if (!saved) return;
-    
-    try {
-        const { endTime } = JSON.parse(saved);
-        const now = Date.now();
-        const timeLeft = Math.floor((endTime - now) / 1000);
-        
-        if (timeLeft <= 0) {
-            // Таймер истек пока приложение было закрыто
-            localStorage.removeItem('restTimer');
-            playRestEndSound();
-            return;
-        }
-        
-        // Восстанавливаем таймер
-        const inline = document.getElementById('rest-timer-inline');
-        const btn = document.getElementById('rest-btn');
-        const stopBtn = document.getElementById('rest-stop-btn');
-        const display = document.getElementById('rest-timer-display');
-        
-        const updateRestTimer = () => {
-            const now = Date.now();
-            const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
-            
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            display.textContent = 
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(restTimerInterval);
-                restTimerInterval = null;
-                inline.classList.remove('active');
-                btn.classList.remove('active');
-                btn.textContent = '⏱️ Отдых (1:30)';
-                display.textContent = '--:--';
-                
-                localStorage.removeItem('restTimer');
-                
-                if (stopBtn) {
-                    stopBtn.style.display = 'none';
-                }
-                
-                playRestEndSound();
-                haptic('success');
-            }
-        };
-        
-        inline.classList.add('active');
-        btn.classList.add('active');
-        btn.textContent = '⏸️ Отдых';
-        
-        if (stopBtn) {
-            stopBtn.style.display = 'block';
-        }
-        
-        updateRestTimer();
-        restTimerInterval = setInterval(updateRestTimer, 1000);
-        
-    } catch (e) {
-        console.error('Error restoring rest timer:', e);
-        localStorage.removeItem('restTimer');
-    }
 }
 
 // Воспроизвести звук окончания отдыха
