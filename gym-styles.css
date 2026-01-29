@@ -1435,8 +1435,8 @@
     position: relative;
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 40px 20px;
+    border-radius: 16px;
+    padding: 24px 20px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -1446,7 +1446,8 @@
     gap: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    min-height: 120px;
+    min-height: 80px;
+    aspect-ratio: 2.5 / 1;
 }
 
 .muscle-group-card::before {
@@ -1677,6 +1678,13 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    z-index: 2 !important;
+}
+
+.workout-day-card .delete-btn-inline,
+.exercise-card .delete-btn-inline {
+    background: rgba(255, 59, 48, 0.2) !important;
+    border: 1px solid rgba(255, 59, 48, 0.3) !important;
 }
 
 .delete-btn-inline:active {
@@ -1701,6 +1709,13 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    z-index: 2 !important;
+}
+
+.workout-day-card .edit-btn-inline,
+.exercise-card .edit-btn-inline {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .edit-btn-inline:active {
