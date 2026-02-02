@@ -1573,7 +1573,7 @@ function renderWorkoutDays() {
                 <p>${day.description}</p>
                 <div class="exercises-count">${day.exercises.length} упражнений</div>
                 ${editDaysMode ? `
-                    <button class="day-delete-button" style="background: rgba(255, 59, 48, 0.2) !important; border: 1px solid rgba(255, 59, 48, 0.3) !important; color: #ffffff !important;" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
+                    <button class="day-delete-button" data-btn-type="delete" onclick="event.stopPropagation(); showDayEditMenu('${day.id}')">🗑️</button>
                 ` : ''}
             </div>
             ${editDaysMode ? `
@@ -1584,6 +1584,18 @@ function renderWorkoutDays() {
             ` : ''}
         </div>
     `).join('');
+    
+    // Принудительно устанавливаем стили для кнопок удаления через JavaScript
+    if (editDaysMode) {
+        setTimeout(() => {
+            const deleteButtons = container.querySelectorAll('.day-delete-button');
+            deleteButtons.forEach(btn => {
+                btn.style.setProperty('background', 'rgba(255, 59, 48, 0.2)', 'important');
+                btn.style.setProperty('border', '1px solid rgba(255, 59, 48, 0.3)', 'important');
+                btn.style.setProperty('color', '#ffffff', 'important');
+            });
+        }, 0);
+    }
 }
 
 // Переместить день вверх
@@ -1893,7 +1905,7 @@ function renderExercisesList(exercises) {
                     </div>
                 </div>
                 ${editExercisesMode ? `
-                    <button class="exercise-edit-button" style="background: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: var(--tg-theme-text-color) !important;" onclick="openEditExerciseModal(${index})">✏️</button>
+                    <button class="exercise-edit-button" data-btn-type="edit" onclick="openEditExerciseModal(${index})">✏️</button>
                 ` : ''}
             </div>
             ${editExercisesMode ? `
@@ -1904,6 +1916,18 @@ function renderExercisesList(exercises) {
             ` : ''}
         </div>
     `).join('');
+    
+    // Принудительно устанавливаем стили для кнопок редактирования через JavaScript
+    if (editExercisesMode) {
+        setTimeout(() => {
+            const editButtons = container.querySelectorAll('.exercise-edit-button');
+            editButtons.forEach(btn => {
+                btn.style.setProperty('background', 'rgba(255, 255, 255, 0.1)', 'important');
+                btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.2)', 'important');
+                btn.style.setProperty('color', 'var(--tg-theme-text-color)', 'important');
+            });
+        }, 0);
+    }
 }
 
 // Открыть модальное окно редактирования упражнения
