@@ -1101,6 +1101,52 @@ function generateNutritionPlan() {
     const data = JSON.parse(savedData);
     const { protein, fats, carbs } = data;
     
+    // Проверяем есть ли сохраненный план
+    const savedPlan = localStorage.getItem('nutritionPlan');
+    if (savedPlan) {
+        try {
+            const plan = JSON.parse(savedPlan);
+            // Проверяем что план соответствует текущим макросам
+            if (plan.protein === protein && plan.fats === fats && plan.carbs === carbs) {
+                // Восстанавливаем сохраненный план
+                restoreSavedPlan(plan);
+                return;
+            }
+        } catch (e) {
+            console.error('Error loading saved plan:', e);
+        }
+    }
+    
+    // Генерируем новый план
+    generateNewPlan(protein, fats, carbs);
+}
+
+// Восстановление сохраненного плана
+function restoreSavedPlan(plan) {
+    // Обновляем макросы
+    document.getElementById('nutrition-protein').textContent = plan.protein + ' г';
+    document.getElementById('nutrition-fats').textContent = plan.fats + ' г';
+    document.getElementById('nutrition-carbs').textContent = plan.carbs + ' г';
+    
+    // Восстанавливаем приемы пищи
+    ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(mealId => {
+        const container = document.getElementById(`${mealId}-items`);
+        container.innerHTML = plan.meals[mealId].map(item => `
+            <div class="meal-item">
+                <span class="meal-item-name">${item.name}</span>
+                <span class="meal-item-amount">${item.amount}г</span>
+            </div>
+        `).join('');
+    });
+    
+    // Генерируем подсказки для макросов
+    generateMacroHelp('protein', plan.protein);
+    generateMacroHelp('fats', plan.fats);
+    generateMacroHelp('carbs', plan.carbs);
+}
+
+// Генерация нового плана
+function generateNewPlan(protein, fats, carbs) {
     // Обновляем макросы
     document.getElementById('nutrition-protein').textContent = protein + ' г';
     document.getElementById('nutrition-fats').textContent = fats + ' г';
@@ -1114,11 +1160,30 @@ function generateNutritionPlan() {
         snacks: { protein: Math.round(protein * 0.1), fats: Math.round(fats * 0.1), carbs: Math.round(carbs * 0.1) }
     };
     
+    // Объект для сохранения плана
+    const planToSave = {
+        protein,
+        fats,
+        carbs,
+        meals: {}
+    };
+    
     // Генерируем меню для каждого приема пищи
-    generateMeal('breakfast', meals.breakfast);
-    generateMeal('lunch', meals.lunch);
-    generateMeal('dinner', meals.dinner);
-    generateMeal('snacks', meals.snacks);
+    Object.keys(meals).forEach(mealId => {
+        const items = generateMealWithRealPortions(mealId, meals[mealId]);
+        planToSave.meals[mealId] = items;
+        
+        const container = document.getElementById(`${mealId}-items`);
+        container.innerHTML = items.map(item => `
+            <div class="meal-item">
+                <span class="meal-item-name">${item.name}</span>
+                <span class="meal-item-amount">${item.amount}г</span>
+            </div>
+        `).join('');
+    });
+    
+    // Сохраняем план
+    localStorage.setItem('nutritionPlan', JSON.stringify(planToSave));
     
     // Генерируем подсказки для макросов
     generateMacroHelp('protein', protein);
@@ -1128,87 +1193,114 @@ function generateNutritionPlan() {
     haptic('success');
 }
 
-// Генерация меню для одного приема пищи
-function generateMeal(mealId, macros) {
-    const container = document.getElementById(`${mealId}-items`);
+// Генерация меню с реальными порциями
+function generateMealWithRealPortions(mealId, macros) {
     const items = [];
     
-    // Выбираем продукты для достижения целевых макросов
     let remainingProtein = macros.protein;
     let remainingFats = macros.fats;
     let remainingCarbs = macros.carbs;
     
-    // Добавляем белковый продукт
+    // Белковый продукт - округляем до 50г
     if (remainingProtein > 0) {
         const proteinFood = foodDatabase.protein[Math.floor(Math.random() * foodDatabase.protein.length)];
-        const amount = Math.round((remainingProtein / proteinFood.protein) * proteinFood.per);
-        items.push({ ...proteinFood, amount });
+        let amount = Math.round((remainingProtein / proteinFood.protein) * proteinFood.per);
+        // Округляем до 50г для удобства
+        amount = Math.round(amount / 50) * 50;
+        if (amount < 50) amount = 50;
+        
+        items.push({ name: proteinFood.name, amount });
         remainingProtein -= (amount / proteinFood.per) * proteinFood.protein;
         remainingFats -= (amount / proteinFood.per) * proteinFood.fats;
         remainingCarbs -= (amount / proteinFood.per) * proteinFood.carbs;
     }
     
-    // Добавляем углеводный продукт
+    // Углеводный продукт - округляем до 50г
     if (remainingCarbs > 0) {
         const carbFood = foodDatabase.carbs[Math.floor(Math.random() * foodDatabase.carbs.length)];
-        const amount = Math.round((remainingCarbs / carbFood.carbs) * carbFood.per);
-        items.push({ ...carbFood, amount });
+        let amount = Math.round((remainingCarbs / carbFood.carbs) * carbFood.per);
+        // Округляем до 50г для удобства
+        amount = Math.round(amount / 50) * 50;
+        if (amount < 50) amount = 50;
+        
+        items.push({ name: carbFood.name, amount });
         remainingCarbs -= (amount / carbFood.per) * carbFood.carbs;
         remainingProtein -= (amount / carbFood.per) * carbFood.protein;
         remainingFats -= (amount / carbFood.per) * carbFood.fats;
     }
     
-    // Добавляем жировой продукт
+    // Жировой продукт - используем стандартные порции
     if (remainingFats > 5) {
         const fatFood = foodDatabase.fats[Math.floor(Math.random() * foodDatabase.fats.length)];
-        const amount = Math.round((remainingFats / fatFood.fats) * fatFood.per);
-        items.push({ ...fatFood, amount });
+        let amount = Math.round((remainingFats / fatFood.fats) * fatFood.per);
+        
+        // Стандартные порции для жиров
+        if (fatFood.name.includes('масло')) {
+            // Масло - округляем до 10мл
+            amount = Math.round(amount / 10) * 10;
+            if (amount < 10) amount = 10;
+        } else {
+            // Сметана - округляем до 50г
+            amount = Math.round(amount / 50) * 50;
+            if (amount < 50) amount = 50;
+        }
+        
+        items.push({ name: fatFood.name, amount });
     }
     
-    // Добавляем овощи
+    // Овощи - всегда 100г (кроме перекусов)
     if (mealId !== 'snacks') {
         const veggie = foodDatabase.vegetables[Math.floor(Math.random() * foodDatabase.vegetables.length)];
-        items.push({ ...veggie, amount: 100 });
+        items.push({ name: veggie.name, amount: 100 });
     }
     
-    // Отображаем продукты
-    container.innerHTML = items.map(item => `
-        <div class="meal-item">
-            <span class="meal-item-name">${item.name}</span>
-            <span class="meal-item-amount">${item.amount}г</span>
-        </div>
-    `).join('');
+    return items;
 }
 
-// Генерация подсказки для макроса
+// Генерация подсказки для макроса - показывает дневной рацион
 function generateMacroHelp(macro, amount) {
     const container = document.getElementById(`${macro}-help-content`);
-    let foods = [];
+    let content = '';
     
     if (macro === 'protein') {
-        foods = [
-            { name: 'Куриная грудка', amount: Math.round(amount / 0.23) },
-            { name: 'Яйца', amount: Math.round(amount / 0.13 / 50) + ' шт' },
-            { name: 'Творог 5%', amount: Math.round(amount / 0.16) }
-        ];
+        // Рассчитываем реальный дневной рацион белка
+        const chicken = Math.round(amount * 0.4 / 0.23); // 40% из курицы
+        const eggs = Math.round(amount * 0.3 / 0.13 / 50); // 30% из яиц
+        const cottage = Math.round(amount * 0.3 / 0.16); // 30% из творога
+        
+        content = `
+            <p>Дневной рацион:</p>
+            <div>• ${chicken}г Куриной грудки</div>
+            <div>• ${eggs} шт Яиц</div>
+            <div>• ${cottage}г Творога 5%</div>
+        `;
     } else if (macro === 'fats') {
-        foods = [
-            { name: 'Подсолнечное масло', amount: Math.round(amount) + ' мл' },
-            { name: 'Сливочное масло', amount: Math.round(amount / 0.82) },
-            { name: 'Сметана 20%', amount: Math.round(amount / 0.20) }
-        ];
+        // Рассчитываем реальный дневной рацион жиров
+        const oil = Math.round(amount * 0.5); // 50% из масла
+        const butter = Math.round(amount * 0.3 / 0.82); // 30% из сливочного масла
+        const sour = Math.round(amount * 0.2 / 0.20); // 20% из сметаны
+        
+        content = `
+            <p>Дневной рацион:</p>
+            <div>• ${oil}мл Подсолнечного масла</div>
+            <div>• ${butter}г Сливочного масла</div>
+            <div>• ${sour}г Сметаны 20%</div>
+        `;
     } else if (macro === 'carbs') {
-        foods = [
-            { name: 'Рис', amount: Math.round(amount / 0.78) },
-            { name: 'Гречка', amount: Math.round(amount / 0.62) },
-            { name: 'Макароны', amount: Math.round(amount / 0.71) }
-        ];
+        // Рассчитываем реальный дневной рацион углеводов
+        const rice = Math.round(amount * 0.35 / 0.78); // 35% из риса
+        const buckwheat = Math.round(amount * 0.35 / 0.62); // 35% из гречки
+        const bread = Math.round(amount * 0.3 / 0.50); // 30% из хлеба
+        
+        content = `
+            <p>Дневной рацион:</p>
+            <div>• ${rice}г Риса</div>
+            <div>• ${buckwheat}г Гречки</div>
+            <div>• ${bread}г Хлеба</div>
+        `;
     }
     
-    container.innerHTML = `
-        <p>Это примерно:</p>
-        ${foods.map(f => `<div>• ${f.amount}${typeof f.amount === 'number' ? 'г' : ''} ${f.name}</div>`).join('')}
-    `;
+    container.innerHTML = content;
 }
 
 // Переключение подсказки для макроса
@@ -1225,6 +1317,21 @@ function toggleMacroHelp(macro) {
     }
     
     haptic();
+}
+
+// Принудительная генерация нового плана (по кнопке)
+function regenerateNutritionPlan() {
+    const savedData = localStorage.getItem('caloriesData');
+    if (!savedData) return;
+    
+    const data = JSON.parse(savedData);
+    const { protein, fats, carbs } = data;
+    
+    // Удаляем старый план
+    localStorage.removeItem('nutritionPlan');
+    
+    // Генерируем новый
+    generateNewPlan(protein, fats, carbs);
 }
 
 // Обновляем функцию switchCaloriesGoal для работы с подвкладками
