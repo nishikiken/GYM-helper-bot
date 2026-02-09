@@ -1454,8 +1454,6 @@ function updatePinButton(isPinned) {
         pinBtn.classList.remove('pinned');
     }
 }
-    generateNewPlan(protein, fats, carbs);
-}
 
 // Обновляем функцию switchCaloriesGoal для работы с подвкладками
 function switchCaloriesGoal(goal) {
