@@ -1063,21 +1063,19 @@ function showNutritionPlan() {
     generateNutritionPlan();
 }
 
-// База продуктов (неаллергенные)
+// База продуктов (простые и доступные)
 const foodDatabase = {
     protein: [
         { name: 'Куриная грудка', protein: 23, fats: 1.2, carbs: 0, per: 100 },
         { name: 'Яйца', protein: 13, fats: 11, carbs: 1, per: 100 },
         { name: 'Творог 5%', protein: 16, fats: 5, carbs: 2, per: 100 },
-        { name: 'Индейка', protein: 25, fats: 2, carbs: 0, per: 100 },
-        { name: 'Говядина', protein: 26, fats: 7, carbs: 0, per: 100 },
-        { name: 'Треска', protein: 17, fats: 0.7, carbs: 0, per: 100 }
+        { name: 'Куриные ножки', protein: 18, fats: 14, carbs: 0, per: 100 },
+        { name: 'Говядина', protein: 26, fats: 7, carbs: 0, per: 100 }
     ],
     fats: [
-        { name: 'Оливковое масло', protein: 0, fats: 100, carbs: 0, per: 100 },
-        { name: 'Авокадо', protein: 2, fats: 15, carbs: 9, per: 100 },
-        { name: 'Грецкие орехи', protein: 15, fats: 65, carbs: 14, per: 100 },
-        { name: 'Миндаль', protein: 21, fats: 49, carbs: 22, per: 100 }
+        { name: 'Подсолнечное масло', protein: 0, fats: 100, carbs: 0, per: 100 },
+        { name: 'Сливочное масло', protein: 0.5, fats: 82, carbs: 0.8, per: 100 },
+        { name: 'Сметана 20%', protein: 2.8, fats: 20, carbs: 3.2, per: 100 }
     ],
     carbs: [
         { name: 'Рис', protein: 7, fats: 0.7, carbs: 78, per: 100 },
@@ -1085,12 +1083,12 @@ const foodDatabase = {
         { name: 'Овсянка', protein: 12, fats: 6, carbs: 60, per: 100 },
         { name: 'Картофель', protein: 2, fats: 0.4, carbs: 18, per: 100 },
         { name: 'Макароны', protein: 11, fats: 1, carbs: 71, per: 100 },
-        { name: 'Банан', protein: 1.5, fats: 0.2, carbs: 23, per: 100 }
+        { name: 'Хлеб', protein: 8, fats: 1, carbs: 50, per: 100 }
     ],
     vegetables: [
         { name: 'Огурцы', protein: 0.8, fats: 0.1, carbs: 3.6, per: 100 },
         { name: 'Помидоры', protein: 0.9, fats: 0.2, carbs: 3.9, per: 100 },
-        { name: 'Брокколи', protein: 3, fats: 0.4, carbs: 7, per: 100 },
+        { name: 'Капуста', protein: 1.8, fats: 0.1, carbs: 5.8, per: 100 },
         { name: 'Морковь', protein: 1, fats: 0.1, carbs: 10, per: 100 }
     ]
 };
@@ -1195,15 +1193,15 @@ function generateMacroHelp(macro, amount) {
         ];
     } else if (macro === 'fats') {
         foods = [
-            { name: 'Оливковое масло', amount: Math.round(amount) + ' мл' },
-            { name: 'Авокадо', amount: Math.round(amount / 0.15) },
-            { name: 'Орехи', amount: Math.round(amount / 0.65) }
+            { name: 'Подсолнечное масло', amount: Math.round(amount) + ' мл' },
+            { name: 'Сливочное масло', amount: Math.round(amount / 0.82) },
+            { name: 'Сметана 20%', amount: Math.round(amount / 0.20) }
         ];
     } else if (macro === 'carbs') {
         foods = [
             { name: 'Рис', amount: Math.round(amount / 0.78) },
             { name: 'Гречка', amount: Math.round(amount / 0.62) },
-            { name: 'Овсянка', amount: Math.round(amount / 0.60) }
+            { name: 'Макароны', amount: Math.round(amount / 0.71) }
         ];
     }
     

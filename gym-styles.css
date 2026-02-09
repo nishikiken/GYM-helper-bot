@@ -260,31 +260,31 @@
 }
 
 .nutrition-plan h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-align: center;
 }
 
 .nutrition-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--tg-theme-hint-color);
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .nutrition-macros {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
 .macro-item {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 16px 12px;
+    border-radius: 12px;
+    padding: 10px 8px;
     text-align: center;
 }
 
@@ -292,26 +292,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    margin-bottom: 8px;
+    gap: 4px;
+    margin-bottom: 6px;
 }
 
 .macro-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--tg-theme-hint-color);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .macro-help-btn {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background: rgba(10, 132, 255, 0.2);
     border: 1px solid rgba(10, 132, 255, 0.3);
     border-radius: 50%;
     color: var(--tg-theme-button-color);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -326,17 +326,17 @@
 }
 
 .macro-value {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--tg-theme-button-color);
 }
 
 .macro-help {
-    margin-top: 12px;
-    padding: 12px;
+    margin-top: 10px;
+    padding: 10px;
     background: rgba(10, 132, 255, 0.1);
     border: 1px solid rgba(10, 132, 255, 0.2);
-    border-radius: 12px;
+    border-radius: 10px;
     text-align: left;
     animation: slideDown 0.3s ease;
 }
@@ -353,61 +353,61 @@
 }
 
 .macro-help-content {
-    font-size: 12px;
-    line-height: 1.6;
+    font-size: 11px;
+    line-height: 1.5;
 }
 
 .macro-help-content p {
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: var(--tg-theme-text-color);
 }
 
 .macro-help-content div {
     color: var(--tg-theme-hint-color);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .meals-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .meal-card {
     background: linear-gradient(135deg, rgba(10, 132, 255, 0.08) 0%, rgba(10, 132, 255, 0.02) 100%);
     border: 1px solid rgba(10, 132, 255, 0.2);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 14px;
+    padding: 12px;
 }
 
 .meal-card h4 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .meal-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .meal-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
+    padding: 8px 10px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .meal-item-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 }
 
@@ -419,12 +419,12 @@
 
 .regenerate-plan-btn {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: rgba(10, 132, 255, 0.15);
     border: 1px solid rgba(10, 132, 255, 0.3);
     color: var(--tg-theme-button-color);
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
