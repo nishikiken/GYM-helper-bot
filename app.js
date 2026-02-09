@@ -1163,6 +1163,14 @@ function restoreSavedPlan(plan, isPinned = false) {
     document.getElementById('nutrition-fats').textContent = plan.fats + ' г';
     document.getElementById('nutrition-carbs').textContent = plan.carbs + ' г';
     
+    // Распределяем макросы по приемам пищи (для отображения)
+    const meals = {
+        breakfast: { protein: Math.round(plan.protein * 0.25), fats: Math.round(plan.fats * 0.3), carbs: Math.round(plan.carbs * 0.3) },
+        lunch: { protein: Math.round(plan.protein * 0.35), fats: Math.round(plan.fats * 0.35), carbs: Math.round(plan.carbs * 0.4) },
+        dinner: { protein: Math.round(plan.protein * 0.3), fats: Math.round(plan.fats * 0.25), carbs: Math.round(plan.carbs * 0.2) },
+        snacks: { protein: Math.round(plan.protein * 0.1), fats: Math.round(plan.fats * 0.1), carbs: Math.round(plan.carbs * 0.1) }
+    };
+    
     // Восстанавливаем приемы пищи
     ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(mealId => {
         const container = document.getElementById(`${mealId}-items`);
@@ -1172,6 +1180,17 @@ function restoreSavedPlan(plan, isPinned = false) {
                 <span class="meal-item-amount">${item.amount}</span>
             </div>
         `).join('');
+        
+        // Отображаем КБЖУ приема пищи
+        const macrosContainer = document.getElementById(`${mealId}-macros`);
+        const mealMacros = meals[mealId];
+        const calories = Math.round(mealMacros.protein * 4 + mealMacros.fats * 9 + mealMacros.carbs * 4);
+        macrosContainer.innerHTML = `
+            <span class="meal-macro">Б: ${mealMacros.protein}г</span>
+            <span class="meal-macro">Ж: ${mealMacros.fats}г</span>
+            <span class="meal-macro">У: ${mealMacros.carbs}г</span>
+            <span class="meal-macro">${calories} ккал</span>
+        `;
     });
     
     // Обновляем кнопку закрепления
@@ -1206,6 +1225,7 @@ function generateNewPlan(protein, fats, carbs) {
         const items = generateMealWithRealPortions(mealId, meals[mealId]);
         planToSave.meals[mealId] = items;
         
+        // Отображаем продукты
         const container = document.getElementById(`${mealId}-items`);
         container.innerHTML = items.map(item => `
             <div class="meal-item">
@@ -1213,6 +1233,17 @@ function generateNewPlan(protein, fats, carbs) {
                 <span class="meal-item-amount">${item.amount}</span>
             </div>
         `).join('');
+        
+        // Отображаем КБЖУ приема пищи
+        const macrosContainer = document.getElementById(`${mealId}-macros`);
+        const mealMacros = meals[mealId];
+        const calories = Math.round(mealMacros.protein * 4 + mealMacros.fats * 9 + mealMacros.carbs * 4);
+        macrosContainer.innerHTML = `
+            <span class="meal-macro">Б: ${mealMacros.protein}г</span>
+            <span class="meal-macro">Ж: ${mealMacros.fats}г</span>
+            <span class="meal-macro">У: ${mealMacros.carbs}г</span>
+            <span class="meal-macro">${calories} ккал</span>
+        `;
     });
     
     // Сохраняем план
@@ -1235,9 +1266,9 @@ function generateMealWithRealPortions(mealId, macros) {
         if (breakfastType === 0) {
             // Омлет + овсянка
             const eggs = Math.min(5, Math.max(2, Math.round(macros.protein / 13)));
-            const oats = Math.min(250, Math.max(150, Math.round(macros.carbs / 0.17 / 10) * 10)); // готовая овсянка ~17г углеводов на 100г
+            const oats = Math.min(100, Math.max(50, Math.round(macros.carbs / 0.60 / 10) * 10)); // сырая овсянка
             items.push({ name: `Омлет из ${eggs} яиц`, amount: '' });
-            items.push({ name: 'Овсянка готовая', amount: `${oats}г` });
+            items.push({ name: 'Овсянка (сырой вес)', amount: `${oats}г` });
             items.push({ name: 'Молоко 2.5-3.2%', amount: '200мл' });
         } else if (breakfastType === 1) {
             // Творог + фрукты
@@ -1254,9 +1285,9 @@ function generateMealWithRealPortions(mealId, macros) {
             items.push({ name: 'Авокадо', amount: '½ шт' });
         } else {
             // Гречка + яйца
-            const buckwheat = Math.min(300, Math.max(150, Math.round(macros.carbs / 0.20 / 50) * 50)); // готовая гречка ~20г углеводов на 100г
+            const buckwheat = Math.min(120, Math.max(50, Math.round(macros.carbs / 0.62 / 10) * 10)); // сырая гречка
             const eggs = Math.min(3, Math.max(2, Math.round(macros.protein / 13)));
-            items.push({ name: 'Гречка готовая', amount: `${buckwheat}г` });
+            items.push({ name: 'Гречка (сырой вес)', amount: `${buckwheat}г` });
             items.push({ name: 'Яйца вареные', amount: `${eggs} шт` });
             items.push({ name: 'Сливочное масло', amount: '10г' });
         }
@@ -1269,25 +1300,25 @@ function generateMealWithRealPortions(mealId, macros) {
         if (lunchType === 0) {
             // Курица + рис + овощи
             const chicken = Math.min(300, Math.max(150, Math.round(macros.protein / 0.23 / 50) * 50));
-            const rice = Math.min(350, Math.max(200, Math.round(macros.carbs / 0.28 / 50) * 50)); // готовый рис ~28г углеводов на 100г
-            items.push({ name: 'Куриная грудка', amount: `${chicken}г` });
-            items.push({ name: 'Рис готовый', amount: `${rice}г` });
+            const rice = Math.min(150, Math.max(80, Math.round(macros.carbs / 0.78 / 10) * 10)); // сырой рис
+            items.push({ name: 'Куриная грудка (сырой вес)', amount: `${chicken}г` });
+            items.push({ name: 'Рис (сырой вес)', amount: `${rice}г` });
             items.push({ name: 'Овощной салат', amount: '150г' });
             items.push({ name: 'Оливковое масло', amount: '1 ст.л.' });
         } else if (lunchType === 1) {
             // Говядина + картофель
             const beef = Math.min(250, Math.max(150, Math.round(macros.protein / 0.26 / 50) * 50));
             const potato = Math.min(400, Math.max(200, Math.round(macros.carbs / 0.18 / 50) * 50));
-            items.push({ name: 'Говядина', amount: `${beef}г` });
+            items.push({ name: 'Говядина (сырой вес)', amount: `${beef}г` });
             items.push({ name: 'Картофель запеченный', amount: `${potato}г` });
             items.push({ name: 'Помидоры', amount: '100г' });
             items.push({ name: 'Сметана 15-20%', amount: '30г' });
         } else {
             // Рыба + гречка
             const fish = Math.min(300, Math.max(150, Math.round(macros.protein / 0.20 / 50) * 50));
-            const buckwheat = Math.min(350, Math.max(200, Math.round(macros.carbs / 0.20 / 50) * 50));
-            items.push({ name: 'Рыба (лосось/треска)', amount: `${fish}г` });
-            items.push({ name: 'Гречка готовая', amount: `${buckwheat}г` });
+            const buckwheat = Math.min(150, Math.max(80, Math.round(macros.carbs / 0.62 / 10) * 10)); // сырая гречка
+            items.push({ name: 'Рыба (лосось/треска, сырой вес)', amount: `${fish}г` });
+            items.push({ name: 'Гречка (сырой вес)', amount: `${buckwheat}г` });
             items.push({ name: 'Брокколи', amount: '150г' });
             items.push({ name: 'Лимонный сок', amount: '1 ст.л.' });
         }
@@ -1307,10 +1338,10 @@ function generateMealWithRealPortions(mealId, macros) {
         } else if (dinnerType === 1) {
             // Курица + овощи
             const chicken = Math.min(250, Math.max(100, Math.round(macros.protein / 0.23 / 50) * 50));
-            const quinoa = Math.min(200, Math.max(100, Math.round(macros.carbs / 0.21 / 50) * 50));
-            items.push({ name: 'Куриная грудка', amount: `${chicken}г` });
+            const quinoa = Math.min(80, Math.max(40, Math.round(macros.carbs / 0.64 / 10) * 10)); // сырая киноа
+            items.push({ name: 'Куриная грудка (сырой вес)', amount: `${chicken}г` });
             items.push({ name: 'Овощи на гриле', amount: '200г' });
-            items.push({ name: 'Киноа готовая', amount: `${quinoa}г` });
+            items.push({ name: 'Киноа (сырой вес)', amount: `${quinoa}г` });
         } else {
             // Яйца + салат
             const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 13)));

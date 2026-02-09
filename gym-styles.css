@@ -406,14 +406,34 @@
         0 0 20px rgba(56, 189, 248, 0.05);
 }
 
+.meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .meal-card h4 {
     font-size: 16px;
     font-weight: 700;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
     color: #38bdf8;
+    margin: 0;
+}
+
+.meal-macros {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    display: flex;
+    gap: 6px;
+}
+
+.meal-macro {
+    background: rgba(56, 189, 248, 0.15);
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .meal-items {
