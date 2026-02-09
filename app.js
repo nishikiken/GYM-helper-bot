@@ -971,7 +971,7 @@ function loadSavedCaloriesData() {
         
         // Восстанавливаем цель
         currentGoal = data.goal || 'bulk';
-        document.querySelectorAll('.calories-tab').forEach(tab => {
+        document.querySelectorAll('.calories-subtab').forEach(tab => {
             tab.classList.remove('active');
             if (tab.textContent.includes('Масса') && data.goal === 'bulk') tab.classList.add('active');
             if (tab.textContent.includes('Сушка') && data.goal === 'cut') tab.classList.add('active');
@@ -1009,6 +1009,238 @@ function loadSavedCaloriesData() {
         console.error('Error loading saved calories data:', e);
     }
 }
+
+// === ПИТАНИЕ ===
+let currentCaloriesTab = 'calculator';
+
+// Переключение между вкладками Калькулятор/Питание
+function switchCaloriesTab(tab) {
+    currentCaloriesTab = tab;
+    
+    // Переключаем активную вкладку
+    document.querySelectorAll('.calories-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.calories-tab[data-tab="${tab}"]`).classList.add('active');
+    
+    // Показываем/скрываем контент
+    const calculatorContent = document.querySelector('.calories-form');
+    const calculatorResult = document.getElementById('calories-result');
+    const calculatorSubtabs = document.getElementById('calculator-subtabs');
+    const nutritionContent = document.getElementById('nutrition-content');
+    
+    if (tab === 'calculator') {
+        calculatorSubtabs.style.display = 'flex';
+        calculatorContent.style.display = 'flex';
+        calculatorResult.style.display = 'block';
+        nutritionContent.style.display = 'none';
+    } else {
+        calculatorSubtabs.style.display = 'none';
+        calculatorContent.style.display = 'none';
+        calculatorResult.style.display = 'none';
+        nutritionContent.style.display = 'block';
+        
+        // Проверяем есть ли рассчитанные данные
+        const savedData = localStorage.getItem('caloriesData');
+        if (savedData) {
+            showNutritionPlan();
+        } else {
+            showNutritionMessage();
+        }
+    }
+    
+    haptic();
+}
+
+// Показать сообщение о необходимости рассчитать КБЖУ
+function showNutritionMessage() {
+    document.getElementById('nutrition-message').style.display = 'flex';
+    document.getElementById('nutrition-plan').style.display = 'none';
+}
+
+// Показать план питания
+function showNutritionPlan() {
+    document.getElementById('nutrition-message').style.display = 'none';
+    document.getElementById('nutrition-plan').style.display = 'block';
+    generateNutritionPlan();
+}
+
+// База продуктов (неаллергенные)
+const foodDatabase = {
+    protein: [
+        { name: 'Куриная грудка', protein: 23, fats: 1.2, carbs: 0, per: 100 },
+        { name: 'Яйца', protein: 13, fats: 11, carbs: 1, per: 100 },
+        { name: 'Творог 5%', protein: 16, fats: 5, carbs: 2, per: 100 },
+        { name: 'Индейка', protein: 25, fats: 2, carbs: 0, per: 100 },
+        { name: 'Говядина', protein: 26, fats: 7, carbs: 0, per: 100 },
+        { name: 'Треска', protein: 17, fats: 0.7, carbs: 0, per: 100 }
+    ],
+    fats: [
+        { name: 'Оливковое масло', protein: 0, fats: 100, carbs: 0, per: 100 },
+        { name: 'Авокадо', protein: 2, fats: 15, carbs: 9, per: 100 },
+        { name: 'Грецкие орехи', protein: 15, fats: 65, carbs: 14, per: 100 },
+        { name: 'Миндаль', protein: 21, fats: 49, carbs: 22, per: 100 }
+    ],
+    carbs: [
+        { name: 'Рис', protein: 7, fats: 0.7, carbs: 78, per: 100 },
+        { name: 'Гречка', protein: 12, fats: 3, carbs: 62, per: 100 },
+        { name: 'Овсянка', protein: 12, fats: 6, carbs: 60, per: 100 },
+        { name: 'Картофель', protein: 2, fats: 0.4, carbs: 18, per: 100 },
+        { name: 'Макароны', protein: 11, fats: 1, carbs: 71, per: 100 },
+        { name: 'Банан', protein: 1.5, fats: 0.2, carbs: 23, per: 100 }
+    ],
+    vegetables: [
+        { name: 'Огурцы', protein: 0.8, fats: 0.1, carbs: 3.6, per: 100 },
+        { name: 'Помидоры', protein: 0.9, fats: 0.2, carbs: 3.9, per: 100 },
+        { name: 'Брокколи', protein: 3, fats: 0.4, carbs: 7, per: 100 },
+        { name: 'Морковь', protein: 1, fats: 0.1, carbs: 10, per: 100 }
+    ]
+};
+
+// Генерация плана питания
+function generateNutritionPlan() {
+    const savedData = localStorage.getItem('caloriesData');
+    if (!savedData) return;
+    
+    const data = JSON.parse(savedData);
+    const { protein, fats, carbs } = data;
+    
+    // Обновляем макросы
+    document.getElementById('nutrition-protein').textContent = protein + ' г';
+    document.getElementById('nutrition-fats').textContent = fats + ' г';
+    document.getElementById('nutrition-carbs').textContent = carbs + ' г';
+    
+    // Распределяем макросы по приемам пищи
+    const meals = {
+        breakfast: { protein: Math.round(protein * 0.25), fats: Math.round(fats * 0.3), carbs: Math.round(carbs * 0.3) },
+        lunch: { protein: Math.round(protein * 0.35), fats: Math.round(fats * 0.35), carbs: Math.round(carbs * 0.4) },
+        dinner: { protein: Math.round(protein * 0.3), fats: Math.round(fats * 0.25), carbs: Math.round(carbs * 0.2) },
+        snacks: { protein: Math.round(protein * 0.1), fats: Math.round(fats * 0.1), carbs: Math.round(carbs * 0.1) }
+    };
+    
+    // Генерируем меню для каждого приема пищи
+    generateMeal('breakfast', meals.breakfast);
+    generateMeal('lunch', meals.lunch);
+    generateMeal('dinner', meals.dinner);
+    generateMeal('snacks', meals.snacks);
+    
+    // Генерируем подсказки для макросов
+    generateMacroHelp('protein', protein);
+    generateMacroHelp('fats', fats);
+    generateMacroHelp('carbs', carbs);
+    
+    haptic('success');
+}
+
+// Генерация меню для одного приема пищи
+function generateMeal(mealId, macros) {
+    const container = document.getElementById(`${mealId}-items`);
+    const items = [];
+    
+    // Выбираем продукты для достижения целевых макросов
+    let remainingProtein = macros.protein;
+    let remainingFats = macros.fats;
+    let remainingCarbs = macros.carbs;
+    
+    // Добавляем белковый продукт
+    if (remainingProtein > 0) {
+        const proteinFood = foodDatabase.protein[Math.floor(Math.random() * foodDatabase.protein.length)];
+        const amount = Math.round((remainingProtein / proteinFood.protein) * proteinFood.per);
+        items.push({ ...proteinFood, amount });
+        remainingProtein -= (amount / proteinFood.per) * proteinFood.protein;
+        remainingFats -= (amount / proteinFood.per) * proteinFood.fats;
+        remainingCarbs -= (amount / proteinFood.per) * proteinFood.carbs;
+    }
+    
+    // Добавляем углеводный продукт
+    if (remainingCarbs > 0) {
+        const carbFood = foodDatabase.carbs[Math.floor(Math.random() * foodDatabase.carbs.length)];
+        const amount = Math.round((remainingCarbs / carbFood.carbs) * carbFood.per);
+        items.push({ ...carbFood, amount });
+        remainingCarbs -= (amount / carbFood.per) * carbFood.carbs;
+        remainingProtein -= (amount / carbFood.per) * carbFood.protein;
+        remainingFats -= (amount / carbFood.per) * carbFood.fats;
+    }
+    
+    // Добавляем жировой продукт
+    if (remainingFats > 5) {
+        const fatFood = foodDatabase.fats[Math.floor(Math.random() * foodDatabase.fats.length)];
+        const amount = Math.round((remainingFats / fatFood.fats) * fatFood.per);
+        items.push({ ...fatFood, amount });
+    }
+    
+    // Добавляем овощи
+    if (mealId !== 'snacks') {
+        const veggie = foodDatabase.vegetables[Math.floor(Math.random() * foodDatabase.vegetables.length)];
+        items.push({ ...veggie, amount: 100 });
+    }
+    
+    // Отображаем продукты
+    container.innerHTML = items.map(item => `
+        <div class="meal-item">
+            <span class="meal-item-name">${item.name}</span>
+            <span class="meal-item-amount">${item.amount}г</span>
+        </div>
+    `).join('');
+}
+
+// Генерация подсказки для макроса
+function generateMacroHelp(macro, amount) {
+    const container = document.getElementById(`${macro}-help-content`);
+    let foods = [];
+    
+    if (macro === 'protein') {
+        foods = [
+            { name: 'Куриная грудка', amount: Math.round(amount / 0.23) },
+            { name: 'Яйца', amount: Math.round(amount / 0.13 / 50) + ' шт' },
+            { name: 'Творог 5%', amount: Math.round(amount / 0.16) }
+        ];
+    } else if (macro === 'fats') {
+        foods = [
+            { name: 'Оливковое масло', amount: Math.round(amount) + ' мл' },
+            { name: 'Авокадо', amount: Math.round(amount / 0.15) },
+            { name: 'Орехи', amount: Math.round(amount / 0.65) }
+        ];
+    } else if (macro === 'carbs') {
+        foods = [
+            { name: 'Рис', amount: Math.round(amount / 0.78) },
+            { name: 'Гречка', amount: Math.round(amount / 0.62) },
+            { name: 'Овсянка', amount: Math.round(amount / 0.60) }
+        ];
+    }
+    
+    container.innerHTML = `
+        <p>Это примерно:</p>
+        ${foods.map(f => `<div>• ${f.amount}${typeof f.amount === 'number' ? 'г' : ''} ${f.name}</div>`).join('')}
+    `;
+}
+
+// Переключение подсказки для макроса
+function toggleMacroHelp(macro) {
+    const helpDiv = document.getElementById(`${macro}-help`);
+    const isVisible = helpDiv.style.display !== 'none';
+    
+    // Скрываем все подсказки
+    document.querySelectorAll('.macro-help').forEach(h => h.style.display = 'none');
+    
+    // Показываем/скрываем текущую
+    if (!isVisible) {
+        helpDiv.style.display = 'block';
+    }
+    
+    haptic();
+}
+
+// Обновляем функцию switchCaloriesGoal для работы с подвкладками
+function switchCaloriesGoal(goal) {
+    currentGoal = goal;
+    document.querySelectorAll('.calories-subtab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Сохраняем выбранную цель
+    localStorage.setItem('caloriesGoal', goal);
+    
+    haptic();
+}
+
 
 // === МАГАЗИН КАСТОМИЗАЦИИ ===
 const shopItems = {

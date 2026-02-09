@@ -234,9 +234,15 @@
             <div class="calories-container">
                 <div class="calories-card">
                     <div class="calories-tabs">
-                        <div class="calories-tab active" onclick="switchCaloriesGoal('bulk')">Масса</div>
-                        <div class="calories-tab" onclick="switchCaloriesGoal('cut')">Сушка</div>
-                        <div class="calories-tab" onclick="switchCaloriesGoal('maintain')">Поддержка</div>
+                        <div class="calories-tab active" data-tab="calculator" onclick="switchCaloriesTab('calculator')">Калькулятор</div>
+                        <div class="calories-tab" data-tab="nutrition" onclick="switchCaloriesTab('nutrition')">Питание</div>
+                    </div>
+                    
+                    <!-- Подвкладки для калькулятора -->
+                    <div class="calories-subtabs" id="calculator-subtabs">
+                        <div class="calories-subtab active" onclick="switchCaloriesGoal('bulk')">Масса</div>
+                        <div class="calories-subtab" onclick="switchCaloriesGoal('cut')">Сушка</div>
+                        <div class="calories-subtab" onclick="switchCaloriesGoal('maintain')">Поддержка</div>
                     </div>
                     
                     <div class="calories-form">
@@ -296,6 +302,83 @@
                             <span class="result-value" id="result-carbs">0 г</span>
                         </div>
                         <button class="recalculate-btn" onclick="showCaloriesForm()">Перерасчет</button>
+                    </div>
+                    
+                    <!-- Вкладка "Питание" -->
+                    <div class="nutrition-content" id="nutrition-content" style="display: none;">
+                        <div class="nutrition-message" id="nutrition-message">
+                            <div class="nutrition-icon">🍽️</div>
+                            <h3>Сначала рассчитай КБЖУ</h3>
+                            <p>Перейди на вкладку "Калькулятор" и рассчитай свои показатели</p>
+                        </div>
+                        
+                        <div class="nutrition-plan" id="nutrition-plan" style="display: none;">
+                            <h3>Твой рацион на день</h3>
+                            <p class="nutrition-subtitle">Простой план питания без аллергенов</p>
+                            
+                            <!-- Макросы с подсказками -->
+                            <div class="nutrition-macros">
+                                <div class="macro-item">
+                                    <div class="macro-header">
+                                        <span class="macro-label">Белки</span>
+                                        <button class="macro-help-btn" onclick="toggleMacroHelp('protein')">?</button>
+                                    </div>
+                                    <div class="macro-value" id="nutrition-protein">0 г</div>
+                                    <div class="macro-help" id="protein-help" style="display: none;">
+                                        <div class="macro-help-content" id="protein-help-content"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="macro-item">
+                                    <div class="macro-header">
+                                        <span class="macro-label">Жиры</span>
+                                        <button class="macro-help-btn" onclick="toggleMacroHelp('fats')">?</button>
+                                    </div>
+                                    <div class="macro-value" id="nutrition-fats">0 г</div>
+                                    <div class="macro-help" id="fats-help" style="display: none;">
+                                        <div class="macro-help-content" id="fats-help-content"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="macro-item">
+                                    <div class="macro-header">
+                                        <span class="macro-label">Углеводы</span>
+                                        <button class="macro-help-btn" onclick="toggleMacroHelp('carbs')">?</button>
+                                    </div>
+                                    <div class="macro-value" id="nutrition-carbs">0 г</div>
+                                    <div class="macro-help" id="carbs-help" style="display: none;">
+                                        <div class="macro-help-content" id="carbs-help-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Приемы пищи -->
+                            <div class="meals-list">
+                                <div class="meal-card">
+                                    <h4>🌅 Завтрак</h4>
+                                    <div class="meal-items" id="breakfast-items"></div>
+                                </div>
+                                
+                                <div class="meal-card">
+                                    <h4>🌞 Обед</h4>
+                                    <div class="meal-items" id="lunch-items"></div>
+                                </div>
+                                
+                                <div class="meal-card">
+                                    <h4>🌙 Ужин</h4>
+                                    <div class="meal-items" id="dinner-items"></div>
+                                </div>
+                                
+                                <div class="meal-card">
+                                    <h4>🍎 Перекусы</h4>
+                                    <div class="meal-items" id="snacks-items"></div>
+                                </div>
+                            </div>
+                            
+                            <button class="regenerate-plan-btn" onclick="generateNutritionPlan()">
+                                🔄 Сгенерировать новый план
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

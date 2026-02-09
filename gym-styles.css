@@ -195,6 +195,246 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* === ПОДВКЛАДКИ КАЛЬКУЛЯТОРА === */
+.calories-subtabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.calories-subtab {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tg-theme-hint-color);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.calories-subtab.active {
+    background: rgba(10, 132, 255, 0.15);
+    color: var(--tg-theme-button-color);
+    border-color: rgba(10, 132, 255, 0.3);
+}
+
+/* === ПИТАНИЕ === */
+.nutrition-content {
+    min-height: 400px;
+}
+
+.nutrition-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.nutrition-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.nutrition-message h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.nutrition-message p {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color);
+    line-height: 1.5;
+}
+
+.nutrition-plan h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.nutrition-subtitle {
+    font-size: 13px;
+    color: var(--tg-theme-hint-color);
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.nutrition-macros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.macro-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.macro-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.macro-label {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.macro-help-btn {
+    width: 18px;
+    height: 18px;
+    background: rgba(10, 132, 255, 0.2);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    border-radius: 50%;
+    color: var(--tg-theme-button-color);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.macro-help-btn:active {
+    transform: scale(0.9);
+}
+
+.macro-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--tg-theme-button-color);
+}
+
+.macro-help {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(10, 132, 255, 0.1);
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 12px;
+    text-align: left;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.macro-help-content {
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.macro-help-content p {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--tg-theme-text-color);
+}
+
+.macro-help-content div {
+    color: var(--tg-theme-hint-color);
+    margin-bottom: 4px;
+}
+
+.meals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.meal-card {
+    background: linear-gradient(135deg, rgba(10, 132, 255, 0.08) 0%, rgba(10, 132, 255, 0.02) 100%);
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.meal-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meal-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.meal-item-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.meal-item-amount {
+    font-size: 13px;
+    color: var(--tg-theme-button-color);
+    font-weight: 700;
+}
+
+.regenerate-plan-btn {
+    width: 100%;
+    padding: 16px;
+    background: rgba(10, 132, 255, 0.15);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    color: var(--tg-theme-button-color);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.regenerate-plan-btn:active {
+    transform: scale(0.98);
+    background: rgba(10, 132, 255, 0.25);
+}
+
 /* === УПРАЖНЕНИЯ === */
 .exercises-container {
     padding: 0 16px 100px;
