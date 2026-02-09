@@ -1236,7 +1236,7 @@ function generateMealWithRealPortions(mealId, macros) {
             // Омлет + овсянка
             const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 15)));
             items.push({ name: `Омлет из ${eggs} яиц`, amount: '' });
-            items.push({ name: 'Овсянка', amount: '60г' });
+            items.push({ name: 'Овсянка готовая', amount: '200г' });
             items.push({ name: 'Молоко 2.5-3.2%', amount: '200мл' });
         } else if (breakfastType === 1) {
             // Творог + фрукты
@@ -1252,7 +1252,7 @@ function generateMealWithRealPortions(mealId, macros) {
             items.push({ name: 'Авокадо', amount: '½ шт' });
         } else {
             // Гречка + яйца
-            items.push({ name: 'Гречка', amount: '60г' });
+            items.push({ name: 'Гречка готовая', amount: '200г' });
             items.push({ name: 'Яйца вареные', amount: '2 шт' });
             items.push({ name: 'Сливочное масло', amount: '10г' });
         }
@@ -1265,7 +1265,7 @@ function generateMealWithRealPortions(mealId, macros) {
         if (lunchType === 0) {
             // Курица + рис + овощи
             items.push({ name: 'Куриная грудка', amount: '200г' });
-            items.push({ name: 'Рис', amount: '100г' });
+            items.push({ name: 'Рис готовый', amount: '250г' });
             items.push({ name: 'Овощной салат', amount: '150г' });
             items.push({ name: 'Оливковое масло', amount: '1 ст.л.' });
         } else if (lunchType === 1) {
@@ -1277,7 +1277,7 @@ function generateMealWithRealPortions(mealId, macros) {
         } else {
             // Рыба + гречка
             items.push({ name: 'Рыба (лосось/треска)', amount: '200г' });
-            items.push({ name: 'Гречка', amount: '100г' });
+            items.push({ name: 'Гречка готовая', amount: '250г' });
             items.push({ name: 'Брокколи', amount: '150г' });
             items.push({ name: 'Лимонный сок', amount: '1 ст.л.' });
         }
@@ -1297,7 +1297,7 @@ function generateMealWithRealPortions(mealId, macros) {
             // Курица + овощи
             items.push({ name: 'Куриная грудка', amount: '150г' });
             items.push({ name: 'Овощи на гриле', amount: '200г' });
-            items.push({ name: 'Киноа', amount: '50г' });
+            items.push({ name: 'Киноа готовая', amount: '150г' });
         } else {
             // Яйца + салат
             items.push({ name: 'Яйца вареные', amount: '3 шт' });
@@ -1390,7 +1390,7 @@ function toggleMacroHelp(macro) {
         `;
     } else if (macro === 'carbs') {
         title = `Углеводы: ${amount}г в день`;
-        const rice = Math.round(amount * 0.4 / 0.78);
+        const rice = Math.round(amount * 0.4 / 0.28); // готовый рис ~28г углеводов на 100г
         const oats = Math.round(amount * 0.3 / 0.60);
         const bread = Math.round(amount * 0.3 / 0.50);
         
@@ -1398,11 +1398,11 @@ function toggleMacroHelp(macro) {
             <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Примерный список продуктов на день:</p>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🍚 ${rice}г Риса/Гречки</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Сухой вес, на обед</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🍚 ${rice}г Риса/Гречки готовой</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Варёный вес, на обед</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🥣 ${oats}г Овсянки</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥣 ${oats}г Овсянки сухой</div>
                     <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Сухой вес, на завтрак</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
