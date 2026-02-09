@@ -1163,14 +1163,6 @@ function restoreSavedPlan(plan, isPinned = false) {
     document.getElementById('nutrition-fats').textContent = plan.fats + ' г';
     document.getElementById('nutrition-carbs').textContent = plan.carbs + ' г';
     
-    // Распределяем макросы по приемам пищи (для отображения)
-    const meals = {
-        breakfast: { protein: Math.round(plan.protein * 0.25), fats: Math.round(plan.fats * 0.3), carbs: Math.round(plan.carbs * 0.3) },
-        lunch: { protein: Math.round(plan.protein * 0.35), fats: Math.round(plan.fats * 0.35), carbs: Math.round(plan.carbs * 0.4) },
-        dinner: { protein: Math.round(plan.protein * 0.3), fats: Math.round(plan.fats * 0.25), carbs: Math.round(plan.carbs * 0.2) },
-        snacks: { protein: Math.round(plan.protein * 0.1), fats: Math.round(plan.fats * 0.1), carbs: Math.round(plan.carbs * 0.1) }
-    };
-    
     // Восстанавливаем приемы пищи
     ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(mealId => {
         const container = document.getElementById(`${mealId}-items`);
@@ -1183,14 +1175,26 @@ function restoreSavedPlan(plan, isPinned = false) {
         
         // Отображаем КБЖУ приема пищи
         const macrosContainer = document.getElementById(`${mealId}-macros`);
-        const mealMacros = meals[mealId];
-        const calories = Math.round(mealMacros.protein * 4 + mealMacros.fats * 9 + mealMacros.carbs * 4);
-        macrosContainer.innerHTML = `
-            <span class="meal-macro">Б: ${mealMacros.protein}г</span>
-            <span class="meal-macro">Ж: ${mealMacros.fats}г</span>
-            <span class="meal-macro">У: ${mealMacros.carbs}г</span>
-            <span class="meal-macro">${calories} ккал</span>
-        `;
+        
+        // Если есть сохраненные реальные макросы - используем их
+        if (plan.mealMacros && plan.mealMacros[mealId]) {
+            const realMacros = plan.mealMacros[mealId];
+            macrosContainer.innerHTML = `
+                <span class="meal-macro">Б: ${realMacros.protein}г</span>
+                <span class="meal-macro">Ж: ${realMacros.fats}г</span>
+                <span class="meal-macro">У: ${realMacros.carbs}г</span>
+                <span class="meal-macro">${realMacros.calories} ккал</span>
+            `;
+        } else {
+            // Если нет сохраненных макросов (старый формат) - пересчитываем из продуктов
+            const realMacros = calculateRealMacros(plan.meals[mealId]);
+            macrosContainer.innerHTML = `
+                <span class="meal-macro">Б: ${realMacros.protein}г</span>
+                <span class="meal-macro">Ж: ${realMacros.fats}г</span>
+                <span class="meal-macro">У: ${realMacros.carbs}г</span>
+                <span class="meal-macro">${realMacros.calories} ккал</span>
+            `;
+        }
     });
     
     // Обновляем кнопку закрепления
@@ -1204,8 +1208,8 @@ function generateNewPlan(protein, fats, carbs) {
     document.getElementById('nutrition-fats').textContent = fats + ' г';
     document.getElementById('nutrition-carbs').textContent = carbs + ' г';
     
-    // Распределяем макросы по приемам пищи
-    const meals = {
+    // Распределяем макросы по приемам пищи (целевые значения для генерации)
+    const targetMacros = {
         breakfast: { protein: Math.round(protein * 0.25), fats: Math.round(fats * 0.3), carbs: Math.round(carbs * 0.3) },
         lunch: { protein: Math.round(protein * 0.35), fats: Math.round(fats * 0.35), carbs: Math.round(carbs * 0.4) },
         dinner: { protein: Math.round(protein * 0.3), fats: Math.round(fats * 0.25), carbs: Math.round(carbs * 0.2) },
@@ -1217,13 +1221,18 @@ function generateNewPlan(protein, fats, carbs) {
         protein,
         fats,
         carbs,
-        meals: {}
+        meals: {},
+        mealMacros: {} // Сохраняем РЕАЛЬНЫЕ макросы для каждого приема
     };
     
     // Генерируем меню для каждого приема пищи
-    Object.keys(meals).forEach(mealId => {
-        const items = generateMealWithRealPortions(mealId, meals[mealId]);
+    Object.keys(targetMacros).forEach(mealId => {
+        const items = generateMealWithRealPortions(mealId, targetMacros[mealId]);
         planToSave.meals[mealId] = items;
+        
+        // РАССЧИТЫВАЕМ РЕАЛЬНЫЕ КБЖУ из продуктов
+        const realMacros = calculateRealMacros(items);
+        planToSave.mealMacros[mealId] = realMacros;
         
         // Отображаем продукты
         const container = document.getElementById(`${mealId}-items`);
@@ -1234,15 +1243,13 @@ function generateNewPlan(protein, fats, carbs) {
             </div>
         `).join('');
         
-        // Отображаем КБЖУ приема пищи
+        // Отображаем РЕАЛЬНЫЕ КБЖУ приема пищи
         const macrosContainer = document.getElementById(`${mealId}-macros`);
-        const mealMacros = meals[mealId];
-        const calories = Math.round(mealMacros.protein * 4 + mealMacros.fats * 9 + mealMacros.carbs * 4);
         macrosContainer.innerHTML = `
-            <span class="meal-macro">Б: ${mealMacros.protein}г</span>
-            <span class="meal-macro">Ж: ${mealMacros.fats}г</span>
-            <span class="meal-macro">У: ${mealMacros.carbs}г</span>
-            <span class="meal-macro">${calories} ккал</span>
+            <span class="meal-macro">Б: ${realMacros.protein}г</span>
+            <span class="meal-macro">Ж: ${realMacros.fats}г</span>
+            <span class="meal-macro">У: ${realMacros.carbs}г</span>
+            <span class="meal-macro">${realMacros.calories} ккал</span>
         `;
     });
     
@@ -1253,6 +1260,116 @@ function generateNewPlan(protein, fats, carbs) {
     updatePinButton(false);
     
     haptic('success');
+}
+
+// База данных продуктов с КБЖУ на 100г (или на штуку для яиц)
+const foodDatabase = {
+    // Белковые продукты
+    'Куриная грудка (сырой вес)': { protein: 23, fats: 1.9, carbs: 0, perUnit: false },
+    'Говядина (сырой вес)': { protein: 26, fats: 15, carbs: 0, perUnit: false },
+    'Рыба (лосось/треска, сырой вес)': { protein: 20, fats: 13, carbs: 0, perUnit: false },
+    'Творог 5%': { protein: 16, fats: 5, carbs: 2, perUnit: false },
+    'Творог 5-9%': { protein: 16, fats: 7, carbs: 2, perUnit: false },
+    'Яйца вареные': { protein: 13, fats: 11, carbs: 1, perUnit: true }, // на 1 яйцо
+    'Омлет из': { protein: 13, fats: 11, carbs: 1, perUnit: true }, // на 1 яйцо
+    'Яичница из': { protein: 13, fats: 11, carbs: 1, perUnit: true }, // на 1 яйцо
+    'Греческий йогурт 2-5%': { protein: 10, fats: 3.5, carbs: 4, perUnit: false },
+    'Протеиновый коктейль': { protein: 25, fats: 2, carbs: 5, perUnit: true }, // на порцию
+    
+    // Углеводы
+    'Рис (сырой вес)': { protein: 7, fats: 0.7, carbs: 78, perUnit: false },
+    'Гречка (сырой вес)': { protein: 12, fats: 3, carbs: 62, perUnit: false },
+    'Овсянка (сырой вес)': { protein: 13, fats: 6, carbs: 60, perUnit: false },
+    'Киноа (сырой вес)': { protein: 14, fats: 6, carbs: 64, perUnit: false },
+    'Картофель запеченный': { protein: 2, fats: 0.1, carbs: 18, perUnit: false },
+    'Хлеб цельнозерновой': { protein: 9, fats: 3, carbs: 50, perUnit: false }, // ~40г на кусок
+    'Хлебцы': { protein: 10, fats: 2, carbs: 70, perUnit: false }, // ~10г на штуку
+    
+    // Жиры
+    'Оливковое масло': { protein: 0, fats: 100, carbs: 0, perUnit: false }, // ~15мл = 1 ст.л.
+    'Сливочное масло': { protein: 0.5, fats: 82, carbs: 0.8, perUnit: false },
+    'Сметана 15-20%': { protein: 2.5, fats: 17.5, carbs: 3, perUnit: false },
+    'Орехи': { protein: 15, fats: 50, carbs: 15, perUnit: false },
+    'Орехи микс': { protein: 15, fats: 50, carbs: 15, perUnit: false },
+    'Авокадо': { protein: 2, fats: 15, carbs: 9, perUnit: false }, // ~150г на штуку
+    'Арахисовая паста': { protein: 25, fats: 50, carbs: 20, perUnit: false },
+    
+    // Овощи и фрукты (минимальные КБЖУ)
+    'Овощной салат': { protein: 1, fats: 0.2, carbs: 5, perUnit: false },
+    'Овощи на гриле': { protein: 2, fats: 0.3, carbs: 7, perUnit: false },
+    'Брокколи': { protein: 3, fats: 0.4, carbs: 7, perUnit: false },
+    'Огурцы': { protein: 0.8, fats: 0.1, carbs: 3.6, perUnit: false },
+    'Помидоры': { protein: 0.9, fats: 0.2, carbs: 3.9, perUnit: false },
+    'Греческий салат': { protein: 3, fats: 8, carbs: 5, perUnit: false },
+    'Банан': { protein: 1.5, fats: 0.5, carbs: 23, perUnit: true }, // ~120г на штуку
+    'Яблоко': { protein: 0.4, fats: 0.4, carbs: 14, perUnit: true }, // ~180г на штуку
+    'Ягоды': { protein: 1, fats: 0.3, carbs: 12, perUnit: false },
+    
+    // Прочее
+    'Молоко 2.5-3.2%': { protein: 3.2, fats: 2.85, carbs: 4.7, perUnit: false }, // на 100мл
+    'Мёд': { protein: 0.3, fats: 0, carbs: 82, perUnit: false }, // ~7г на ч.л.
+    'Лимонный сок': { protein: 0.4, fats: 0.1, carbs: 3, perUnit: false },
+    'Зелень': { protein: 0, fats: 0, carbs: 0, perUnit: false }
+};
+
+// Функция для расчета реальных КБЖУ из списка продуктов
+function calculateRealMacros(items) {
+    let totalProtein = 0;
+    let totalFats = 0;
+    let totalCarbs = 0;
+    
+    items.forEach(item => {
+        // Ищем продукт в базе данных
+        let foodKey = item.name;
+        let foodData = foodDatabase[foodKey];
+        
+        // Если не нашли точное совпадение, пробуем найти по началу названия
+        if (!foodData) {
+            foodKey = Object.keys(foodDatabase).find(key => item.name.startsWith(key));
+            foodData = foodDatabase[foodKey];
+        }
+        
+        if (!foodData) {
+            console.warn('Food not found in database:', item.name);
+            return;
+        }
+        
+        // Парсим количество из amount
+        let quantity = 0;
+        if (foodData.perUnit) {
+            // Для штучных продуктов (яйца, бананы)
+            const match = item.name.match(/(\d+)\s*(шт|яиц|яйцо)/i) || item.amount.match(/(\d+)\s*(шт|порция)/i);
+            quantity = match ? parseInt(match[1]) : 1;
+        } else {
+            // Для весовых продуктов
+            const match = item.amount.match(/(\d+)\s*г/i) || item.amount.match(/(\d+)\s*мл/i);
+            if (match) {
+                quantity = parseInt(match[1]) / 100; // переводим в коэффициент от 100г
+            } else if (item.amount.includes('ст.л.')) {
+                quantity = 0.15; // 1 ст.л. = ~15мл/г
+            } else if (item.amount.includes('ч.л.')) {
+                quantity = 0.07; // 1 ч.л. = ~7г
+            } else if (item.amount.includes('½')) {
+                quantity = 0.75; // половина авокадо ~75г
+            } else if (item.amount.includes('куска')) {
+                const match = item.amount.match(/(\d+)\s*куска/i);
+                const slices = match ? parseInt(match[1]) : 2;
+                quantity = (slices * 40) / 100; // 1 кусок хлеба ~40г
+            }
+        }
+        
+        // Добавляем КБЖУ
+        totalProtein += foodData.protein * quantity;
+        totalFats += foodData.fats * quantity;
+        totalCarbs += foodData.carbs * quantity;
+    });
+    
+    return {
+        protein: Math.round(totalProtein),
+        fats: Math.round(totalFats),
+        carbs: Math.round(totalCarbs),
+        calories: Math.round(totalProtein * 4 + totalFats * 9 + totalCarbs * 4)
+    };
 }
 
 // Генерация меню с реальными порциями
