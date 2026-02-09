@@ -1099,35 +1099,6 @@ function showNutritionPlan() {
 }
 
 // База продуктов (простые и доступные)
-const foodDatabase = {
-    protein: [
-        { name: 'Куриная грудка', protein: 23, fats: 1.2, carbs: 0, per: 100 },
-        { name: 'Яйца', protein: 13, fats: 11, carbs: 1, per: 100 },
-        { name: 'Творог 5%', protein: 16, fats: 5, carbs: 2, per: 100 },
-        { name: 'Куриные ножки', protein: 18, fats: 14, carbs: 0, per: 100 },
-        { name: 'Говядина', protein: 26, fats: 7, carbs: 0, per: 100 }
-    ],
-    fats: [
-        { name: 'Подсолнечное масло', protein: 0, fats: 100, carbs: 0, per: 100 },
-        { name: 'Сливочное масло', protein: 0.5, fats: 82, carbs: 0.8, per: 100 },
-        { name: 'Сметана 20%', protein: 2.8, fats: 20, carbs: 3.2, per: 100 }
-    ],
-    carbs: [
-        { name: 'Рис', protein: 7, fats: 0.7, carbs: 78, per: 100 },
-        { name: 'Гречка', protein: 12, fats: 3, carbs: 62, per: 100 },
-        { name: 'Овсянка', protein: 12, fats: 6, carbs: 60, per: 100 },
-        { name: 'Картофель', protein: 2, fats: 0.4, carbs: 18, per: 100 },
-        { name: 'Макароны', protein: 11, fats: 1, carbs: 71, per: 100 },
-        { name: 'Хлеб', protein: 8, fats: 1, carbs: 50, per: 100 }
-    ],
-    vegetables: [
-        { name: 'Огурцы', protein: 0.8, fats: 0.1, carbs: 3.6, per: 100 },
-        { name: 'Помидоры', protein: 0.9, fats: 0.2, carbs: 3.9, per: 100 },
-        { name: 'Капуста', protein: 1.8, fats: 0.1, carbs: 5.8, per: 100 },
-        { name: 'Морковь', protein: 1, fats: 0.1, carbs: 10, per: 100 }
-    ]
-};
-
 // Генерация плана питания
 function generateNutritionPlan() {
     const savedData = localStorage.getItem('caloriesData');
