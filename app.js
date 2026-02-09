@@ -1061,8 +1061,22 @@ function showNutritionPlan() {
     document.getElementById('nutrition-message').style.display = 'none';
     document.getElementById('nutrition-plan').style.display = 'block';
     
-    // Проверяем есть ли сохраненный план
+    // Проверяем есть ли закрепленный план
+    const isPinned = localStorage.getItem('nutritionPlanPinned') === 'true';
     const savedPlan = localStorage.getItem('nutritionPlan');
+    
+    if (isPinned && savedPlan) {
+        try {
+            const plan = JSON.parse(savedPlan);
+            // Восстанавливаем закрепленный план
+            restoreSavedPlan(plan, true);
+            return;
+        } catch (e) {
+            console.error('Error loading pinned plan:', e);
+        }
+    }
+    
+    // Если план не закреплен - проверяем соответствие макросам
     if (savedPlan) {
         try {
             const plan = JSON.parse(savedPlan);
@@ -1072,7 +1086,7 @@ function showNutritionPlan() {
             // Проверяем что план соответствует текущим макросам
             if (plan.protein === data.protein && plan.fats === data.fats && plan.carbs === data.carbs) {
                 // Восстанавливаем сохраненный план
-                restoreSavedPlan(plan);
+                restoreSavedPlan(plan, false);
                 return;
             }
         } catch (e) {
@@ -1143,7 +1157,7 @@ function generateNutritionPlan() {
 }
 
 // Восстановление сохраненного плана
-function restoreSavedPlan(plan) {
+function restoreSavedPlan(plan, isPinned = false) {
     // Обновляем макросы
     document.getElementById('nutrition-protein').textContent = plan.protein + ' г';
     document.getElementById('nutrition-fats').textContent = plan.fats + ' г';
@@ -1159,6 +1173,9 @@ function restoreSavedPlan(plan) {
             </div>
         `).join('');
     });
+    
+    // Обновляем кнопку закрепления
+    updatePinButton(isPinned);
 }
 
 // Генерация нового плана
@@ -1200,6 +1217,9 @@ function generateNewPlan(protein, fats, carbs) {
     
     // Сохраняем план
     localStorage.setItem('nutritionPlan', JSON.stringify(planToSave));
+    
+    // Обновляем кнопку закрепления (новый план не закреплен)
+    updatePinButton(false);
     
     haptic('success');
 }
@@ -1394,10 +1414,46 @@ function regenerateNutritionPlan() {
     const data = JSON.parse(savedData);
     const { protein, fats, carbs } = data;
     
-    // Удаляем старый план
+    // Удаляем старый план и открепляем
     localStorage.removeItem('nutritionPlan');
+    localStorage.removeItem('nutritionPlanPinned');
     
     // Генерируем новый
+    generateNewPlan(protein, fats, carbs);
+    
+    haptic('success');
+}
+
+// Закрепить/открепить план питания
+function togglePinNutritionPlan() {
+    const isPinned = localStorage.getItem('nutritionPlanPinned') === 'true';
+    
+    if (isPinned) {
+        // Открепляем
+        localStorage.removeItem('nutritionPlanPinned');
+        updatePinButton(false);
+    } else {
+        // Закрепляем
+        localStorage.setItem('nutritionPlanPinned', 'true');
+        updatePinButton(true);
+    }
+    
+    haptic();
+}
+
+// Обновить кнопку закрепления
+function updatePinButton(isPinned) {
+    const pinBtn = document.getElementById('pin-plan-btn');
+    if (!pinBtn) return;
+    
+    if (isPinned) {
+        pinBtn.innerHTML = '📌 Открепить рацион';
+        pinBtn.classList.add('pinned');
+    } else {
+        pinBtn.innerHTML = '📍 Закрепить рацион';
+        pinBtn.classList.remove('pinned');
+    }
+}
     generateNewPlan(protein, fats, carbs);
 }
 
