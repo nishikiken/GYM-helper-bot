@@ -4,14 +4,17 @@
 }
 
 .calories-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15,23,42,.7);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 20px;
     padding: 20px;
     position: relative;
     min-height: 500px;
     max-width: 100%;
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,.5),
+        0 0 40px rgba(56, 189, 248, 0.1);
 }
 
 .calories-tabs {
@@ -23,21 +26,26 @@
 .calories-tab {
     flex: 1;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15,23,42,.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 12px;
     text-align: center;
     font-size: 13px;
     font-weight: 600;
-    color: var(--tg-theme-hint-color);
+    color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .calories-tab.active {
-    background: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    border-color: var(--tg-theme-button-color);
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(56, 189, 248, 0.3);
 }
 
 .calories-form {
@@ -110,19 +118,26 @@
 .calculate-btn {
     width: 100%;
     padding: 16px;
-    background: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    border: none;
+    background: rgba(15,23,42,.7);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
     margin-top: 8px;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(56, 189, 248, 0.2);
 }
 
 .calculate-btn:active {
-    transform: scale(0.98);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 28px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(56, 189, 248, 0.4);
 }
 
 .calories-result {
@@ -281,11 +296,13 @@
 }
 
 .macro-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15,23,42,.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 12px;
     padding: 10px 8px;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .macro-header {
@@ -298,7 +315,7 @@
 
 .macro-label {
     font-size: 11px;
-    color: var(--tg-theme-hint-color);
+    color: rgba(255, 255, 255, 0.6);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -307,10 +324,10 @@
 .macro-help-btn {
     width: 16px;
     height: 16px;
-    background: rgba(10, 132, 255, 0.2);
-    border: 1px solid rgba(10, 132, 255, 0.3);
+    background: rgba(56, 189, 248, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 50%;
-    color: var(--tg-theme-button-color);
+    color: #38bdf8;
     font-size: 10px;
     font-weight: 700;
     cursor: pointer;
@@ -319,16 +336,19 @@
     align-items: center;
     justify-content: center;
     padding: 0;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
 
 .macro-help-btn:active {
     transform: scale(0.9);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
 .macro-value {
     font-size: 18px;
     font-weight: 700;
-    color: var(--tg-theme-button-color);
+    color: #38bdf8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
 
 .macro-help {
@@ -376,10 +396,14 @@
 }
 
 .meal-card {
-    background: linear-gradient(135deg, rgba(10, 132, 255, 0.08) 0%, rgba(10, 132, 255, 0.02) 100%);
-    border: 1px solid rgba(10, 132, 255, 0.2);
+    background: rgba(15,23,42,.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 14px;
     padding: 12px;
+    box-shadow: 
+        0 12px 40px rgba(0,0,0,.5),
+        0 0 30px rgba(56, 189, 248, 0.05);
 }
 
 .meal-card h4 {
@@ -420,19 +444,25 @@
 .regenerate-plan-btn {
     width: 100%;
     padding: 14px;
-    background: rgba(10, 132, 255, 0.15);
-    border: 1px solid rgba(10, 132, 255, 0.3);
-    color: var(--tg-theme-button-color);
+    background: rgba(15,23,42,.7);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
     border-radius: 12px;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(56, 189, 248, 0.2);
 }
 
 .regenerate-plan-btn:active {
-    transform: scale(0.98);
-    background: rgba(10, 132, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 28px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(56, 189, 248, 0.4);
 }
 
 /* === УПРАЖНЕНИЯ === */
