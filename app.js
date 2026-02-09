@@ -1237,7 +1237,7 @@ function generateMealWithRealPortions(mealId, macros) {
             const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 15)));
             items.push({ name: `Омлет из ${eggs} яиц`, amount: '' });
             items.push({ name: 'Овсянка', amount: '60г' });
-            items.push({ name: 'Молоко', amount: '200мл' });
+            items.push({ name: 'Молоко 2.5-3.2%', amount: '200мл' });
         } else if (breakfastType === 1) {
             // Творог + фрукты
             items.push({ name: 'Творог 5%', amount: '150г' });
@@ -1273,7 +1273,7 @@ function generateMealWithRealPortions(mealId, macros) {
             items.push({ name: 'Говядина', amount: '180г' });
             items.push({ name: 'Картофель запеченный', amount: '250г' });
             items.push({ name: 'Помидоры', amount: '100г' });
-            items.push({ name: 'Сметана 20%', amount: '30г' });
+            items.push({ name: 'Сметана 15-20%', amount: '30г' });
         } else {
             // Рыба + гречка
             items.push({ name: 'Рыба (лосось/треска)', amount: '200г' });
@@ -1289,7 +1289,7 @@ function generateMealWithRealPortions(mealId, macros) {
         
         if (dinnerType === 0) {
             // Творог + овощи
-            items.push({ name: 'Творог 5%', amount: '200г' });
+            items.push({ name: 'Творог 5-9%', amount: '200г' });
             items.push({ name: 'Огурцы', amount: '100г' });
             items.push({ name: 'Помидоры', amount: '100г' });
             items.push({ name: 'Зелень', amount: 'по вкусу' });
@@ -1314,7 +1314,7 @@ function generateMealWithRealPortions(mealId, macros) {
             items.push({ name: 'Протеиновый коктейль', amount: '1 порция' });
             items.push({ name: 'Банан', amount: '1 шт' });
         } else if (snackType === 1) {
-            items.push({ name: 'Греческий йогурт', amount: '150г' });
+            items.push({ name: 'Греческий йогурт 2-5%', amount: '150г' });
             items.push({ name: 'Ягоды', amount: '50г' });
             items.push({ name: 'Мёд', amount: '1 ч.л.' });
         } else if (snackType === 2) {
