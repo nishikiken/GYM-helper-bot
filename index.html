@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css?v=1">
-    <link rel="stylesheet" href="gym-styles.css?v=64">
+    <link rel="stylesheet" href="gym-styles.css?v=65">
     <style>
         /* Встроенная консоль для отладки */
         #debug-console {
@@ -160,7 +160,7 @@
                         <div class="user-avatar" id="user-avatar">
                             <div class="avatar-placeholder">👤</div>
                         </div>
-                        <div class="user-version">v64</div>
+                        <div class="user-version">v65</div>
                     </div>
                 </div>
             </div>
@@ -324,9 +324,6 @@
                                         <button class="macro-help-btn" onclick="toggleMacroHelp('protein')">?</button>
                                     </div>
                                     <div class="macro-value" id="nutrition-protein">0 г</div>
-                                    <div class="macro-help" id="protein-help" style="display: none;">
-                                        <div class="macro-help-content" id="protein-help-content"></div>
-                                    </div>
                                 </div>
                                 
                                 <div class="macro-item">
@@ -335,9 +332,6 @@
                                         <button class="macro-help-btn" onclick="toggleMacroHelp('fats')">?</button>
                                     </div>
                                     <div class="macro-value" id="nutrition-fats">0 г</div>
-                                    <div class="macro-help" id="fats-help" style="display: none;">
-                                        <div class="macro-help-content" id="fats-help-content"></div>
-                                    </div>
                                 </div>
                                 
                                 <div class="macro-item">
@@ -346,9 +340,6 @@
                                         <button class="macro-help-btn" onclick="toggleMacroHelp('carbs')">?</button>
                                     </div>
                                     <div class="macro-value" id="nutrition-carbs">0 г</div>
-                                    <div class="macro-help" id="carbs-help" style="display: none;">
-                                        <div class="macro-help-content" id="carbs-help-content"></div>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -730,6 +721,17 @@
                 <div class="modal-actions">
                     <button class="btn-cancel" onclick="closeViewProgramModal()">Закрыть</button>
                     <button class="btn-save" onclick="downloadProgram()">📥 Скопировать себе</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно: Подсказка по макросам -->
+        <div class="modal" id="macro-help-modal">
+            <div class="modal-content">
+                <h2 id="macro-help-title">Подсказка</h2>
+                <div id="macro-help-content-modal" style="margin-top: 16px;"></div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="closeMacroModal()" style="width: 100%;">Понятно</button>
                 </div>
             </div>
         </div>

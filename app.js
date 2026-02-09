@@ -1060,6 +1060,27 @@ function showNutritionMessage() {
 function showNutritionPlan() {
     document.getElementById('nutrition-message').style.display = 'none';
     document.getElementById('nutrition-plan').style.display = 'block';
+    
+    // Проверяем есть ли сохраненный план
+    const savedPlan = localStorage.getItem('nutritionPlan');
+    if (savedPlan) {
+        try {
+            const plan = JSON.parse(savedPlan);
+            const savedData = localStorage.getItem('caloriesData');
+            const data = JSON.parse(savedData);
+            
+            // Проверяем что план соответствует текущим макросам
+            if (plan.protein === data.protein && plan.fats === data.fats && plan.carbs === data.carbs) {
+                // Восстанавливаем сохраненный план
+                restoreSavedPlan(plan);
+                return;
+            }
+        } catch (e) {
+            console.error('Error loading saved plan:', e);
+        }
+    }
+    
+    // Если нет сохраненного плана - генерируем новый
     generateNutritionPlan();
 }
 
@@ -1138,11 +1159,6 @@ function restoreSavedPlan(plan) {
             </div>
         `).join('');
     });
-    
-    // Генерируем подсказки для макросов
-    generateMacroHelp('protein', plan.protein);
-    generateMacroHelp('fats', plan.fats);
-    generateMacroHelp('carbs', plan.carbs);
 }
 
 // Генерация нового плана
@@ -1185,11 +1201,6 @@ function generateNewPlan(protein, fats, carbs) {
     // Сохраняем план
     localStorage.setItem('nutritionPlan', JSON.stringify(planToSave));
     
-    // Генерируем подсказки для макросов
-    generateMacroHelp('protein', protein);
-    generateMacroHelp('fats', fats);
-    generateMacroHelp('carbs', carbs);
-    
     haptic('success');
 }
 
@@ -1201,13 +1212,19 @@ function generateMealWithRealPortions(mealId, macros) {
     let remainingFats = macros.fats;
     let remainingCarbs = macros.carbs;
     
-    // Белковый продукт - округляем до 50г
+    // Белковый продукт - реальные порции
     if (remainingProtein > 0) {
         const proteinFood = foodDatabase.protein[Math.floor(Math.random() * foodDatabase.protein.length)];
         let amount = Math.round((remainingProtein / proteinFood.protein) * proteinFood.per);
-        // Округляем до 50г для удобства
-        amount = Math.round(amount / 50) * 50;
-        if (amount < 50) amount = 50;
+        
+        // Реальные порции для белка
+        if (proteinFood.name.includes('Яйца')) {
+            // Яйца - по 1-2 штуки (50-100г)
+            amount = Math.min(100, Math.max(50, Math.round(amount / 50) * 50));
+        } else {
+            // Мясо/творог - 100-200г
+            amount = Math.min(200, Math.max(100, Math.round(amount / 50) * 50));
+        }
         
         items.push({ name: proteinFood.name, amount });
         remainingProtein -= (amount / proteinFood.per) * proteinFood.protein;
@@ -1215,13 +1232,22 @@ function generateMealWithRealPortions(mealId, macros) {
         remainingCarbs -= (amount / proteinFood.per) * proteinFood.carbs;
     }
     
-    // Углеводный продукт - округляем до 50г
+    // Углеводный продукт - реальные порции
     if (remainingCarbs > 0) {
         const carbFood = foodDatabase.carbs[Math.floor(Math.random() * foodDatabase.carbs.length)];
         let amount = Math.round((remainingCarbs / carbFood.carbs) * carbFood.per);
-        // Округляем до 50г для удобства
-        amount = Math.round(amount / 50) * 50;
-        if (amount < 50) amount = 50;
+        
+        // Реальные порции для углеводов
+        if (carbFood.name.includes('Хлеб')) {
+            // Хлеб - 40-80г (1-2 куска)
+            amount = Math.min(80, Math.max(40, Math.round(amount / 40) * 40));
+        } else if (carbFood.name.includes('Картофель')) {
+            // Картофель - 150-300г (1-2 средних)
+            amount = Math.min(300, Math.max(150, Math.round(amount / 50) * 50));
+        } else {
+            // Крупы - 50-150г (сухой вес)
+            amount = Math.min(150, Math.max(50, Math.round(amount / 50) * 50));
+        }
         
         items.push({ name: carbFood.name, amount });
         remainingCarbs -= (amount / carbFood.per) * carbFood.carbs;
@@ -1229,26 +1255,27 @@ function generateMealWithRealPortions(mealId, macros) {
         remainingFats -= (amount / carbFood.per) * carbFood.fats;
     }
     
-    // Жировой продукт - используем стандартные порции
+    // Жировой продукт - реальные порции
     if (remainingFats > 5) {
         const fatFood = foodDatabase.fats[Math.floor(Math.random() * foodDatabase.fats.length)];
         let amount = Math.round((remainingFats / fatFood.fats) * fatFood.per);
         
-        // Стандартные порции для жиров
+        // Реальные порции для жиров
         if (fatFood.name.includes('масло')) {
-            // Масло - округляем до 10мл
-            amount = Math.round(amount / 10) * 10;
-            if (amount < 10) amount = 10;
+            // Масло - 10-30мл (1-2 ложки)
+            amount = Math.min(30, Math.max(10, Math.round(amount / 10) * 10));
+        } else if (fatFood.name.includes('Сметана')) {
+            // Сметана - 20-50г (1-2 ложки)
+            amount = Math.min(50, Math.max(20, Math.round(amount / 10) * 10));
         } else {
-            // Сметана - округляем до 50г
-            amount = Math.round(amount / 50) * 50;
-            if (amount < 50) amount = 50;
+            // Другие жиры - 20-50г
+            amount = Math.min(50, Math.max(20, Math.round(amount / 10) * 10));
         }
         
         items.push({ name: fatFood.name, amount });
     }
     
-    // Овощи - всегда 100г (кроме перекусов)
+    // Овощи - всегда 100-150г (кроме перекусов)
     if (mealId !== 'snacks') {
         const veggie = foodDatabase.vegetables[Math.floor(Math.random() * foodDatabase.vegetables.length)];
         items.push({ name: veggie.name, amount: 100 });
@@ -1257,65 +1284,105 @@ function generateMealWithRealPortions(mealId, macros) {
     return items;
 }
 
-// Генерация подсказки для макроса - показывает дневной рацион
-function generateMacroHelp(macro, amount) {
-    const container = document.getElementById(`${macro}-help-content`);
+// Переключение подсказки для макроса - открывает модальное окно
+function toggleMacroHelp(macro) {
+    const savedData = localStorage.getItem('caloriesData');
+    if (!savedData) return;
+    
+    const data = JSON.parse(savedData);
+    const amount = data[macro === 'protein' ? 'protein' : macro === 'fats' ? 'fats' : 'carbs'];
+    
+    let title = '';
     let content = '';
     
     if (macro === 'protein') {
-        // Рассчитываем реальный дневной рацион белка
-        const chicken = Math.round(amount * 0.4 / 0.23); // 40% из курицы
-        const eggs = Math.round(amount * 0.3 / 0.13 / 50); // 30% из яиц
-        const cottage = Math.round(amount * 0.3 / 0.16); // 30% из творога
+        title = `Белки: ${amount}г в день`;
+        const chicken = Math.round(amount * 0.4 / 0.23);
+        const eggs = Math.round(amount * 0.3 / 0.13 / 50);
+        const cottage = Math.round(amount * 0.3 / 0.16);
         
         content = `
-            <p>Дневной рацион:</p>
-            <div>• ${chicken}г Куриной грудки</div>
-            <div>• ${eggs} шт Яиц</div>
-            <div>• ${cottage}г Творога 5%</div>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🍗 ${chicken}г Куриной грудки</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 40% дневного белка</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥚 ${eggs} шт Яиц</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневного белка</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🧀 ${cottage}г Творога 5%</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневного белка</div>
+                </div>
+            </div>
         `;
     } else if (macro === 'fats') {
-        // Рассчитываем реальный дневной рацион жиров
-        const oil = Math.round(amount * 0.5); // 50% из масла
-        const butter = Math.round(amount * 0.3 / 0.82); // 30% из сливочного масла
-        const sour = Math.round(amount * 0.2 / 0.20); // 20% из сметаны
+        title = `Жиры: ${amount}г в день`;
+        const oil = Math.round(amount * 0.5);
+        const butter = Math.round(amount * 0.3 / 0.82);
+        const sour = Math.round(amount * 0.2 / 0.20);
         
         content = `
-            <p>Дневной рацион:</p>
-            <div>• ${oil}мл Подсолнечного масла</div>
-            <div>• ${butter}г Сливочного масла</div>
-            <div>• ${sour}г Сметаны 20%</div>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🛢️ ${oil}мл Подсолнечного масла</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 50% дневных жиров</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🧈 ${butter}г Сливочного масла</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневных жиров</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥛 ${sour}г Сметаны 20%</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 20% дневных жиров</div>
+                </div>
+            </div>
         `;
     } else if (macro === 'carbs') {
-        // Рассчитываем реальный дневной рацион углеводов
-        const rice = Math.round(amount * 0.35 / 0.78); // 35% из риса
-        const buckwheat = Math.round(amount * 0.35 / 0.62); // 35% из гречки
-        const bread = Math.round(amount * 0.3 / 0.50); // 30% из хлеба
+        title = `Углеводы: ${amount}г в день`;
+        const rice = Math.round(amount * 0.35 / 0.78);
+        const buckwheat = Math.round(amount * 0.35 / 0.62);
+        const bread = Math.round(amount * 0.3 / 0.50);
         
         content = `
-            <p>Дневной рацион:</p>
-            <div>• ${rice}г Риса</div>
-            <div>• ${buckwheat}г Гречки</div>
-            <div>• ${bread}г Хлеба</div>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🍚 ${rice}г Риса</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 35% дневных углеводов</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🌾 ${buckwheat}г Гречки</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 35% дневных углеводов</div>
+                </div>
+                <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">🍞 ${bread}г Хлеба</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневных углеводов</div>
+                </div>
+            </div>
         `;
     }
     
-    container.innerHTML = content;
+    // Показываем модальное окно
+    showMacroModal(title, content);
+    
+    haptic();
 }
 
-// Переключение подсказки для макроса
-function toggleMacroHelp(macro) {
-    const helpDiv = document.getElementById(`${macro}-help`);
-    const isVisible = helpDiv.style.display !== 'none';
-    
-    // Скрываем все подсказки
-    document.querySelectorAll('.macro-help').forEach(h => h.style.display = 'none');
-    
-    // Показываем/скрываем текущую
-    if (!isVisible) {
-        helpDiv.style.display = 'block';
-    }
-    
+// Показать модальное окно с подсказкой
+function showMacroModal(title, content) {
+    const modal = document.getElementById('macro-help-modal');
+    document.getElementById('macro-help-title').textContent = title;
+    document.getElementById('macro-help-content-modal').innerHTML = content;
+    modal.classList.add('active');
+}
+
+// Закрыть модальное окно с подсказкой
+function closeMacroModal() {
+    document.getElementById('macro-help-modal').classList.remove('active');
     haptic();
 }
 
