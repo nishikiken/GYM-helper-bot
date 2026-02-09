@@ -1396,7 +1396,7 @@ function generateMealWithRealPortions(mealId, macros) {
             const rice = Math.min(100, Math.max(60, Math.round(macros.carbs / 0.78 / 10) * 10)); // сырой рис
             items.push({ name: 'Куриная грудка (сырой вес)', amount: `${chicken}г` });
             items.push({ name: 'Рис (сырой вес)', amount: `${rice}г` });
-            items.push({ name: 'Овощной салат', amount: '150г` });
+            items.push({ name: 'Овощной салат', amount: '150г' });
             items.push({ name: 'Оливковое масло', amount: '1 ст.л.' });
         } else if (lunchType === 1) {
             // Говядина + картофель + овощи
