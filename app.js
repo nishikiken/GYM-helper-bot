@@ -1169,7 +1169,7 @@ function restoreSavedPlan(plan, isPinned = false) {
         container.innerHTML = plan.meals[mealId].map(item => `
             <div class="meal-item">
                 <span class="meal-item-name">${item.name}</span>
-                <span class="meal-item-amount">${item.amount}г</span>
+                <span class="meal-item-amount">${item.amount}</span>
             </div>
         `).join('');
     });
@@ -1210,7 +1210,7 @@ function generateNewPlan(protein, fats, carbs) {
         container.innerHTML = items.map(item => `
             <div class="meal-item">
                 <span class="meal-item-name">${item.name}</span>
-                <span class="meal-item-amount">${item.amount}г</span>
+                <span class="meal-item-amount">${item.amount}</span>
             </div>
         `).join('');
     });
@@ -1228,77 +1228,103 @@ function generateNewPlan(protein, fats, carbs) {
 function generateMealWithRealPortions(mealId, macros) {
     const items = [];
     
-    let remainingProtein = macros.protein;
-    let remainingFats = macros.fats;
-    let remainingCarbs = macros.carbs;
-    
-    // Белковый продукт - реальные порции
-    if (remainingProtein > 0) {
-        const proteinFood = foodDatabase.protein[Math.floor(Math.random() * foodDatabase.protein.length)];
-        let amount = Math.round((remainingProtein / proteinFood.protein) * proteinFood.per);
+    // Завтрак - яйца/творог + каша + масло
+    if (mealId === 'breakfast') {
+        // Яйца (2-4 шт = 100-200г)
+        const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 13)));
+        items.push({ name: `Яйца`, amount: `${eggs} шт` });
         
-        // Реальные порции для белка
-        if (proteinFood.name.includes('Яйца')) {
-            // Яйца - по 1-2 штуки (50-100г)
-            amount = Math.min(100, Math.max(50, Math.round(amount / 50) * 50));
-        } else {
-            // Мясо/творог - 100-200г
-            amount = Math.min(200, Math.max(100, Math.round(amount / 50) * 50));
+        // Каша (50-80г сухой)
+        const porridge = ['Овсянка', 'Гречка'][Math.floor(Math.random() * 2)];
+        const porridgeAmount = Math.min(80, Math.max(50, Math.round(macros.carbs / 60 * 100 / 10) * 10));
+        items.push({ name: porridge, amount: `${porridgeAmount}г` });
+        
+        // Масло (10-20г)
+        items.push({ name: 'Сливочное масло', amount: '10г' });
+        
+        // Хлеб (1-2 куска)
+        if (macros.carbs > 50) {
+            items.push({ name: 'Хлеб', amount: '40г' });
         }
-        
-        items.push({ name: proteinFood.name, amount });
-        remainingProtein -= (amount / proteinFood.per) * proteinFood.protein;
-        remainingFats -= (amount / proteinFood.per) * proteinFood.fats;
-        remainingCarbs -= (amount / proteinFood.per) * proteinFood.carbs;
     }
     
-    // Углеводный продукт - реальные порции
-    if (remainingCarbs > 0) {
-        const carbFood = foodDatabase.carbs[Math.floor(Math.random() * foodDatabase.carbs.length)];
-        let amount = Math.round((remainingCarbs / carbFood.carbs) * carbFood.per);
+    // Обед - мясо + гарнир + овощи + масло
+    else if (mealId === 'lunch') {
+        // Мясо (150-250г)
+        const meat = ['Куриная грудка', 'Куриные ножки', 'Говядина'][Math.floor(Math.random() * 3)];
+        const meatAmount = Math.min(250, Math.max(150, Math.round(macros.protein / 23 * 100 / 50) * 50));
+        items.push({ name: meat, amount: `${meatAmount}г` });
         
-        // Реальные порции для углеводов
-        if (carbFood.name.includes('Хлеб')) {
-            // Хлеб - 40-80г (1-2 куска)
-            amount = Math.min(80, Math.max(40, Math.round(amount / 40) * 40));
-        } else if (carbFood.name.includes('Картофель')) {
-            // Картофель - 150-300г (1-2 средних)
-            amount = Math.min(300, Math.max(150, Math.round(amount / 50) * 50));
+        // Гарнир (100-200г сухой крупы или 200-400г картофеля)
+        const garnish = ['Рис', 'Гречка', 'Макароны', 'Картофель'][Math.floor(Math.random() * 4)];
+        let garnishAmount;
+        if (garnish === 'Картофель') {
+            garnishAmount = Math.min(400, Math.max(200, Math.round(macros.carbs / 18 * 100 / 50) * 50));
         } else {
-            // Крупы - 50-150г (сухой вес)
-            amount = Math.min(150, Math.max(50, Math.round(amount / 50) * 50));
+            garnishAmount = Math.min(150, Math.max(80, Math.round(macros.carbs / 70 * 100 / 10) * 10));
         }
+        items.push({ name: garnish, amount: `${garnishAmount}г` });
         
-        items.push({ name: carbFood.name, amount });
-        remainingCarbs -= (amount / carbFood.per) * carbFood.carbs;
-        remainingProtein -= (amount / carbFood.per) * carbFood.protein;
-        remainingFats -= (amount / carbFood.per) * carbFood.fats;
+        // Овощи (100-200г)
+        const veggie = ['Огурцы', 'Помидоры', 'Капуста'][Math.floor(Math.random() * 3)];
+        items.push({ name: veggie, amount: '150г' });
+        
+        // Масло для готовки (10-20мл)
+        items.push({ name: 'Подсолнечное масло', amount: '15мл' });
     }
     
-    // Жировой продукт - реальные порции
-    if (remainingFats > 5) {
-        const fatFood = foodDatabase.fats[Math.floor(Math.random() * foodDatabase.fats.length)];
-        let amount = Math.round((remainingFats / fatFood.fats) * fatFood.per);
-        
-        // Реальные порции для жиров
-        if (fatFood.name.includes('масло')) {
-            // Масло - 10-30мл (1-2 ложки)
-            amount = Math.min(30, Math.max(10, Math.round(amount / 10) * 10));
-        } else if (fatFood.name.includes('Сметана')) {
-            // Сметана - 20-50г (1-2 ложки)
-            amount = Math.min(50, Math.max(20, Math.round(amount / 10) * 10));
+    // Ужин - белок + легкий гарнир + овощи
+    else if (mealId === 'dinner') {
+        // Белок (творог или мясо/яйца)
+        const proteinChoice = Math.random();
+        if (proteinChoice < 0.4) {
+            // Творог (150-250г)
+            const cottageAmount = Math.min(250, Math.max(150, Math.round(macros.protein / 16 * 100 / 50) * 50));
+            items.push({ name: 'Творог 5%', amount: `${cottageAmount}г` });
+            
+            // Сметана к творогу (30-50г)
+            items.push({ name: 'Сметана 20%', amount: '40г' });
         } else {
-            // Другие жиры - 20-50г
-            amount = Math.min(50, Math.max(20, Math.round(amount / 10) * 10));
+            // Яйца или мясо
+            if (proteinChoice < 0.7) {
+                const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 13)));
+                items.push({ name: `Яйца`, amount: `${eggs} шт` });
+            } else {
+                const meat = ['Куриная грудка', 'Куриные ножки'][Math.floor(Math.random() * 2)];
+                const meatAmount = Math.min(200, Math.max(100, Math.round(macros.protein / 23 * 100 / 50) * 50));
+                items.push({ name: meat, amount: `${meatAmount}г` });
+            }
         }
         
-        items.push({ name: fatFood.name, amount });
+        // Легкий гарнир если нужны углеводы (50-100г)
+        if (macros.carbs > 30) {
+            const garnish = ['Рис', 'Гречка'][Math.floor(Math.random() * 2)];
+            const garnishAmount = Math.min(100, Math.max(50, Math.round(macros.carbs / 70 * 100 / 10) * 10));
+            items.push({ name: garnish, amount: `${garnishAmount}г` });
+        }
+        
+        // Овощи (100-150г)
+        const veggie = ['Огурцы', 'Помидоры', 'Капуста'][Math.floor(Math.random() * 3)];
+        items.push({ name: veggie, amount: '100г' });
     }
     
-    // Овощи - всегда 100-150г (кроме перекусов)
-    if (mealId !== 'snacks') {
-        const veggie = foodDatabase.vegetables[Math.floor(Math.random() * foodDatabase.vegetables.length)];
-        items.push({ name: veggie.name, amount: 100 });
+    // Перекусы - простые и быстрые
+    else if (mealId === 'snacks') {
+        const snackChoice = Math.random();
+        
+        if (snackChoice < 0.3) {
+            // Творог + фрукт
+            items.push({ name: 'Творог 5%', amount: '100г' });
+            items.push({ name: 'Банан', amount: '1 шт' });
+        } else if (snackChoice < 0.6) {
+            // Яйца + хлеб
+            items.push({ name: 'Яйца', amount: '2 шт' });
+            items.push({ name: 'Хлеб', amount: '40г' });
+        } else {
+            // Орехи + фрукт
+            items.push({ name: 'Орехи', amount: '30г' });
+            items.push({ name: 'Яблоко', amount: '1 шт' });
+        }
     }
     
     return items;
