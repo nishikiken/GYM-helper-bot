@@ -1228,102 +1228,101 @@ function generateNewPlan(protein, fats, carbs) {
 function generateMealWithRealPortions(mealId, macros) {
     const items = [];
     
-    // Завтрак - яйца/творог + каша + масло
+    // Завтрак - разные варианты
     if (mealId === 'breakfast') {
-        // Яйца (2-4 шт = 100-200г)
-        const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 13)));
-        items.push({ name: `Яйца`, amount: `${eggs} шт` });
+        const breakfastType = Math.floor(Math.random() * 4);
         
-        // Каша (50-80г сухой)
-        const porridge = ['Овсянка', 'Гречка'][Math.floor(Math.random() * 2)];
-        const porridgeAmount = Math.min(80, Math.max(50, Math.round(macros.carbs / 60 * 100 / 10) * 10));
-        items.push({ name: porridge, amount: `${porridgeAmount}г` });
-        
-        // Масло (10-20г)
-        items.push({ name: 'Сливочное масло', amount: '10г' });
-        
-        // Хлеб (1-2 куска)
-        if (macros.carbs > 50) {
-            items.push({ name: 'Хлеб', amount: '40г' });
+        if (breakfastType === 0) {
+            // Омлет + овсянка
+            const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 15)));
+            items.push({ name: `Омлет из ${eggs} яиц`, amount: '' });
+            items.push({ name: 'Овсянка', amount: '60г' });
+            items.push({ name: 'Молоко', amount: '200мл' });
+        } else if (breakfastType === 1) {
+            // Творог + фрукты
+            items.push({ name: 'Творог 5%', amount: '150г' });
+            items.push({ name: 'Банан', amount: '1 шт' });
+            items.push({ name: 'Мёд', amount: '1 ч.л.' });
+            items.push({ name: 'Орехи', amount: '20г' });
+        } else if (breakfastType === 2) {
+            // Яичница + хлеб
+            const eggs = Math.min(3, Math.max(2, Math.round(macros.protein / 15)));
+            items.push({ name: `Яичница из ${eggs} яиц`, amount: '' });
+            items.push({ name: 'Хлеб цельнозерновой', amount: '2 куска' });
+            items.push({ name: 'Авокадо', amount: '½ шт' });
+        } else {
+            // Гречка + яйца
+            items.push({ name: 'Гречка', amount: '60г' });
+            items.push({ name: 'Яйца вареные', amount: '2 шт' });
+            items.push({ name: 'Сливочное масло', amount: '10г' });
         }
     }
     
-    // Обед - мясо + гарнир + овощи + масло
+    // Обед - полноценный прием
     else if (mealId === 'lunch') {
-        // Мясо (150-250г)
-        const meat = ['Куриная грудка', 'Куриные ножки', 'Говядина'][Math.floor(Math.random() * 3)];
-        const meatAmount = Math.min(250, Math.max(150, Math.round(macros.protein / 23 * 100 / 50) * 50));
-        items.push({ name: meat, amount: `${meatAmount}г` });
+        const lunchType = Math.floor(Math.random() * 3);
         
-        // Гарнир (100-200г сухой крупы или 200-400г картофеля)
-        const garnish = ['Рис', 'Гречка', 'Макароны', 'Картофель'][Math.floor(Math.random() * 4)];
-        let garnishAmount;
-        if (garnish === 'Картофель') {
-            garnishAmount = Math.min(400, Math.max(200, Math.round(macros.carbs / 18 * 100 / 50) * 50));
+        if (lunchType === 0) {
+            // Курица + рис + овощи
+            items.push({ name: 'Куриная грудка', amount: '200г' });
+            items.push({ name: 'Рис', amount: '100г' });
+            items.push({ name: 'Овощной салат', amount: '150г' });
+            items.push({ name: 'Оливковое масло', amount: '1 ст.л.' });
+        } else if (lunchType === 1) {
+            // Говядина + картофель
+            items.push({ name: 'Говядина', amount: '180г' });
+            items.push({ name: 'Картофель запеченный', amount: '250г' });
+            items.push({ name: 'Помидоры', amount: '100г' });
+            items.push({ name: 'Сметана 20%', amount: '30г' });
         } else {
-            garnishAmount = Math.min(150, Math.max(80, Math.round(macros.carbs / 70 * 100 / 10) * 10));
+            // Рыба + гречка
+            items.push({ name: 'Рыба (лосось/треска)', amount: '200г' });
+            items.push({ name: 'Гречка', amount: '100г' });
+            items.push({ name: 'Брокколи', amount: '150г' });
+            items.push({ name: 'Лимонный сок', amount: '1 ст.л.' });
         }
-        items.push({ name: garnish, amount: `${garnishAmount}г` });
-        
-        // Овощи (100-200г)
-        const veggie = ['Огурцы', 'Помидоры', 'Капуста'][Math.floor(Math.random() * 3)];
-        items.push({ name: veggie, amount: '150г' });
-        
-        // Масло для готовки (10-20мл)
-        items.push({ name: 'Подсолнечное масло', amount: '15мл' });
     }
     
-    // Ужин - белок + легкий гарнир + овощи
+    // Ужин - легче обеда
     else if (mealId === 'dinner') {
-        // Белок (творог или мясо/яйца)
-        const proteinChoice = Math.random();
-        if (proteinChoice < 0.4) {
-            // Творог (150-250г)
-            const cottageAmount = Math.min(250, Math.max(150, Math.round(macros.protein / 16 * 100 / 50) * 50));
-            items.push({ name: 'Творог 5%', amount: `${cottageAmount}г` });
-            
-            // Сметана к творогу (30-50г)
-            items.push({ name: 'Сметана 20%', amount: '40г' });
+        const dinnerType = Math.floor(Math.random() * 3);
+        
+        if (dinnerType === 0) {
+            // Творог + овощи
+            items.push({ name: 'Творог 5%', amount: '200г' });
+            items.push({ name: 'Огурцы', amount: '100г' });
+            items.push({ name: 'Помидоры', amount: '100г' });
+            items.push({ name: 'Зелень', amount: 'по вкусу' });
+        } else if (dinnerType === 1) {
+            // Курица + овощи
+            items.push({ name: 'Куриная грудка', amount: '150г' });
+            items.push({ name: 'Овощи на гриле', amount: '200г' });
+            items.push({ name: 'Киноа', amount: '50г' });
         } else {
-            // Яйца или мясо
-            if (proteinChoice < 0.7) {
-                const eggs = Math.min(4, Math.max(2, Math.round(macros.protein / 13)));
-                items.push({ name: `Яйца`, amount: `${eggs} шт` });
-            } else {
-                const meat = ['Куриная грудка', 'Куриные ножки'][Math.floor(Math.random() * 2)];
-                const meatAmount = Math.min(200, Math.max(100, Math.round(macros.protein / 23 * 100 / 50) * 50));
-                items.push({ name: meat, amount: `${meatAmount}г` });
-            }
+            // Яйца + салат
+            items.push({ name: 'Яйца вареные', amount: '3 шт' });
+            items.push({ name: 'Греческий салат', amount: '200г' });
+            items.push({ name: 'Оливковое масло', amount: '1 ст.л.' });
         }
-        
-        // Легкий гарнир если нужны углеводы (50-100г)
-        if (macros.carbs > 30) {
-            const garnish = ['Рис', 'Гречка'][Math.floor(Math.random() * 2)];
-            const garnishAmount = Math.min(100, Math.max(50, Math.round(macros.carbs / 70 * 100 / 10) * 10));
-            items.push({ name: garnish, amount: `${garnishAmount}г` });
-        }
-        
-        // Овощи (100-150г)
-        const veggie = ['Огурцы', 'Помидоры', 'Капуста'][Math.floor(Math.random() * 3)];
-        items.push({ name: veggie, amount: '100г' });
     }
     
     // Перекусы - простые и быстрые
     else if (mealId === 'snacks') {
-        const snackChoice = Math.random();
+        const snackType = Math.floor(Math.random() * 4);
         
-        if (snackChoice < 0.3) {
-            // Творог + фрукт
-            items.push({ name: 'Творог 5%', amount: '100г' });
+        if (snackType === 0) {
+            items.push({ name: 'Протеиновый коктейль', amount: '1 порция' });
             items.push({ name: 'Банан', amount: '1 шт' });
-        } else if (snackChoice < 0.6) {
-            // Яйца + хлеб
-            items.push({ name: 'Яйца', amount: '2 шт' });
-            items.push({ name: 'Хлеб', amount: '40г' });
-        } else {
-            // Орехи + фрукт
-            items.push({ name: 'Орехи', amount: '30г' });
+        } else if (snackType === 1) {
+            items.push({ name: 'Греческий йогурт', amount: '150г' });
+            items.push({ name: 'Ягоды', amount: '50г' });
+            items.push({ name: 'Мёд', amount: '1 ч.л.' });
+        } else if (snackType === 2) {
+            items.push({ name: 'Орехи микс', amount: '40г' });
             items.push({ name: 'Яблоко', amount: '1 шт' });
+        } else {
+            items.push({ name: 'Хлебцы', amount: '3 шт' });
+            items.push({ name: 'Арахисовая паста', amount: '20г' });
         }
     }
     
@@ -1343,72 +1342,75 @@ function toggleMacroHelp(macro) {
     
     if (macro === 'protein') {
         title = `Белки: ${amount}г в день`;
-        const chicken = Math.round(amount * 0.4 / 0.23);
+        const chicken = Math.round(amount * 0.5 / 0.23);
         const eggs = Math.round(amount * 0.3 / 0.13 / 50);
-        const cottage = Math.round(amount * 0.3 / 0.16);
+        const cottage = Math.round(amount * 0.2 / 0.16);
         
         content = `
-            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Примерный список продуктов на день:</p>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
                     <div style="font-weight: 600; margin-bottom: 4px;">🍗 ${chicken}г Куриной грудки</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 40% дневного белка</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">~50% дневного белка</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
                     <div style="font-weight: 600; margin-bottom: 4px;">🥚 ${eggs} шт Яиц</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневного белка</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">~30% дневного белка</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🧀 ${cottage}г Творога 5%</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневного белка</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🧀 ${cottage}г Творога</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">~20% дневного белка</div>
                 </div>
             </div>
+            <p style="margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.5);">* Это примерное распределение, можно комбинировать по-разному</p>
         `;
     } else if (macro === 'fats') {
         title = `Жиры: ${amount}г в день`;
-        const oil = Math.round(amount * 0.5);
-        const butter = Math.round(amount * 0.3 / 0.82);
-        const sour = Math.round(amount * 0.2 / 0.20);
+        const oil = Math.round(amount * 0.4);
+        const nuts = Math.round(amount * 0.35 / 0.60);
+        const avocado = Math.round(amount * 0.25 / 0.15);
         
         content = `
-            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Примерный список продуктов на день:</p>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🛢️ ${oil}мл Подсолнечного масла</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 50% дневных жиров</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🛢️ ${oil}мл Растительного масла</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Для готовки и салатов</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🧈 ${butter}г Сливочного масла</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневных жиров</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥜 ${nuts}г Орехов</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Горсть орехов в перекус</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🥛 ${sour}г Сметаны 20%</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 20% дневных жиров</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥑 ${avocado}г Авокадо</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно ½ авокадо</div>
                 </div>
             </div>
+            <p style="margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.5);">* Жиры также содержатся в мясе, яйцах и молочке</p>
         `;
     } else if (macro === 'carbs') {
         title = `Углеводы: ${amount}г в день`;
-        const rice = Math.round(amount * 0.35 / 0.78);
-        const buckwheat = Math.round(amount * 0.35 / 0.62);
+        const rice = Math.round(amount * 0.4 / 0.78);
+        const oats = Math.round(amount * 0.3 / 0.60);
         const bread = Math.round(amount * 0.3 / 0.50);
         
         content = `
-            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Список продуктов на весь день:</p>
+            <p style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">Примерный список продуктов на день:</p>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🍚 ${rice}г Риса</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 35% дневных углеводов</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🍚 ${rice}г Риса/Гречки</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Сухой вес, на обед</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">🌾 ${buckwheat}г Гречки</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 35% дневных углеводов</div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">🥣 ${oats}г Овсянки</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Сухой вес, на завтрак</div>
                 </div>
                 <div style="padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 8px;">
                     <div style="font-weight: 600; margin-bottom: 4px;">🍞 ${bread}г Хлеба</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Примерно 30% дневных углеводов</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.6);">2-3 куска в течение дня</div>
                 </div>
             </div>
+            <p style="margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.5);">* Также добавляй овощи и фрукты</p>
         `;
     }
     
